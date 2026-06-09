@@ -63,38 +63,32 @@
             android:orientation="horizontal">
 
             <com.google.android.material.button.MaterialButton
-                style="@style/Widget.Material3Expressive.Button.IconButton.Standard"
+                style="@style/Widget.hKtweaks.Material3Expressive.IconButton.Standard"
                 android:id="@+id/cancel"
                 android:layout_width="48dp"
                 android:layout_height="48dp"
                 android:layout_marginEnd="30dp"
                 android:layout_marginRight="30dp"
                 android:contentDescription="@string/cancel"
-                app:icon="@drawable/ic_cancel"
-                app:iconPadding="0dp"
-                app:iconTint="?attr/colorAccent" />
+                app:icon="@drawable/ic_cancel" />
 
             <com.google.android.material.button.MaterialButton
-                style="@style/Widget.Material3Expressive.Button.IconButton.Standard"
+                style="@style/Widget.hKtweaks.Material3Expressive.IconButton.Tonal"
                 android:id="@+id/restore"
                 android:layout_width="48dp"
                 android:layout_height="48dp"
                 android:contentDescription="@string/restore"
-                app:icon="@drawable/ic_restore"
-                app:iconPadding="0dp"
-                app:iconTint="?attr/colorAccent" />
+                app:icon="@drawable/ic_restore" />
 
             <com.google.android.material.button.MaterialButton
-                style="@style/Widget.Material3Expressive.Button.IconButton.Standard"
+                style="@style/Widget.hKtweaks.Material3Expressive.IconButton.Filled"
                 android:id="@+id/done"
                 android:layout_width="48dp"
                 android:layout_height="48dp"
                 android:layout_marginLeft="30dp"
                 android:layout_marginStart="30dp"
                 android:contentDescription="@string/save"
-                app:icon="@drawable/ic_done"
-                app:iconPadding="0dp"
-                app:iconTint="?attr/colorAccent" />
+                app:icon="@drawable/ic_done" />
         </LinearLayout>
     </LinearLayout>
 </LinearLayout>

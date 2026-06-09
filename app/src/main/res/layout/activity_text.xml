@@ -9,7 +9,7 @@
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/help_fab"
-        style="@style/Widget.Material3Expressive.FloatingActionButton"
+        style="@style/Widget.hKtweaks.Material3Expressive.FloatingActionButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="end|bottom"
@@ -20,7 +20,6 @@
         android:layout_marginRight="@dimen/nav_header_fab_margin_right"
         android:layout_marginStart="@dimen/nav_header_fab_margin_left"
         android:layout_marginTop="@dimen/nav_header_fab_margin_top"
-        android:tint="@color/white"
         app:srcCompat="@drawable/ic_help" />
 
     <TextView

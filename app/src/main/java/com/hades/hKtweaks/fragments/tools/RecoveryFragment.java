@@ -27,7 +27,6 @@ import android.os.Environment;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
-import androidx.core.graphics.drawable.DrawableCompat;
 import androidx.appcompat.view.ContextThemeWrapper;
 import com.google.android.material.checkbox.MaterialCheckBox;
 import android.view.LayoutInflater;
@@ -74,10 +73,7 @@ public class RecoveryFragment extends RecyclerViewFragment {
 
     @Override
     protected Drawable getTopFabDrawable() {
-        Drawable drawable = DrawableCompat.wrap(
-                ContextCompat.getDrawable(getActivity(), R.drawable.ic_add));
-        DrawableCompat.setTint(drawable, Color.WHITE);
-        return drawable;
+        return ContextCompat.getDrawable(getActivity(), R.drawable.ic_add);
     }
 
     @Override

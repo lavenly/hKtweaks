@@ -15,15 +15,13 @@
         android:orientation="vertical">
 
         <com.google.android.material.button.MaterialButton
-            style="@style/Widget.Material3Expressive.Button.IconButton.Standard"
+            style="@style/Widget.hKtweaks.Material3Expressive.IconButton.Tonal"
             android:id="@+id/frequency_refresh"
             android:layout_width="48dp"
             android:layout_height="48dp"
             android:layout_gravity="center"
             android:contentDescription="@string/refresh"
-            app:icon="@drawable/ic_refresh"
-            app:iconPadding="0dp"
-            app:iconTint="?attr/colorAccent" />
+            app:icon="@drawable/ic_refresh" />
 
         <TextView
             android:layout_width="match_parent"
@@ -44,16 +42,14 @@
         android:orientation="vertical">
 
         <com.google.android.material.button.MaterialButton
-            style="@style/Widget.Material3Expressive.Button.IconButton.Standard"
+            style="@style/Widget.hKtweaks.Material3Expressive.IconButton.Tonal"
             android:id="@+id/frequency_reset"
             android:layout_width="48dp"
             android:layout_height="48dp"
             android:layout_gravity="center"
             android:scaleY="-1"
             android:contentDescription="@string/reset"
-            app:icon="@drawable/ic_refresh"
-            app:iconPadding="0dp"
-            app:iconTint="?attr/colorAccent" />
+            app:icon="@drawable/ic_refresh" />
 
         <TextView
             android:layout_width="match_parent"
@@ -74,15 +70,13 @@
         android:orientation="vertical">
 
         <com.google.android.material.button.MaterialButton
-            style="@style/Widget.Material3Expressive.Button.IconButton.Standard"
+            style="@style/Widget.hKtweaks.Material3Expressive.IconButton.Tonal"
             android:id="@+id/frequency_restore"
             android:layout_width="48dp"
             android:layout_height="48dp"
             android:layout_gravity="center"
             android:contentDescription="@string/restore"
-            app:icon="@drawable/ic_restore"
-            app:iconPadding="0dp"
-            app:iconTint="?attr/colorAccent" />
+            app:icon="@drawable/ic_restore" />
 
         <TextView
             android:layout_width="match_parent"

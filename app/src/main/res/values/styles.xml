@@ -108,9 +108,53 @@
     <style name="Widget.hKtweaks.Material3Expressive.Toolbar"
         parent="Widget.Material3Expressive.Toolbar">
         <item name="android:background">@android:color/transparent</item>
+        <item name="actionMenuTextColor">?attr/colorOnPrimary</item>
+        <item name="colorControlNormal">?attr/colorOnPrimary</item>
         <item name="navigationIconTint">?attr/colorOnPrimary</item>
         <item name="subtitleTextColor">?attr/colorOnPrimary</item>
         <item name="titleTextColor">?attr/colorOnPrimary</item>
+    </style>
+
+    <style name="Widget.hKtweaks.Material3Expressive.IconButton.Standard"
+        parent="Widget.Material3Expressive.Button.IconButton.Standard">
+        <item name="android:minWidth">48dp</item>
+        <item name="android:minHeight">48dp</item>
+        <item name="iconPadding">0dp</item>
+        <item name="iconSize">24dp</item>
+        <item name="materialSizeOverlay">@style/SizeOverlay.Material3Expressive.Button.IconButton.Small</item>
+    </style>
+
+    <style name="Widget.hKtweaks.Material3Expressive.IconButton.Tonal"
+        parent="Widget.Material3Expressive.Button.IconButton.Tonal">
+        <item name="android:minWidth">48dp</item>
+        <item name="android:minHeight">48dp</item>
+        <item name="iconPadding">0dp</item>
+        <item name="iconSize">24dp</item>
+        <item name="materialSizeOverlay">@style/SizeOverlay.Material3Expressive.Button.IconButton.Small</item>
+    </style>
+
+    <style name="Widget.hKtweaks.Material3Expressive.IconButton.Filled"
+        parent="Widget.Material3Expressive.Button.IconButton.Filled">
+        <item name="android:minWidth">48dp</item>
+        <item name="android:minHeight">48dp</item>
+        <item name="iconPadding">0dp</item>
+        <item name="iconSize">24dp</item>
+        <item name="materialSizeOverlay">@style/SizeOverlay.Material3Expressive.Button.IconButton.Small</item>
+    </style>
+
+    <style name="Widget.hKtweaks.Material3Expressive.IconButton.Outlined"
+        parent="Widget.Material3Expressive.Button.IconButton.Outlined">
+        <item name="android:minWidth">48dp</item>
+        <item name="android:minHeight">48dp</item>
+        <item name="iconPadding">0dp</item>
+        <item name="iconSize">24dp</item>
+        <item name="materialSizeOverlay">@style/SizeOverlay.Material3Expressive.Button.IconButton.Small</item>
+    </style>
+
+    <style name="Widget.hKtweaks.Material3Expressive.FloatingActionButton"
+        parent="Widget.Material3Expressive.FloatingActionButton">
+        <item name="backgroundTint">?attr/colorSecondaryContainer</item>
+        <item name="tint">?attr/colorOnSecondaryContainer</item>
     </style>
 
     <style name="Divider">

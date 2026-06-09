@@ -6,9 +6,6 @@ Created by Grouxho on 19/03/2019.
 package com.grx.soundcontrol;
 
 import android.content.Context;
-import android.content.res.ColorStateList;
-import android.content.res.TypedArray;
-import android.util.TypedValue;
 import android.view.View;
 import android.widget.LinearLayout;
 
@@ -32,9 +29,6 @@ public class GrxVolumeManager extends RecyclerViewItem {
     private final static int HEADPHONES_INDEPENDENT_MODE = 0;
     private final static int HEADPHONES_ASYMETRIC_LINKED_MODE = 2;
     private final static int HEADPHONES_UNKNOWN_MODE = -1;
-
-    private int mAccentColor;
-
 
     /* headphones */
     
@@ -73,13 +67,6 @@ public class GrxVolumeManager extends RecyclerViewItem {
         boolean a = enabled;
     }
 
-    private void setAccentColor(){
-        TypedValue typedValue = new TypedValue();
-        TypedArray b = mContext.obtainStyledAttributes(typedValue.data, new int[] { android.R.attr.colorAccent });
-        mAccentColor = b.getColor(0, 0);
-        b.recycle();
-    }    
-
     @Override
     public int getLayoutRes() {
         return R.layout.grx_volume_controls;
@@ -108,7 +95,6 @@ public class GrxVolumeManager extends RecyclerViewItem {
     public void onCreateView(View view) {
         
         mContext = view.getContext();
-        setAccentColor();
         testSettings();
 
 
@@ -241,20 +227,18 @@ public class GrxVolumeManager extends RecyclerViewItem {
     private void setLinkMode(int mode){
         mLinkMode = mode;
 
-        ColorStateList inactiveTint = ColorStateList.valueOf(mAccentColor & 0x80ffffff);
-        ColorStateList activeTint = ColorStateList.valueOf(mAccentColor);
-        mUnlinkedButton.setIconTint(inactiveTint);
-        mLinkedButton.setIconTint(inactiveTint);
-        mAsymetricLinkedButton.setIconTint(inactiveTint);
+        mUnlinkedButton.setChecked(false);
+        mLinkedButton.setChecked(false);
+        mAsymetricLinkedButton.setChecked(false);
         switch (mLinkMode){
-            case HEADPHONES_INDEPENDENT_MODE: mUnlinkedButton.setIconTint(activeTint);
+            case HEADPHONES_INDEPENDENT_MODE: mUnlinkedButton.setChecked(true);
                 finishAsymLinedMode();
                 break;
-            case HEADPHONES_LINKED_MODE: mLinkedButton.setIconTint(activeTint);
+            case HEADPHONES_LINKED_MODE: mLinkedButton.setChecked(true);
                 finishAsymLinedMode();
                 initLinkedVolumeMode();
                 break;
-            case HEADPHONES_ASYMETRIC_LINKED_MODE: mAsymetricLinkedButton.setIconTint(activeTint);
+            case HEADPHONES_ASYMETRIC_LINKED_MODE: mAsymetricLinkedButton.setChecked(true);
                 initAsymLinedMode();
                 break;
         }

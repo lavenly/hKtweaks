@@ -26,6 +26,7 @@ import android.os.Bundle;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import androidx.core.graphics.drawable.DrawableCompat;
+import com.google.android.material.color.MaterialColors;
 import com.google.android.material.textfield.TextInputEditText;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -70,7 +71,8 @@ public class EditorActivity extends BaseActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         Drawable drawable = ContextCompat.getDrawable(this, R.drawable.ic_save);
-        DrawableCompat.setTint(drawable, Color.WHITE);
+        DrawableCompat.setTint(drawable, MaterialColors.getColor(
+                this, com.google.android.material.R.attr.colorOnPrimary, Color.WHITE));
         menu.add(0, Menu.FIRST, Menu.FIRST, getString(R.string.save)).setIcon(drawable)
                 .setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
         return super.onCreateOptionsMenu(menu);

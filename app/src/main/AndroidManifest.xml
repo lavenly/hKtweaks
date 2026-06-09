@@ -127,7 +127,7 @@
         <!-- DashClock -->
         <service
             android:name="com.hades.hKtweaks.services.DashClock"
-            android:icon="@drawable/ic_launcher_preview"
+            android:icon="@drawable/ic_profile_system"
             android:permission="com.google.android.apps.dashclock.permission.READ_EXTENSION_DATA"
             android:exported="false">
             <intent-filter>

@@ -42,10 +42,10 @@
 
             <com.google.android.material.imageview.ShapeableImageView
                 android:id="@+id/arrow_image"
-                android:layout_width="25dp"
-                android:layout_height="25dp"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
                 android:layout_gravity="center_vertical"
-                android:tint="?android:attr/textColorSecondary"
+                app:tint="?attr/colorOnSurfaceVariant"
                 app:srcCompat="@drawable/ic_arrow" />
         </LinearLayout>
     </FrameLayout>

@@ -101,7 +101,7 @@ public class Tile extends BroadcastReceiver {
         for (int i = 0; i < profiles.size(); i++) {
             CustomTile.ExpandedListItem expandedListItem = new CustomTile.ExpandedListItem();
             expandedListItem.setExpandedListItemTitle(profiles.get(i).getName());
-            expandedListItem.setExpandedListItemDrawable(R.drawable.ic_launcher_preview);
+            expandedListItem.setExpandedListItemDrawable(R.drawable.ic_profile_system);
 
             List<String> commands = new ArrayList<>();
             for (Profiles.ProfileItem.CommandItem commandItem : profiles.get(i).getCommands()) {
@@ -121,7 +121,7 @@ public class Tile extends BroadcastReceiver {
         CustomTile mCustomTile = new CustomTile.Builder(context)
                 .setExpandedStyle(listExpandedStyle)
                 .setLabel(R.string.profile)
-                .setIcon(R.drawable.ic_launcher_preview)
+                .setIcon(R.drawable.ic_profile_system)
                 .build();
         try {
             CMStatusBarManager.getInstance(context).publishTile(0, mCustomTile);

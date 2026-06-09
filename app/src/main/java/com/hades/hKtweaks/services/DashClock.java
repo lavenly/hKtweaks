@@ -47,7 +47,7 @@ public class DashClock extends DashClockExtension {
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
             extensionData = new ExtensionData()
                     .visible(true)
-                    .icon(R.drawable.ic_launcher_preview)
+                    .icon(R.drawable.ic_profile_system)
                     .clickIntent(intent);
         }
         if (!mRunning) {
