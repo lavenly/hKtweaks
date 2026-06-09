@@ -22,7 +22,7 @@ package com.hades.hKtweaks.fragments;
 import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.widget.SwitchCompat;
+import com.google.android.material.materialswitch.MaterialSwitch;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -68,7 +68,7 @@ public class SwitcherFragment extends BaseFragment {
 
         ((TextView) view.findViewById(R.id.title)).setText(title);
         ((TextView) view.findViewById(R.id.summary)).setText(summary);
-        SwitchCompat mSwitch = view.findViewById(R.id.switcher);
+        MaterialSwitch mSwitch = view.findViewById(R.id.switcher);
         mSwitch.setChecked(checked);
         mSwitch.setOnCheckedChangeListener(mOnCheckedChangeListener);
         return view;

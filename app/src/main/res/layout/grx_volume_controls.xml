@@ -33,35 +33,35 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
-                <ImageView
-                    android:clickable="true"
-                    android:background="@drawable/ripple_drawable"
-                    android:layout_weight="1"
+                <com.google.android.material.button.MaterialButton
+                    style="@style/Widget.Material3Expressive.Button.IconButton.Standard"
                     android:id="@+id/linked"
-                    android:src="@drawable/link"
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
-                    />
-
-                <ImageView
-                    android:clickable="true"
-                    android:background="@drawable/ripple_drawable"
+                    android:layout_width="0dp"
+                    android:layout_height="48dp"
                     android:layout_weight="1"
+                    android:contentDescription="@string/headphones_linked"
+                    app:icon="@drawable/link"
+                    app:iconPadding="0dp" />
+
+                <com.google.android.material.button.MaterialButton
+                    style="@style/Widget.Material3Expressive.Button.IconButton.Standard"
                     android:id="@+id/unlinked"
-                    android:src="@drawable/unlink"
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
-                    />
-
-                <ImageView
-                    android:clickable="true"
-                    android:background="@drawable/ripple_drawable"
+                    android:layout_width="0dp"
+                    android:layout_height="48dp"
                     android:layout_weight="1"
+                    android:contentDescription="@string/headphones_unlinked"
+                    app:icon="@drawable/unlink"
+                    app:iconPadding="0dp" />
+
+                <com.google.android.material.button.MaterialButton
+                    style="@style/Widget.Material3Expressive.Button.IconButton.Standard"
                     android:id="@+id/linked_a"
-                    android:src="@drawable/link_a"
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
-                    />
+                    android:layout_width="0dp"
+                    android:layout_height="48dp"
+                    android:layout_weight="1"
+                    android:contentDescription="@string/headphones_linked_asymmetric"
+                    app:icon="@drawable/link_a"
+                    app:iconPadding="0dp" />
 
             </LinearLayout>
 
@@ -181,6 +181,5 @@
         </LinearLayout>
 
     </LinearLayout>
-
 
 

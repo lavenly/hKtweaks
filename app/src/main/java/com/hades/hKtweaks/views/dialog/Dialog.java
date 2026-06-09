@@ -19,18 +19,21 @@
  */
 package com.hades.hKtweaks.views.dialog;
 
-import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.database.Cursor;
 import android.view.View;
 import android.view.WindowManager;
 
+import androidx.appcompat.app.AlertDialog;
+
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+
 /**
  * Created by willi on 07.11.16.
  */
 
-public class Dialog extends AlertDialog.Builder {
+public class Dialog extends MaterialAlertDialogBuilder {
 
     private DialogInterface.OnDismissListener mOnDismissListener;
 

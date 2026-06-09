@@ -6,12 +6,13 @@ Created by Grouxho on 19/03/2019.
 package com.grx.soundcontrol;
 
 import android.content.Context;
+import android.content.res.ColorStateList;
 import android.content.res.TypedArray;
 import android.util.TypedValue;
 import android.view.View;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 
+import com.google.android.material.button.MaterialButton;
 import com.hades.hKtweaks.database.Settings;
 import com.hades.hKtweaks.utils.AppSettings;
 import com.hades.hKtweaks.utils.kernel.sound.MoroSound;
@@ -38,7 +39,7 @@ public class GrxVolumeManager extends RecyclerViewItem {
     /* headphones */
     
     private int mLinkMode  = HEADPHONES_LINKED_MODE;
-    private ImageView mLinkedButton, mUnlinkedButton, mAsymetricLinkedButton;
+    private MaterialButton mLinkedButton, mUnlinkedButton, mAsymetricLinkedButton;
     private GrxVolumeItemController mVolumeLeftController, mVolumeRightController;
     private int mWheelStep = 6;
     private int mReferenceLevel = 113;
@@ -89,25 +90,16 @@ public class GrxVolumeManager extends RecyclerViewItem {
         public void onClick(View view) {
             if(!mMainSwitchEnabled) return;
             mLinkMode = HEADPHONES_UNKNOWN_MODE;
-            mUnlinkedButton.clearColorFilter();
-            mLinkedButton.clearColorFilter();
-            mAsymetricLinkedButton.clearColorFilter();
             int id = view.getId();
-            switch (id){
-                case R.id.unlinked:
-                    setLinkMode(HEADPHONES_INDEPENDENT_MODE);
-                    saveSpHeadPhonesLinkMode(HEADPHONES_INDEPENDENT_MODE);
-                    break;
-
-                case R.id.linked:
-                    setLinkMode(HEADPHONES_LINKED_MODE );
-                    saveSpHeadPhonesLinkMode(HEADPHONES_LINKED_MODE);
-                    break;
-
-                case R.id.linked_a:
-                    setLinkMode(HEADPHONES_ASYMETRIC_LINKED_MODE);
-                    saveSpHeadPhonesLinkMode(HEADPHONES_ASYMETRIC_LINKED_MODE);
-                    break;
+            if (id == R.id.unlinked) {
+                setLinkMode(HEADPHONES_INDEPENDENT_MODE);
+                saveSpHeadPhonesLinkMode(HEADPHONES_INDEPENDENT_MODE);
+            } else if (id == R.id.linked) {
+                setLinkMode(HEADPHONES_LINKED_MODE);
+                saveSpHeadPhonesLinkMode(HEADPHONES_LINKED_MODE);
+            } else if (id == R.id.linked_a) {
+                setLinkMode(HEADPHONES_ASYMETRIC_LINKED_MODE);
+                saveSpHeadPhonesLinkMode(HEADPHONES_ASYMETRIC_LINKED_MODE);
             }
         }
     };
@@ -249,18 +241,20 @@ public class GrxVolumeManager extends RecyclerViewItem {
     private void setLinkMode(int mode){
         mLinkMode = mode;
 
-        mUnlinkedButton.setColorFilter(mAccentColor&0x80ffffff);
-        mLinkedButton.setColorFilter(mAccentColor&0x80ffffff);
-        mAsymetricLinkedButton.setColorFilter(mAccentColor&0x80ffffff);
+        ColorStateList inactiveTint = ColorStateList.valueOf(mAccentColor & 0x80ffffff);
+        ColorStateList activeTint = ColorStateList.valueOf(mAccentColor);
+        mUnlinkedButton.setIconTint(inactiveTint);
+        mLinkedButton.setIconTint(inactiveTint);
+        mAsymetricLinkedButton.setIconTint(inactiveTint);
         switch (mLinkMode){
-            case HEADPHONES_INDEPENDENT_MODE: mUnlinkedButton.setColorFilter(mAccentColor);
+            case HEADPHONES_INDEPENDENT_MODE: mUnlinkedButton.setIconTint(activeTint);
                 finishAsymLinedMode();
                 break;
-            case HEADPHONES_LINKED_MODE: mLinkedButton.setColorFilter(mAccentColor);
+            case HEADPHONES_LINKED_MODE: mLinkedButton.setIconTint(activeTint);
                 finishAsymLinedMode();
                 initLinkedVolumeMode();
                 break;
-            case HEADPHONES_ASYMETRIC_LINKED_MODE: mAsymetricLinkedButton.setColorFilter(mAccentColor);
+            case HEADPHONES_ASYMETRIC_LINKED_MODE: mAsymetricLinkedButton.setIconTint(activeTint);
                 initAsymLinedMode();
                 break;
         }

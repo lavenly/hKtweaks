@@ -19,27 +19,23 @@
  */
 package com.hades.hKtweaks.activities;
 
+import android.annotation.SuppressLint;
 import android.app.KeyguardManager;
-import android.os.Build;
 import android.os.Bundle;
 import android.security.keystore.KeyGenParameterSpec;
 import android.security.keystore.KeyProperties;
 import androidx.annotation.Nullable;
-import androidx.annotation.RequiresApi;
 import androidx.core.hardware.fingerprint.FingerprintManagerCompat;
-import androidx.appcompat.view.ContextThemeWrapper;
-import androidx.appcompat.widget.AppCompatEditText;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.FrameLayout;
 
+import com.google.android.material.progressindicator.CircularProgressIndicator;
+import com.google.android.material.textfield.TextInputEditText;
 import com.hades.hKtweaks.R;
 import com.hades.hKtweaks.utils.AppSettings;
 import com.hades.hKtweaks.utils.FingerprintUiHelper;
 import com.hades.hKtweaks.utils.Utils;
-import com.mattprecious.swirl.SwirlView;
 
 import java.io.IOException;
 import java.security.InvalidAlgorithmParameterException;
@@ -61,6 +57,7 @@ import javax.crypto.SecretKey;
 /**
  * Created by willi on 27.07.16.
  */
+@SuppressLint("RestrictedApi")
 public class SecurityActivity extends BaseActivity {
 
     public static final String PASSWORD_INTENT = "password";
@@ -79,7 +76,7 @@ public class SecurityActivity extends BaseActivity {
         setContentView(R.layout.activity_security);
 
         final String password = Utils.decodeString(getIntent().getStringExtra(PASSWORD_INTENT));
-        AppCompatEditText editText = findViewById(R.id.edittext);
+        TextInputEditText editText = findViewById(R.id.edittext);
         mPasswordWrong = findViewById(R.id.password_wrong);
         editText.addTextChangedListener(new TextWatcher() {
             @Override
@@ -102,8 +99,7 @@ public class SecurityActivity extends BaseActivity {
             }
         });
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M
-                && AppSettings.isFingerprint(this)) {
+        if (AppSettings.isFingerprint(this)) {
             mFingerprintManagerCompat = FingerprintManagerCompat.from(this);
             if (mFingerprintManagerCompat.isHardwareDetected()
                     && mFingerprintManagerCompat.hasEnrolledFingerprints()
@@ -113,7 +109,6 @@ public class SecurityActivity extends BaseActivity {
         }
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.M)
     private void loadFingerprint() {
         try {
             KeyStore keyStore = KeyStore.getInstance("AndroidKeyStore");
@@ -141,15 +136,11 @@ public class SecurityActivity extends BaseActivity {
         }
 
         mCryptoObject = new FingerprintManagerCompat.CryptoObject(mCipher);
-        FrameLayout fingerprintParent = findViewById(R.id.fingerprint_parent);
-        final SwirlView swirlView = new SwirlView(new ContextThemeWrapper(this, R.style.Swirl));
-        swirlView.setLayoutParams(new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
-                ViewGroup.LayoutParams.MATCH_PARENT));
-        fingerprintParent.addView(swirlView);
-        fingerprintParent.setVisibility(View.VISIBLE);
+        CircularProgressIndicator indicator = findViewById(R.id.fingerprint_indicator);
+        indicator.setVisibility(View.VISIBLE);
 
         mFingerprintUiHelper = new FingerprintUiHelper.FingerprintUiHelperBuilder(
-                mFingerprintManagerCompat).build(swirlView,
+                mFingerprintManagerCompat).build(indicator,
                 new FingerprintUiHelper.Callback() {
                     @Override
                     public void onAuthenticated() {
@@ -160,7 +151,7 @@ public class SecurityActivity extends BaseActivity {
                             finish();
                         } catch (IllegalBlockSizeException | BadPaddingException e) {
                             e.printStackTrace();
-                            swirlView.setState(SwirlView.State.ERROR);
+                            mFingerprintUiHelper.showError();
                         }
                     }
 

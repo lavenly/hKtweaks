@@ -1,8 +1,8 @@
 package com.hades.hKtweaks.fragments.kernel;
 
-import androidx.appcompat.app.AlertDialog;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import android.view.View;
-import android.widget.CheckBox;
+import com.google.android.material.checkbox.MaterialCheckBox;
 
 import com.hades.hKtweaks.R;
 import com.hades.hKtweaks.fragments.ApplyOnBootFragment;
@@ -21,7 +21,6 @@ import com.hades.hKtweaks.views.recyclerview.TitleView;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
 
 /**
  * Created by MoroGoku on 10/11/2017.
@@ -135,14 +134,15 @@ public class BoefflaWakelockFragment extends RecyclerViewFragment {
     private void warningDialog() {
 
         View checkBoxView = View.inflate(getActivity(), R.layout.alertdialog_wakelock_fragment, null);
-        CheckBox checkBox = checkBoxView.findViewById(R.id.chbox);
+        MaterialCheckBox checkBox = checkBoxView.findViewById(R.id.chbox);
         checkBox.setChecked(true);
         checkBox.setText(getString(R.string.wkl_alert_checkbox));
         checkBox.setOnCheckedChangeListener((buttonView, isChecked)
                 -> mAlertCheckbox = isChecked);
 
 
-        AlertDialog.Builder alert = new AlertDialog.Builder(Objects.requireNonNull(getActivity()));
+        MaterialAlertDialogBuilder alert =
+                new MaterialAlertDialogBuilder(requireActivity());
         alert.setTitle(getString(R.string.wkl_alert_title));
         alert.setMessage(getString(R.string.wkl_alert_message));
         alert.setView(checkBoxView);

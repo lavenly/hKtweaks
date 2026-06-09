@@ -15,7 +15,7 @@
         android:focusable="true"
         android:padding="10dp">
 
-        <androidx.appcompat.widget.AppCompatTextView
+        <com.google.android.material.textview.MaterialTextView
             android:id="@+id/maintitle"
             android:text="@string/arizona_eq_sw"
             android:layout_width="match_parent"
@@ -28,18 +28,18 @@
             android:gravity="center_vertical"
             android:orientation="horizontal">
 
-            <androidx.appcompat.widget.AppCompatTextView
+            <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/summary"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1" />
 
-            <androidx.appcompat.widget.SwitchCompat
+            <com.google.android.material.materialswitch.MaterialSwitch
                 android:id="@+id/switcher"
-                android:layout_width="80dp"
+                style="@style/Widget.Material3.CompoundButton.MaterialSwitch"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical|end"
-                android:background="@null"
                 android:clickable="false"
                 android:focusable="false" />
 
@@ -54,7 +54,7 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
-        <androidx.appcompat.widget.AppCompatTextView
+        <com.google.android.material.textview.MaterialTextView
             android:text="@string/eq_profile"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -65,7 +65,7 @@
             android:layout_height="wrap_content"
             android:gravity="center_vertical">
 
-            <androidx.appcompat.widget.AppCompatTextView
+            <com.google.android.material.textview.MaterialTextView
                 android:foreground="?attr/selectableItemBackground"
                 android:id="@+id/button_eq_profile"
                 android:paddingTop="8dp"
@@ -75,18 +75,16 @@
                 android:layout_gravity="center_vertical"
                 android:layout_height="wrap_content" />
 
-            <ImageView
-                android:focusable="true"
-                android:clickable="true"
+            <com.google.android.material.button.MaterialButton
+                style="@style/Widget.Material3Expressive.Button.IconButton.Standard"
                 android:id="@+id/button_eq_save"
-                android:foreground="?attr/selectableItemBackground"
-                android:layout_marginStart="10dp"
-                app:srcCompat="@drawable/ic_save"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
                 android:layout_gravity="center_vertical|end"
-                android:gravity="center|right"
-                android:padding="4dp"
-                android:layout_width="28dp"
-                android:layout_height="28dp" />
+                android:layout_marginStart="10dp"
+                android:contentDescription="@string/eq_profile_save"
+                app:icon="@drawable/ic_save"
+                app:iconPadding="0dp" />
 
         </LinearLayout>
 

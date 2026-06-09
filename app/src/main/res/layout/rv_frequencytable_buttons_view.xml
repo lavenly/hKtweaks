@@ -14,15 +14,16 @@
         android:layout_weight="1"
         android:orientation="vertical">
 
-        <androidx.appcompat.widget.AppCompatImageButton
+        <com.google.android.material.button.MaterialButton
+            style="@style/Widget.Material3Expressive.Button.IconButton.Standard"
             android:id="@+id/frequency_refresh"
-            android:layout_width="30dp"
-            android:layout_height="30dp"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
             android:layout_gravity="center"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:scaleType="fitCenter"
-            android:tint="?attr/colorAccent"
-            app:srcCompat="@drawable/ic_refresh" />
+            android:contentDescription="@string/refresh"
+            app:icon="@drawable/ic_refresh"
+            app:iconPadding="0dp"
+            app:iconTint="?attr/colorAccent" />
 
         <TextView
             android:layout_width="match_parent"
@@ -42,16 +43,17 @@
         android:layout_weight="1"
         android:orientation="vertical">
 
-        <androidx.appcompat.widget.AppCompatImageButton
+        <com.google.android.material.button.MaterialButton
+            style="@style/Widget.Material3Expressive.Button.IconButton.Standard"
             android:id="@+id/frequency_reset"
-            android:layout_width="30dp"
-            android:layout_height="30dp"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
             android:layout_gravity="center"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:scaleType="fitCenter"
             android:scaleY="-1"
-            android:tint="?attr/colorAccent"
-            app:srcCompat="@drawable/ic_refresh" />
+            android:contentDescription="@string/reset"
+            app:icon="@drawable/ic_refresh"
+            app:iconPadding="0dp"
+            app:iconTint="?attr/colorAccent" />
 
         <TextView
             android:layout_width="match_parent"
@@ -71,15 +73,16 @@
         android:layout_weight="1"
         android:orientation="vertical">
 
-        <androidx.appcompat.widget.AppCompatImageButton
+        <com.google.android.material.button.MaterialButton
+            style="@style/Widget.Material3Expressive.Button.IconButton.Standard"
             android:id="@+id/frequency_restore"
-            android:layout_width="30dp"
-            android:layout_height="30dp"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
             android:layout_gravity="center"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:scaleType="fitCenter"
-            android:tint="?attr/colorAccent"
-            app:srcCompat="@drawable/ic_restore" />
+            android:contentDescription="@string/restore"
+            app:icon="@drawable/ic_restore"
+            app:iconPadding="0dp"
+            app:iconTint="?attr/colorAccent" />
 
         <TextView
             android:layout_width="match_parent"

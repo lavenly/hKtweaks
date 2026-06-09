@@ -27,9 +27,9 @@ import androidx.core.content.ContextCompat;
 import androidx.core.graphics.drawable.DrawableCompat;
 import android.text.method.LinkMovementMethod;
 import android.view.View;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.google.android.material.progressindicator.LinearProgressIndicator;
 import com.hades.hKtweaks.R;
 import com.hades.hKtweaks.utils.DownloadTask;
 import com.hades.hKtweaks.utils.Utils;
@@ -60,7 +60,7 @@ public class DownloadKernelView extends RecyclerViewItem {
     private View mDownloadSection;
     private View mProgressParent;
     private TextView mProgressText;
-    private ProgressBar mProgressBar;
+    private LinearProgressIndicator mProgressBar;
     private FloatingActionButton mFabButton;
     private View mCheckMD5;
     private View mMismatchMD5;

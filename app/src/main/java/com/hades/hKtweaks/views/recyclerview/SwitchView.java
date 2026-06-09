@@ -19,8 +19,8 @@
  */
 package com.hades.hKtweaks.views.recyclerview;
 
-import androidx.appcompat.widget.AppCompatTextView;
-import androidx.appcompat.widget.SwitchCompat;
+import com.google.android.material.textview.MaterialTextView;
+import com.google.android.material.materialswitch.MaterialSwitch;
 import android.view.View;
 
 import com.hades.hKtweaks.R;
@@ -37,9 +37,9 @@ public class SwitchView extends RecyclerViewItem {
         void onChanged(SwitchView switchView, boolean isChecked);
     }
 
-    private AppCompatTextView mTitle;
-    private AppCompatTextView mSummary;
-    private SwitchCompat mSwitcher;
+    private MaterialTextView mTitle;
+    private MaterialTextView mSummary;
+    private MaterialSwitch mSwitcher;
 
     private CharSequence mTitleText;
     private CharSequence mSummaryText;

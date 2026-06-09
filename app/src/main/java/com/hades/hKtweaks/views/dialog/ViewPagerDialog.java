@@ -32,7 +32,7 @@ import android.view.ViewTreeObserver;
 
 import com.hades.hKtweaks.R;
 import com.hades.hKtweaks.fragments.recyclerview.RecyclerViewFragment;
-import com.viewpagerindicator.CirclePageIndicator;
+import com.google.android.material.tabs.TabLayout;
 
 import java.util.List;
 
@@ -65,9 +65,10 @@ public class ViewPagerDialog extends DialogFragment {
         View rootView = inflater.inflate(R.layout.viewpager_view, container, false);
 
         ViewPager viewPager = rootView.findViewById(R.id.viewpager);
-        CirclePageIndicator indicator = rootView.findViewById(R.id.indicator);
+        TabLayout indicator = rootView.findViewById(R.id.indicator);
         viewPager.setAdapter(new RecyclerViewFragment.ViewPagerAdapter(getChildFragmentManager(), mFragments));
-        indicator.setViewPager(viewPager);
+        indicator.setupWithViewPager(viewPager);
+        indicator.setVisibility(mFragments.size() > 1 ? View.VISIBLE : View.GONE);
 
         return rootView;
     }

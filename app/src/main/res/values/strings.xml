@@ -54,6 +54,10 @@
 
     <!-- Editor -->
     <string name="save">Save</string>
+    <string name="xda" translatable="false">XDA</string>
+    <string name="github" translatable="false">GitHub</string>
+    <string name="google_plus" translatable="false">Google Plus</string>
+    <string name="paypal" translatable="false">PayPal</string>
 
     <!-- File Picker -->
     <string name="select_question">Select %s?</string>
@@ -75,6 +79,7 @@
     <string name="percent">%</string>
     <string name="gb">GB</string>
     <string name="db">dB</string>
+    <string name="db_value">%1$s dB</string>
 
     <!-- Special signs -->
     <string name="minus" translatable="false">-</string>
@@ -762,6 +767,9 @@
 
     <!-- Grx Sound Control -->
     <string name="headphones_volume">HeadPhones</string>
+    <string name="headphones_linked">Link headphone channels</string>
+    <string name="headphones_unlinked">Unlink headphone channels</string>
+    <string name="headphones_linked_asymmetric">Link headphone channels asymmetrically</string>
     <string name="left_headphone">Left</string>
     <string name="right_headphone">Right</string>
     <string name="eq_profile">Active Profile / Manage Profiles</string>
@@ -1249,6 +1257,7 @@
     <string name="force_english">Force displaying english language</string>
     <string name="user_interface">User interface</string>
     <string name="dark_theme">Dark theme</string>
+    <string name="dark_theme_mode">Dark theme mode</string>
     <string name="material_icon">Material icon</string>
     <string name="banner_resizer">Banner resizer</string>
     <string name="hide_banner">Hide banner</string>

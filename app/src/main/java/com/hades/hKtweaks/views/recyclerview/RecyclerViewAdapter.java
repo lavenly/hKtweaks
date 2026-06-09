@@ -20,7 +20,7 @@
 package com.hades.hKtweaks.views.recyclerview;
 
 import androidx.annotation.NonNull;
-import androidx.cardview.widget.CardView;
+import com.google.android.material.card.MaterialCardView;
 import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -88,10 +88,8 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             viewGroup.removeView(view);
         }
         if (item.cardCompatible() && AppSettings.isForceCards(parent.getContext())) {
-            CardView cardView =
-                    new CardView(view.getContext());
-            cardView.setRadius(view.getResources().getDimension(R.dimen.cardview_radius));
-            cardView.setCardElevation(view.getResources().getDimension(R.dimen.cardview_elevation));
+            MaterialCardView cardView =
+                    new MaterialCardView(view.getContext());
             cardView.setUseCompatPadding(true);
             cardView.setFocusable(false);
             cardView.addView(view);

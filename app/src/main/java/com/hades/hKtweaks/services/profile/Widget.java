@@ -22,18 +22,27 @@ package com.hades.hKtweaks.services.profile;
 import android.app.PendingIntent;
 import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.ColorStateList;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.util.SparseArray;
+import android.util.TypedValue;
+import android.view.ContextThemeWrapper;
 import android.widget.RemoteViews;
 import android.widget.RemoteViewsService;
 
 import com.hades.hKtweaks.R;
+import com.hades.hKtweaks.activities.MainActivity;
+import com.hades.hKtweaks.activities.NavigationActivity;
 import com.hades.hKtweaks.database.tools.profiles.Profiles;
+import com.hades.hKtweaks.fragments.tools.ProfileFragment;
 import com.hades.hKtweaks.services.boot.ApplyOnBoot;
+import com.hades.hKtweaks.utils.Themes;
 import com.hades.hKtweaks.utils.Utils;
 import com.hades.hKtweaks.utils.kernel.cpu.CPUFreq;
 import com.hades.hKtweaks.utils.root.RootUtils;
@@ -51,6 +60,16 @@ public class Widget extends AppWidgetProvider {
 
     private static final SparseArray<Long> sProfileLastClicked = new SparseArray<>();
 
+    public static void updateAll(Context context) {
+        AppWidgetManager manager = AppWidgetManager.getInstance(context);
+        int[] appWidgetIds = manager.getAppWidgetIds(new ComponentName(context, Widget.class));
+        if (appWidgetIds.length == 0) {
+            return;
+        }
+        new Widget().onUpdate(context, manager, appWidgetIds);
+        manager.notifyAppWidgetViewDataChanged(appWidgetIds, R.id.profile_list);
+    }
+
     @Override
     public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
         super.onUpdate(context, appWidgetManager, appWidgetIds);
@@ -62,26 +81,95 @@ public class Widget extends AppWidgetProvider {
 
             RemoteViews widget = new RemoteViews(context.getPackageName(), R.layout.widget_profile);
             widget.setRemoteAdapter(R.id.profile_list, svcIntent);
-
-            widget.setPendingIntentTemplate(R.id.profile_list, getPendingIntent(context, LIST_ITEM_CLICK));
+            widget.setEmptyView(R.id.profile_list, R.id.profile_empty);
+            widget.setPendingIntentTemplate(R.id.profile_list,
+                    getListPendingIntent(context, appWidgetId));
+            widget.setOnClickPendingIntent(R.id.widget_header,
+                    getProfilesPendingIntent(context, appWidgetId));
+            applyWidgetColors(widget, context);
 
             appWidgetManager.updateAppWidget(appWidgetId, widget);
         }
     }
 
-    private PendingIntent getPendingIntent(Context context, String action) {
+    private PendingIntent getListPendingIntent(Context context, int appWidgetId) {
         Intent intent = new Intent(context, getClass());
-        intent.setAction(action);
-        return PendingIntent.getBroadcast(context, 0, intent, 0);
+        intent.setAction(LIST_ITEM_CLICK);
+        intent.setData(Uri.parse("hKtweaks://profile-widget/" + appWidgetId));
+        int flags = PendingIntent.FLAG_UPDATE_CURRENT;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            flags |= PendingIntent.FLAG_MUTABLE;
+        }
+        return PendingIntent.getBroadcast(context, appWidgetId, intent, flags);
+    }
+
+    private PendingIntent getProfilesPendingIntent(Context context, int appWidgetId) {
+        Intent intent = new Intent(context, MainActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        intent.putExtra(NavigationActivity.INTENT_SECTION,
+                ProfileFragment.class.getCanonicalName());
+        return PendingIntent.getActivity(context, appWidgetId, intent,
+                PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
+    }
+
+    private static void applyWidgetColors(RemoteViews views, Context context) {
+        boolean darkTheme = Themes.isDarkTheme(context);
+        boolean amoledTheme = darkTheme && Themes.isAmoledBlack(context);
+        int surfaceDrawable = darkTheme
+                ? amoledTheme
+                        ? R.drawable.widget_profile_surface_amoled
+                        : R.drawable.widget_profile_surface_dark
+                : R.drawable.widget_profile_surface_light;
+        views.setInt(R.id.widget_container, "setBackgroundResource", surfaceDrawable);
+
+        ContextThemeWrapper themedContext = getThemedContext(context);
+        int primary = resolveColor(themedContext, R.attr.colorPrimary, R.color.widget_primary);
+        int onPrimary = resolveColor(themedContext, R.attr.colorOnPrimary, R.color.widget_on_primary);
+        int surface = resolveColor(themedContext, R.attr.colorSurfaceContainer,
+                darkTheme ? R.color.widget_surface_dark : R.color.widget_surface_light);
+        int onSurfaceVariant = resolveColor(themedContext, R.attr.colorOnSurfaceVariant,
+                darkTheme ? R.color.widget_on_surface_variant : R.color.textcolor_light);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            views.setColorStateList(R.id.widget_container, "setBackgroundTintList",
+                    ColorStateList.valueOf(surface));
+            views.setColorStateList(R.id.widget_header, "setBackgroundTintList",
+                    ColorStateList.valueOf(primary));
+        }
+        views.setTextColor(R.id.widget_title, onPrimary);
+        views.setTextColor(R.id.profile_empty, onSurfaceVariant);
+        views.setInt(R.id.widget_header_icon, "setColorFilter", onPrimary);
+    }
+
+    private static ContextThemeWrapper getThemedContext(Context context) {
+        boolean darkTheme = Themes.isDarkTheme(context);
+        Themes.Theme theme = Themes.getTheme(context, darkTheme,
+                darkTheme && Themes.isAmoledBlack(context));
+        return new ContextThemeWrapper(context, theme.getStyle());
+    }
+
+    private static int resolveColor(Context context, int attribute, int fallbackColor) {
+        TypedValue value = new TypedValue();
+        if (context.getTheme().resolveAttribute(attribute, value, true)) {
+            if (value.resourceId != 0) {
+                return context.getColor(value.resourceId);
+            }
+            return value.data;
+        }
+        return context.getColor(fallbackColor);
     }
 
     @Override
     public void onReceive(final Context context, Intent intent) {
         super.onReceive(context, intent);
 
-        if (intent.getAction().equals(LIST_ITEM_CLICK)) {
+        if (LIST_ITEM_CLICK.equals(intent.getAction())) {
             final int position = intent.getIntExtra(ITEM_ARG, 0);
-            Profiles.ProfileItem profileItem = new Profiles(context).getAllProfiles().get(position);
+            List<Profiles.ProfileItem> profiles = new Profiles(context).getAllProfiles();
+            if (position < 0 || position >= profiles.size()) {
+                return;
+            }
+            Profiles.ProfileItem profileItem = profiles.get(position);
 
             long lastClicked = sProfileLastClicked.get(position, 0L);
             long currentTime = SystemClock.elapsedRealtime();
@@ -155,13 +243,21 @@ public class Widget extends AppWidgetProvider {
             RemoteViews row = new RemoteViews(mContext.getPackageName(), R.layout.widget_profile_item);
 
             row.setTextViewText(R.id.text, mItems.get(position).getName());
+            ContextThemeWrapper themedContext = getThemedContext(mContext);
+            boolean darkTheme = Themes.isDarkTheme(mContext);
+            int onSurface = resolveColor(themedContext, R.attr.colorOnSurface,
+                    darkTheme ? R.color.widget_on_surface : R.color.black);
+            int onSurfaceVariant = resolveColor(themedContext, R.attr.colorOnSurfaceVariant,
+                    darkTheme ? R.color.widget_on_surface_variant : R.color.textcolor_light);
+            row.setTextColor(R.id.text, onSurface);
+            row.setInt(R.id.profile_item_icon, "setColorFilter", onSurfaceVariant);
 
             Intent i = new Intent();
             Bundle extras = new Bundle();
 
             extras.putInt(ITEM_ARG, position);
             i.putExtras(extras);
-            row.setOnClickFillInIntent(R.id.text, i);
+            row.setOnClickFillInIntent(R.id.profile_item, i);
 
             return (row);
         }

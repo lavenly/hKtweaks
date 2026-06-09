@@ -26,7 +26,7 @@ import android.os.Bundle;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import androidx.core.graphics.drawable.DrawableCompat;
-import androidx.appcompat.widget.AppCompatEditText;
+import com.google.android.material.textfield.TextInputEditText;
 import android.view.Menu;
 import android.view.MenuItem;
 
@@ -41,7 +41,7 @@ public class EditorActivity extends BaseActivity {
     public static final String TEXT_INTENT = "text";
     private static final String EDITTEXT_INTENT = "edittext";
 
-    private AppCompatEditText mEditText;
+    private TextInputEditText mEditText;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {

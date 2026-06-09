@@ -43,7 +43,8 @@ import androidx.core.view.ViewCompat;
 import androidx.viewpager.widget.ViewPager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.StaggeredGridLayoutManager;
-import androidx.appcompat.widget.Toolbar;
+import com.google.android.material.appbar.MaterialToolbar;
+import com.google.android.material.tabs.TabLayout;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -54,7 +55,7 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.TextView;
 
-import com.hades.hKtweaks.R;
+import com.lavenly.hKtweaks.R;
 import com.hades.hKtweaks.activities.BaseActivity;
 import com.hades.hKtweaks.activities.NavigationActivity;
 import com.hades.hKtweaks.fragments.BaseFragment;
@@ -65,16 +66,14 @@ import com.hades.hKtweaks.utils.ViewUtils;
 import com.hades.hKtweaks.views.dialog.ViewPagerDialog;
 import com.hades.hKtweaks.views.recyclerview.RecyclerViewAdapter;
 import com.hades.hKtweaks.views.recyclerview.RecyclerViewItem;
-import com.viewpagerindicator.CirclePageIndicator;
-
+hades
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
-import io.codetail.animation.SupportAnimator;
-import io.codetail.animation.ViewAnimationUtils;
+import android.view.ViewAnimationUtils;
 
 /**
  * Created by willi on 16.04.16.
@@ -99,13 +98,13 @@ public abstract class RecyclerViewFragment extends BaseFragment {
     private View mViewPagerParent;
     private ViewPager mViewPager;
     private View mViewPagerShadow;
-    private CirclePageIndicator mCirclePageIndicator;
+    private TabLayout mPageIndicator;
 
     private FloatingActionButton mTopFab;
     private FloatingActionButton mBottomFab;
 
     private AppBarLayout mAppBarLayout;
-    private Toolbar mToolBar;
+    private MaterialToolbar mToolBar;
 
     private AsyncTask<Void, Void, List<RecyclerViewItem>> mLoader;
     AsyncTask<Void, Void, List<RecyclerViewItem>> mReloader;
@@ -151,7 +150,7 @@ public abstract class RecyclerViewFragment extends BaseFragment {
         mViewPager.setVisibility(View.INVISIBLE);
         mViewPagerShadow = mRootView.findViewById(R.id.viewpager_shadow);
         mViewPagerShadow.setVisibility(View.INVISIBLE);
-        mCirclePageIndicator = mRootView.findViewById(R.id.indicator);
+        mPageIndicator = mRootView.findViewById(R.id.indicator);
         resizeBanner();
         mViewPagerParent.setVisibility(View.INVISIBLE);
 
@@ -301,18 +300,16 @@ public abstract class RecyclerViewFragment extends BaseFragment {
 
                             int cx = fragment.mViewPager.getWidth();
 
-                            SupportAnimator animator = ViewAnimationUtils.createCircularReveal(
+                            Animator animator = ViewAnimationUtils.createCircularReveal(
                                     fragment.mViewPager, cx / 2, 0, 0, cx);
-                            animator.addListener(new SupportAnimator.SimpleAnimatorListener() {
+                            animator.addListener(new AnimatorListenerAdapter() {
                                 @Override
-                                public void onAnimationStart() {
-                                    super.onAnimationStart();
+                                public void onAnimationStart(Animator animation) {
                                     fragment.mViewPager.setVisibility(View.VISIBLE);
                                 }
 
                                 @Override
-                                public void onAnimationEnd() {
-                                    super.onAnimationEnd();
+                                public void onAnimationEnd(Animator animation) {
                                     fragment.mViewPagerShadow.setVisibility(View.VISIBLE);
                                 }
                             });
@@ -375,7 +372,9 @@ public abstract class RecyclerViewFragment extends BaseFragment {
         if (showViewPager() && !hideBanner()) {
             mViewPager.setAdapter(mViewPagerAdapter = new ViewPagerAdapter(getChildFragmentManager(),
                     mViewPagerFragments));
-            mCirclePageIndicator.setViewPager(mViewPager);
+            mPageIndicator.setupWithViewPager(mViewPager);
+            mPageIndicator.setVisibility(
+                    mViewPagerFragments.size() > 1 ? View.VISIBLE : View.GONE);
 
             setAppBarLayoutAlpha(0);
             adjustScrollPosition();

@@ -38,7 +38,6 @@ import android.provider.MediaStore;
 import android.provider.Settings;
 import androidx.annotation.StringRes;
 import androidx.core.view.ViewCompat;
-import androidx.appcompat.app.AlertDialog;
 import android.text.Html;
 import android.util.Base64;
 import android.view.Display;
@@ -51,6 +50,7 @@ import com.hades.hKtweaks.activities.StartActivity;
 import com.hades.hKtweaks.activities.StartActivityMaterial;
 import com.hades.hKtweaks.utils.root.RootFile;
 import com.hades.hKtweaks.utils.root.RootUtils;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -101,7 +101,7 @@ public class Utils {
         } catch (JSONException ignored) {
             Log.e("Can't read changelog, no release information provided");
         }
-        AlertDialog.Builder alert = new AlertDialog.Builder(context);
+        MaterialAlertDialogBuilder alert = new MaterialAlertDialogBuilder(context);
         alert.setTitle(String.format(context.getString(R.string.changelog), versionName ));
         alert.setMessage(changelog.toString());
         alert.setPositiveButton(context.getString(R.string.close), (dialog, id) -> {
@@ -521,6 +521,9 @@ public class Utils {
     }
 
     public static boolean existFile(String file) {
+        if (new File(file).exists()) {
+            return true;
+        }
         return existFile(file, true);
     }
 

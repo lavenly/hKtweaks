@@ -13,7 +13,7 @@
         android:gravity="center_vertical"
         android:orientation="horizontal" >
 
-        <androidx.appcompat.widget.AppCompatTextView
+        <com.google.android.material.textview.MaterialTextView
             android:id="@+id/title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -23,7 +23,7 @@
             android:textStyle="bold"
             android:text="@string/title" />
 
-        <androidx.appcompat.widget.AppCompatTextView
+        <com.google.android.material.textview.MaterialTextView
             android:id="@+id/total"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -46,12 +46,12 @@
             android:gravity="start"
             android:orientation="horizontal" >
 
-            <androidx.appcompat.widget.AppCompatTextView
+            <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/used"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
 
-            <androidx.appcompat.widget.AppCompatTextView
+            <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/used_label"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -59,7 +59,7 @@
 
         </LinearLayout>
 
-        <androidx.appcompat.widget.AppCompatTextView
+        <com.google.android.material.textview.MaterialTextView
             android:id="@+id/percent"
             android:layout_width="50dp"
             android:layout_height="wrap_content"
@@ -72,12 +72,12 @@
             android:gravity="end"
             android:orientation="horizontal" >
 
-            <androidx.appcompat.widget.AppCompatTextView
+            <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/free"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
 
-            <androidx.appcompat.widget.AppCompatTextView
+            <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/free_label"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -93,29 +93,14 @@
         android:layout_marginTop="5dp"
         android:gravity="center_vertical">
 
-        <com.akexorcist.roundcornerprogressbar.RoundCornerProgressBar
+        <com.google.android.material.progressindicator.LinearProgressIndicator
             android:id="@+id/progressbar"
-            android:layout_height="17dp"
+            style="@style/Widget.Material3Expressive.LinearProgressIndicator"
+            android:layout_height="wrap_content"
             android:layout_width="match_parent"
-            app:rcProgressColor="@color/blue_greyAccent"
-            app:rcBackgroundColor="?rcBackgroundColor" />
+            android:max="100"
+            android:progress="0" />
 
     </RelativeLayout>
 
 </LinearLayout>
-
-
-    <!--
-        <com.akexorcist.roundcornerprogressbar.RoundCornerProgressBar
-            android:layout_width="dimension"
-            android:layout_height="dimension"
-            app:rcProgress="float"
-            app:rcSecondaryProgress="float"
-            app:rcMax="float"
-            app:rcRadius="dimension"
-            app:rcBackgroundPadding="dimension"
-            app:rcReverse="boolean"
-            app:rcProgressColor="color"
-            app:rcSecondaryProgressColor="color"
-            app:rcBackgroundColor="color" />
-    -->

@@ -22,7 +22,7 @@ package com.hades.hKtweaks.fragments;
 import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.widget.SwitchCompat;
+import com.google.android.material.materialswitch.MaterialSwitch;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -157,7 +157,7 @@ public class ApplyOnBootFragment extends BaseFragment {
             View rootView = inflater.inflate(R.layout.fragment_apply_on_boot, container, false);
 
             final String category = getArguments().getString(INTENT_CATEGORY);
-            SwitchCompat switcher = rootView.findViewById(R.id.switcher);
+            MaterialSwitch switcher = rootView.findViewById(R.id.switcher);
             switcher.setChecked(AppSettings.getBoolean(category, false, getActivity()));
             switcher.setOnCheckedChangeListener((buttonView, isChecked) ->
                     AppSettings.saveBoolean(category, isChecked, getActivity()));

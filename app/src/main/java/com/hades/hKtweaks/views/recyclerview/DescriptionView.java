@@ -21,8 +21,8 @@ package com.hades.hKtweaks.views.recyclerview;
 
 import android.content.res.ColorStateList;
 import android.graphics.drawable.Drawable;
-import androidx.appcompat.widget.AppCompatImageView;
-import androidx.appcompat.widget.AppCompatTextView;
+import com.google.android.material.imageview.ShapeableImageView;
+import com.google.android.material.textview.MaterialTextView;
 import android.text.method.MovementMethod;
 import android.view.View;
 
@@ -34,9 +34,9 @@ import com.hades.hKtweaks.R;
 public class DescriptionView extends RecyclerViewItem {
 
     private View mRootView;
-    private AppCompatImageView mImageView;
-    private AppCompatTextView mTitleView;
-    private AppCompatTextView mSummaryView;
+    private ShapeableImageView mImageView;
+    private MaterialTextView mTitleView;
+    private MaterialTextView mSummaryView;
 
     private Drawable mImage;
     private CharSequence mTitle;

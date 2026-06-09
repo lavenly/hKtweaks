@@ -28,13 +28,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.google.android.material.slider.Slider;
 import com.hades.hKtweaks.R;
 import com.hades.hKtweaks.fragments.BaseFragment;
 import com.hades.hKtweaks.utils.AppSettings;
 import com.hades.hKtweaks.utils.Utils;
 import com.hades.hKtweaks.utils.ViewUtils;
-
-import org.adw.library.widgets.discreteseekbar.DiscreteSeekBar;
 
 /**
  * Created by willi on 09.08.16.
@@ -85,33 +84,25 @@ public class BannerResizerActivity extends BaseActivity {
             final TextView text = rootView.findViewById(R.id.seekbar_text);
             text.setText(Utils.strFormat("%d" + getString(R.string.px), px));
 
-            final DiscreteSeekBar seekBar = rootView.findViewById(R.id.seekbar);
-            seekBar.setMax(maxHeight - minHeight);
-            seekBar.setProgress(px - minHeight);
-            seekBar.setOnProgressChangeListener(new DiscreteSeekBar.OnProgressChangeListener() {
-                @Override
-                public void onProgressChanged(DiscreteSeekBar seekBar, int value, boolean fromUser) {
-                    text.setText(Utils.strFormat("%d" + getString(R.string.px), value + minHeight));
-                    setHeight(banner, value + minHeight);
-                }
-
-                @Override
-                public void onStartTrackingTouch(DiscreteSeekBar seekBar) {
-                }
-
-                @Override
-                public void onStopTrackingTouch(DiscreteSeekBar seekBar) {
-                }
+            final Slider seekBar = rootView.findViewById(R.id.seekbar);
+            seekBar.setValueFrom(0);
+            seekBar.setValueTo(maxHeight - minHeight);
+            seekBar.setStepSize(1);
+            seekBar.setValue(px - minHeight);
+            seekBar.addOnChangeListener((slider, value, fromUser) -> {
+                int height = Math.round(value) + minHeight;
+                text.setText(Utils.strFormat("%d" + getString(R.string.px), height));
+                setHeight(banner, height);
             });
 
             rootView.findViewById(R.id.cancel).setOnClickListener(v
-                    -> seekBar.setProgress(px - minHeight));
+                    -> seekBar.setValue(px - minHeight));
 
             rootView.findViewById(R.id.restore).setOnClickListener(v
-                    -> seekBar.setProgress(defaultHeight - minHeight));
+                    -> seekBar.setValue(defaultHeight - minHeight));
 
             rootView.findViewById(R.id.done).setOnClickListener(v -> {
-                AppSettings.saveBannerSize(seekBar.getProgress() + minHeight, getActivity());
+                AppSettings.saveBannerSize(Math.round(seekBar.getValue()) + minHeight, getActivity());
                 getActivity().finish();
             });
 

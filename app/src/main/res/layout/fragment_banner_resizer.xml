@@ -25,12 +25,11 @@
                 android:background="?attr/colorPrimary"
                 android:elevation="3dp" />
 
-            <androidx.cardview.widget.CardView
+            <com.google.android.material.card.MaterialCardView
+                style="@style/Widget.Material3.CardView.Filled"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_margin="2dp"
-                app:cardCornerRadius="3dp"
-                app:cardElevation="2dp" />
+                android:layout_margin="2dp" />
         </LinearLayout>
     </FrameLayout>
 
@@ -41,19 +40,20 @@
         android:gravity="center"
         android:orientation="vertical">
 
-        <TextView
+        <com.google.android.material.textview.MaterialTextView
             android:id="@+id/seekbar_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal" />
 
-        <org.adw.library.widgets.discreteseekbar.DiscreteSeekBar
+        <com.google.android.material.slider.Slider
             android:id="@+id/seekbar"
+            style="@style/Widget.Material3Expressive.Slider.Xsmall"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="16dp"
-            app:dsb_indicatorPopupEnabled="false"
-            app:dsb_progressColor="?attr/colorAccent" />
+            android:stepSize="1"
+            app:labelBehavior="gone" />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -62,36 +62,39 @@
             android:gravity="center_horizontal"
             android:orientation="horizontal">
 
-            <androidx.appcompat.widget.AppCompatImageButton
+            <com.google.android.material.button.MaterialButton
+                style="@style/Widget.Material3Expressive.Button.IconButton.Standard"
                 android:id="@+id/cancel"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
                 android:layout_marginEnd="30dp"
                 android:layout_marginRight="30dp"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                android:scaleType="fitCenter"
-                android:tint="?attr/colorAccent"
-                app:srcCompat="@drawable/ic_cancel" />
+                android:contentDescription="@string/cancel"
+                app:icon="@drawable/ic_cancel"
+                app:iconPadding="0dp"
+                app:iconTint="?attr/colorAccent" />
 
-            <androidx.appcompat.widget.AppCompatImageButton
+            <com.google.android.material.button.MaterialButton
+                style="@style/Widget.Material3Expressive.Button.IconButton.Standard"
                 android:id="@+id/restore"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                android:scaleType="fitCenter"
-                android:tint="?attr/colorAccent"
-                app:srcCompat="@drawable/ic_restore" />
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:contentDescription="@string/restore"
+                app:icon="@drawable/ic_restore"
+                app:iconPadding="0dp"
+                app:iconTint="?attr/colorAccent" />
 
-            <androidx.appcompat.widget.AppCompatImageButton
+            <com.google.android.material.button.MaterialButton
+                style="@style/Widget.Material3Expressive.Button.IconButton.Standard"
                 android:id="@+id/done"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
                 android:layout_marginLeft="30dp"
                 android:layout_marginStart="30dp"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                android:scaleType="fitCenter"
-                android:tint="?attr/colorAccent"
-                app:srcCompat="@drawable/ic_done" />
+                android:contentDescription="@string/save"
+                app:icon="@drawable/ic_done"
+                app:iconPadding="0dp"
+                app:iconTint="?attr/colorAccent" />
         </LinearLayout>
     </LinearLayout>
 </LinearLayout>

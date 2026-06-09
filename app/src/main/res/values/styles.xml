@@ -1,44 +1,117 @@
 <resources>
 
-    <style name="AppTheme" parent="Theme.MaterialComponents.Light.DarkActionBar">
-        <item name="windowActionBar">false</item>
-        <item name="windowNoTitle">true</item>
-        <item name="preferenceTheme">@style/PreferenceThemeOverlay.v14.Material</item>
-        <item name="discreteSeekBarStyle">@style/Widget.DiscreteSeekBar</item>
+    <style name="AppTheme" parent="Theme.Material3Expressive.Light.NoActionBar">
+        <item name="preferenceTheme">@style/PreferenceThemeOverlay.hKtweaks.Material3</item>
         <item name="banner_frame_drawable">@drawable/drawable_frame_light</item>
+        <item name="appSurfaceColor">@color/white</item>
+        <item name="android:colorBackground">?attr/appSurfaceColor</item>
         <item name="android:textColorPrimary">@color/black</item>
         <item name="android:textColorSecondary">@color/textcolor_light</item>
         <item name="android:textColorPrimaryInverse">@color/white</item>
         <item name="android:textAlignment">gravity</item>
         <item name="android:textDirection">locale</item>
+        <item name="colorSecondary">?attr/colorAccent</item>
+        <item name="colorTertiary">?attr/colorAccent</item>
+        <item name="colorOnPrimary">@color/white</item>
+        <item name="colorOnPrimaryContainer">@color/white</item>
+        <item name="colorPrimaryContainer">?attr/colorPrimary</item>
+        <item name="colorPrimaryFixed">?attr/colorPrimary</item>
+        <item name="colorPrimaryFixedDim">?attr/colorPrimaryDark</item>
+        <item name="colorOnPrimaryFixed">@color/white</item>
+        <item name="colorOnPrimaryFixedVariant">@color/white</item>
+        <item name="colorOnSecondary">@color/black</item>
+        <item name="colorOnSecondaryContainer">@color/black</item>
+        <item name="colorSecondaryContainer">?attr/colorAccent</item>
+        <item name="colorSecondaryFixed">?attr/colorAccent</item>
+        <item name="colorSecondaryFixedDim">?attr/colorAccent</item>
+        <item name="colorOnSecondaryFixed">@color/black</item>
+        <item name="colorOnSecondaryFixedVariant">@color/black</item>
+        <item name="colorOnTertiary">@color/black</item>
+        <item name="colorOnTertiaryContainer">@color/black</item>
+        <item name="colorTertiaryContainer">?attr/colorAccent</item>
+        <item name="colorOnBackground">@color/black</item>
+        <item name="colorSurface">?attr/appSurfaceColor</item>
+        <item name="colorSurfaceVariant">?attr/appSurfaceColor</item>
+        <item name="colorSurfaceBright">?attr/appSurfaceColor</item>
+        <item name="colorSurfaceDim">?attr/appSurfaceColor</item>
+        <item name="colorSurfaceContainer">?attr/appSurfaceColor</item>
+        <item name="colorSurfaceContainerLow">?attr/appSurfaceColor</item>
+        <item name="colorSurfaceContainerHigh">?attr/appSurfaceColor</item>
+        <item name="colorSurfaceContainerLowest">?attr/appSurfaceColor</item>
+        <item name="colorSurfaceContainerHighest">?attr/appSurfaceColor</item>
+        <item name="colorOnSurface">@color/black</item>
+        <item name="colorOnSurfaceVariant">@color/textcolor_light</item>
+        <item name="colorSurfaceInverse">@color/black</item>
+        <item name="colorOnSurfaceInverse">@color/white</item>
+        <item name="colorOutline">@color/textcolor_light</item>
+        <item name="colorOutlineVariant">@color/textcolor_light</item>
+        <item name="dynamicColorThemeOverlay">@null</item>
         <item name="dim_dialog_background">@color/dim_foreground_disabled_material_dark</item>
-        <item name="rcBackgroundColor">@color/rcBackground_light</item>
     </style>
 
-    <style name="AppThemeDark" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
-        <item name="windowActionBar">false</item>
-        <item name="windowNoTitle">true</item>
-        <item name="preferenceTheme">@style/PreferenceThemeOverlay.v14.Material</item>
-        <item name="discreteSeekBarStyle">@style/Widget.DiscreteSeekBar</item>
+    <style name="AppThemeDark" parent="Theme.Material3Expressive.Dark.NoActionBar">
+        <item name="preferenceTheme">@style/PreferenceThemeOverlay.hKtweaks.Material3</item>
         <item name="banner_frame_drawable">@drawable/drawable_frame_dark</item>
+        <item name="appSurfaceColor">@color/blueSecondaryDark</item>
+        <item name="android:colorBackground">?attr/appSurfaceColor</item>
         <item name="android:textColorPrimary">@color/white</item>
         <item name="android:textColorSecondary">@color/textcolor_dark</item>
-        <item name="android:colorBackground">@color/black</item>
         <item name="android:textColorPrimaryInverse">@color/black</item>
         <item name="android:textAlignment">gravity</item>
         <item name="android:textDirection">locale</item>
+        <item name="colorSecondary">?attr/colorAccent</item>
+        <item name="colorTertiary">?attr/colorAccent</item>
+        <item name="colorOnPrimary">@color/white</item>
+        <item name="colorOnPrimaryContainer">@color/white</item>
+        <item name="colorPrimaryContainer">?attr/colorPrimary</item>
+        <item name="colorPrimaryFixed">?attr/colorPrimary</item>
+        <item name="colorPrimaryFixedDim">?attr/colorPrimaryDark</item>
+        <item name="colorOnPrimaryFixed">@color/white</item>
+        <item name="colorOnPrimaryFixedVariant">@color/white</item>
+        <item name="colorOnSecondary">@color/black</item>
+        <item name="colorOnSecondaryContainer">@color/black</item>
+        <item name="colorSecondaryContainer">?attr/colorAccent</item>
+        <item name="colorSecondaryFixed">?attr/colorAccent</item>
+        <item name="colorSecondaryFixedDim">?attr/colorAccent</item>
+        <item name="colorOnSecondaryFixed">@color/black</item>
+        <item name="colorOnSecondaryFixedVariant">@color/black</item>
+        <item name="colorOnTertiary">@color/black</item>
+        <item name="colorOnTertiaryContainer">@color/black</item>
+        <item name="colorTertiaryContainer">?attr/colorAccent</item>
+        <item name="colorOnBackground">@color/white</item>
+        <item name="colorSurface">?attr/appSurfaceColor</item>
+        <item name="colorSurfaceVariant">?attr/appSurfaceColor</item>
+        <item name="colorSurfaceBright">?attr/appSurfaceColor</item>
+        <item name="colorSurfaceDim">?attr/appSurfaceColor</item>
+        <item name="colorSurfaceContainer">?attr/appSurfaceColor</item>
+        <item name="colorSurfaceContainerLow">?attr/appSurfaceColor</item>
+        <item name="colorSurfaceContainerHigh">?attr/appSurfaceColor</item>
+        <item name="colorSurfaceContainerLowest">?attr/appSurfaceColor</item>
+        <item name="colorSurfaceContainerHighest">?attr/appSurfaceColor</item>
+        <item name="colorOnSurface">@color/white</item>
+        <item name="colorOnSurfaceVariant">@color/textcolor_dark</item>
+        <item name="colorSurfaceInverse">@color/white</item>
+        <item name="colorOnSurfaceInverse">@color/black</item>
+        <item name="colorOutline">@color/textcolor_dark</item>
+        <item name="colorOutlineVariant">@color/textcolor_dark</item>
+        <item name="dynamicColorThemeOverlay">@null</item>
         <item name="dim_dialog_background">@color/dim_foreground_disabled_material_light</item>
-        <item name="rcBackgroundColor">@color/rcBackground_dark</item>
-        <item name="android:navigationBarColor">@color/black</item>
+        <item name="android:navigationBarColor">?attr/appSurfaceColor</item>
     </style>
 
     <style name="AppThemeParent" parent="AppTheme" />
 
     <style name="AppThemeParentDark" parent="AppThemeDark" />
 
-    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
+    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.Material3Expressive.Light" />
 
-    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
+    <style name="Widget.hKtweaks.Material3Expressive.Toolbar"
+        parent="Widget.Material3Expressive.Toolbar">
+        <item name="android:background">@android:color/transparent</item>
+        <item name="navigationIconTint">?attr/colorOnPrimary</item>
+        <item name="subtitleTextColor">?attr/colorOnPrimary</item>
+        <item name="titleTextColor">?attr/colorOnPrimary</item>
+    </style>
 
     <style name="Divider">
         <item name="android:layout_width">match_parent</item>
@@ -46,19 +119,39 @@
         <item name="android:background">?android:attr/textColorSecondary</item>
     </style>
 
-    <style name="ItemTextAppearance">
-        <item name="android:ellipsize">middle</item>
-    </style>
-
-    <style name="Base.Widget.AppCompat.CompoundButton.CheckBox.Custom">
+    <style name="ThemeOverlay.hKtweaks.RecoveryCheckBox" parent="">
         <item name="colorControlNormal">@color/white</item>
         <item name="colorControlActivated">?attr/colorAccent</item>
+        <item name="android:textColor">@color/white</item>
         <item name="android:textSize">14sp</item>
     </style>
 
-    <style name="Swirl">
-        <item name="swirl_errorColor">?attr/colorAccent</item>
-        <item name="swirl_ridgeColor">?android:attr/textColorSecondary</item>
+    <style name="PreferenceThemeOverlay.hKtweaks.Material3" parent="PreferenceThemeOverlay">
+        <item name="preferenceStyle">@style/Preference.hKtweaks.Material3</item>
+        <item name="preferenceCategoryStyle">@style/Preference.Category.hKtweaks.Material3</item>
+        <item name="preferenceCategoryTitleTextAppearance">@style/TextAppearance.Material3.TitleSmall</item>
     </style>
+
+    <style name="Preference.hKtweaks.Material3" parent="Preference.Material">
+        <item name="android:layout">@layout/preference_material3</item>
+        <item name="allowDividerAbove">false</item>
+        <item name="allowDividerBelow">false</item>
+        <item name="iconSpaceReserved">false</item>
+    </style>
+
+    <style name="Preference.Category.hKtweaks.Material3" parent="Preference.Category.Material">
+        <item name="android:layout">@layout/preference_category_material3</item>
+        <item name="allowDividerAbove">false</item>
+        <item name="allowDividerBelow">false</item>
+        <item name="iconSpaceReserved">false</item>
+    </style>
+
+    <style name="ShapeAppearanceOverlay.hKtweaks.Circle" parent="">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">50%</item>
+    </style>
+
+    <style name="TextAppearance.hKtweaks.NavigationItem"
+        parent="TextAppearance.Material3.LabelLarge" />
 
 </resources>

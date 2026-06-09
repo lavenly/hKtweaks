@@ -20,14 +20,13 @@
 package com.hades.hKtweaks.fragments.other;
 
 import android.annotation.SuppressLint;
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.os.AsyncTask;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
 import android.os.Message;
 import android.os.Messenger;
 import androidx.fragment.app.Fragment;
@@ -37,13 +36,6 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceCategory;
 import androidx.preference.PreferenceFragmentCompat;
-import androidx.preference.PreferenceGroupAdapter;
-import androidx.preference.PreferenceScreen;
-import androidx.preference.PreferenceViewHolder;
-import androidx.preference.SwitchPreferenceCompat;
-import androidx.appcompat.view.ContextThemeWrapper;
-import androidx.appcompat.widget.AppCompatEditText;
-import androidx.recyclerview.widget.RecyclerView;
 
 import android.text.InputType;
 import android.view.Gravity;
@@ -52,11 +44,15 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import com.google.android.material.textfield.TextInputEditText;
+import com.google.android.material.textfield.TextInputLayout;
 import com.hades.hKtweaks.R;
 import com.hades.hKtweaks.activities.BannerResizerActivity;
 import com.hades.hKtweaks.activities.MainActivity;
 import com.hades.hKtweaks.activities.NavigationActivity;
 import com.hades.hKtweaks.services.boot.ApplyOnBootService;
+import com.hades.hKtweaks.services.profile.Widget;
 import com.hades.hKtweaks.utils.AppSettings;
 import com.hades.hKtweaks.utils.Themes;
 import com.hades.hKtweaks.utils.AppUpdaterTask;
@@ -65,6 +61,8 @@ import com.hades.hKtweaks.utils.ViewUtils;
 import com.hades.hKtweaks.utils.root.RootUtils;
 import com.hades.hKtweaks.views.BorderCircleView;
 import com.hades.hKtweaks.views.dialog.Dialog;
+import com.hades.hKtweaks.views.preference.MaterialListPreference;
+import com.hades.hKtweaks.views.preference.MaterialSwitchPreference;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -133,10 +131,22 @@ public class SettingsFragment extends PreferenceFragmentCompat implements
     }
 
     @Override
+    @SuppressLint("RestrictedApi")
     public void onCreatePreferences(Bundle bundle, String s) {
         addPreferencesFromResource(R.xml.settings);
 
-        SwitchPreferenceCompat forceEnglish = (SwitchPreferenceCompat) findPreference(KEY_FORCE_ENGLISH);
+        MaterialListPreference darkThemeMode =
+                (MaterialListPreference) findPreference(KEY_DARK_THEME_MODE);
+        String darkThemeModeValue = darkThemeMode.getValue();
+        if ("Amoled black".equalsIgnoreCase(darkThemeModeValue)) {
+            darkThemeMode.setValue("black");
+        } else if (!"black".equals(darkThemeModeValue)
+                && !"dark".equals(darkThemeModeValue)) {
+            darkThemeMode.setValue("dark");
+        }
+
+        MaterialSwitchPreference forceEnglish =
+                (MaterialSwitchPreference) findPreference(KEY_FORCE_ENGLISH);
         if (Resources.getSystem().getConfiguration().locale.getLanguage().startsWith("en")) {
             getPreferenceScreen().removePreference(forceEnglish);
         } else {
@@ -154,7 +164,7 @@ public class SettingsFragment extends PreferenceFragmentCompat implements
         findPreference(KEY_UPDATE_NOTIFICATION).setOnPreferenceChangeListener(this);
         findPreference(KEY_CHECK_UPDATE).setOnPreferenceClickListener(this);
         findPreference(KEY_DARK_THEME).setOnPreferenceChangeListener(this);
-        findPreference(KEY_DARK_THEME_MODE).setOnPreferenceChangeListener(this);
+        darkThemeMode.setOnPreferenceChangeListener(this);
         findPreference(KEY_BANNER_RESIZER).setOnPreferenceClickListener(this);
         findPreference(KEY_HIDE_BANNER).setOnPreferenceChangeListener(this);
         findPreference(KEY_PRIMARY_COLOR).setOnPreferenceClickListener(this);
@@ -174,8 +184,7 @@ public class SettingsFragment extends PreferenceFragmentCompat implements
         findPreference(KEY_SET_PASSWORD).setOnPreferenceClickListener(this);
         findPreference(KEY_DELETE_PASSWORD).setOnPreferenceClickListener(this);
 
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M
-                || !FingerprintManagerCompat.from(getActivity()).isHardwareDetected()) {
+        if (!FingerprintManagerCompat.from(requireContext()).isHardwareDetected()) {
             ((PreferenceCategory) findPreference(KEY_SECURITY_CATEGORY)).removePreference(
                     findPreference(KEY_FINGERPRINT));
         } else {
@@ -190,9 +199,9 @@ public class SettingsFragment extends PreferenceFragmentCompat implements
             int id = navigationFragment.mId;
 
             if (fragmentClass != null && fragmentClass != SettingsFragment.class) {
-                SwitchPreferenceCompat switchPreference = new SwitchPreferenceCompat(
-                        new ContextThemeWrapper(getActivity(), R.style.Preference_SwitchPreferenceCompat_Material));
-                switchPreference.setSummary(getString(id));
+                MaterialSwitchPreference switchPreference =
+                        new MaterialSwitchPreference(getActivity());
+                switchPreference.setTitle(getString(id));
                 switchPreference.setKey(fragmentClass.getSimpleName() + "_enabled");
                 switchPreference.setChecked(AppSettings.isFragmentEnabled(fragmentClass, getActivity()));
                 switchPreference.setOnPreferenceChangeListener(this);
@@ -214,6 +223,7 @@ public class SettingsFragment extends PreferenceFragmentCompat implements
                 return true;
             case KEY_FORCE_ENGLISH:
             case KEY_DARK_THEME:
+                updateWidgetsAfterPreferenceChange();
                 getActivity().finish();
                 Intent intent = new Intent(getActivity(), MainActivity.class);
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -222,6 +232,7 @@ public class SettingsFragment extends PreferenceFragmentCompat implements
                 startActivity(intent);
                 return true;
             case KEY_DARK_THEME_MODE:
+                updateWidgetsAfterPreferenceChange();
                 getActivity().finish();
                 Intent intent2 = new Intent(getActivity(), MainActivity.class);
                 intent2.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -247,6 +258,11 @@ public class SettingsFragment extends PreferenceFragmentCompat implements
                 break;
         }
         return false;
+    }
+
+    private void updateWidgetsAfterPreferenceChange() {
+        Context applicationContext = requireContext().getApplicationContext();
+        new Handler(Looper.getMainLooper()).post(() -> Widget.updateAll(applicationContext));
     }
 
     private static class MessengerHandler extends Handler {
@@ -320,12 +336,15 @@ public class SettingsFragment extends PreferenceFragmentCompat implements
     }
 
     private static class Execute extends AsyncTask<String, Void, Void> {
-        private final ProgressDialog mProgressDialog;
+        private final AlertDialog mProgressDialog;
 
         private Execute(Context context) {
-            mProgressDialog = new ProgressDialog(context);
-            mProgressDialog.setMessage(context.getString(R.string.executing));
-            mProgressDialog.setCancelable(false);
+            View progressView = LayoutInflater.from(context)
+                    .inflate(R.layout.dialog_progress_material3, null);
+            mProgressDialog = new MaterialAlertDialogBuilder(context)
+                    .setView(progressView)
+                    .setCancelable(false)
+                    .create();
         }
 
         @Override
@@ -348,7 +367,7 @@ public class SettingsFragment extends PreferenceFragmentCompat implements
     }
 
     private void resetDataDialog(){
-        AlertDialog.Builder alert = new AlertDialog.Builder(getActivity());
+        MaterialAlertDialogBuilder alert = new MaterialAlertDialogBuilder(getActivity());
         alert.setTitle(getString(R.string.reset_data_title));
         alert.setMessage(getString(R.string.reset_data_dialog1));
         alert.setNegativeButton(getString(R.string.cancel), (dialogInterface, i) -> {
@@ -369,24 +388,23 @@ public class SettingsFragment extends PreferenceFragmentCompat implements
         int padding = Math.round(getResources().getDimension(R.dimen.dialog_padding));
         linearLayout.setPadding(padding, padding, padding, padding);
 
-        final AppCompatEditText oldPassword = new AppCompatEditText(getActivity());
+        final TextInputEditText oldPassword;
         if (!oldPass.isEmpty()) {
+            oldPassword = addPasswordInput(linearLayout, R.string.old_password);
             oldPassword.setInputType(InputType.TYPE_CLASS_TEXT
                     | InputType.TYPE_TEXT_VARIATION_PASSWORD);
-            oldPassword.setHint(getString(R.string.old_password));
-            linearLayout.addView(oldPassword);
+        } else {
+            oldPassword = null;
         }
 
-        final AppCompatEditText newPassword = new AppCompatEditText(getActivity());
+        final TextInputEditText newPassword =
+                addPasswordInput(linearLayout, R.string.new_password);
         newPassword.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
-        newPassword.setHint(getString(R.string.new_password));
-        linearLayout.addView(newPassword);
 
-        final AppCompatEditText confirmNewPassword = new AppCompatEditText(getActivity());
+        final TextInputEditText confirmNewPassword =
+                addPasswordInput(linearLayout, R.string.confirm_new_password);
         confirmNewPassword.setInputType(InputType.TYPE_CLASS_TEXT
                 | InputType.TYPE_TEXT_VARIATION_PASSWORD);
-        confirmNewPassword.setHint(getString(R.string.confirm_new_password));
-        linearLayout.addView(confirmNewPassword);
 
         new Dialog(getActivity()).setView(linearLayout)
                 .setNegativeButton(getString(R.string.cancel), (dialogInterface, i) -> {
@@ -437,10 +455,9 @@ public class SettingsFragment extends PreferenceFragmentCompat implements
         int padding = Math.round(getResources().getDimension(R.dimen.dialog_padding));
         linearLayout.setPadding(padding, padding, padding, padding);
 
-        final AppCompatEditText mPassword = new AppCompatEditText(getActivity());
+        final TextInputEditText mPassword =
+                addPasswordInput(linearLayout, R.string.password);
         mPassword.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
-        mPassword.setHint(getString(R.string.password));
-        linearLayout.addView(mPassword);
 
         new Dialog(getActivity()).setView(linearLayout)
                 .setPositiveButton(getString(R.string.ok), (dialogInterface, i) -> {
@@ -455,6 +472,22 @@ public class SettingsFragment extends PreferenceFragmentCompat implements
                     }
                 })
                 .setOnDismissListener(dialogInterface -> mDeletePassword = null).show();
+    }
+
+    private TextInputEditText addPasswordInput(LinearLayout parent, int hintRes) {
+        TextInputLayout inputLayout = new TextInputLayout(requireContext());
+        inputLayout.setBoxBackgroundMode(TextInputLayout.BOX_BACKGROUND_OUTLINE);
+        inputLayout.setHint(getString(hintRes));
+        inputLayout.setEndIconMode(TextInputLayout.END_ICON_PASSWORD_TOGGLE);
+        inputLayout.setLayoutParams(new LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+
+        TextInputEditText editText = new TextInputEditText(inputLayout.getContext());
+        editText.setLayoutParams(new LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+        inputLayout.addView(editText);
+        parent.addView(inputLayout);
+        return editText;
     }
 
     private void colorDialog(boolean primaryColor) {
@@ -527,6 +560,7 @@ public class SettingsFragment extends PreferenceFragmentCompat implements
                         } else {
                             Themes.saveAccentColor(colors.get(mColorSelection), getActivity());
                         }
+                        Widget.updateAll(requireContext().getApplicationContext());
                     }
                     getActivity().finish();
                     Intent intent = new Intent(getActivity(), MainActivity.class);
@@ -536,39 +570,6 @@ public class SettingsFragment extends PreferenceFragmentCompat implements
                     startActivity(intent);
                 })
                 .setOnDismissListener(dialog -> mColorSelection = -1).show();
-    }
-
-    @Override
-    protected RecyclerView.Adapter onCreateAdapter(PreferenceScreen preferenceScreen) {
-        return new PreferenceGroupAdapter(preferenceScreen) {
-            @SuppressLint("RestrictedApi")
-            @Override
-            public void onBindViewHolder(PreferenceViewHolder holder, int position) {
-                super.onBindViewHolder(holder, position);
-                Preference preference = getItem(position);
-                if (preference instanceof PreferenceCategory)
-                    setZeroPaddingToLayoutChildren(holder.itemView);
-                else {
-                    View iconFrame = holder.itemView.findViewById(R.id.icon_frame);
-                    if (iconFrame != null) {
-                        iconFrame.setVisibility(preference.getIcon() == null ? View.GONE : View.VISIBLE);
-                    }
-                }
-            }
-        };
-    }
-    private void setZeroPaddingToLayoutChildren(View view) {
-        if (!(view instanceof ViewGroup))
-            return;
-        ViewGroup viewGroup = (ViewGroup) view;
-        int childCount = viewGroup.getChildCount();
-        for (int i = 0; i < childCount; i++) {
-            setZeroPaddingToLayoutChildren(viewGroup.getChildAt(i));
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1)
-                viewGroup.setPaddingRelative(0, viewGroup.getPaddingTop(), viewGroup.getPaddingEnd(), viewGroup.getPaddingBottom());
-            else
-                viewGroup.setPadding(0, viewGroup.getPaddingTop(), viewGroup.getPaddingRight(), viewGroup.getPaddingBottom());
-        }
     }
 
 }

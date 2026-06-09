@@ -3,16 +3,14 @@ package com.grx.soundcontrol;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.widget.LinearLayout;
-import android.widget.SeekBar;
 import android.widget.TextView;
 
+import com.google.android.material.slider.Slider;
+import com.google.android.material.textview.MaterialTextView;
 import com.hades.hKtweaks.R;
 import com.hades.hKtweaks.utils.kernel.sound.MoroSound;
 
-import androidx.appcompat.widget.AppCompatTextView;
-
-
-public class GrxEqualizerBandController extends LinearLayout implements SeekBar.OnSeekBarChangeListener {
+public class GrxEqualizerBandController extends LinearLayout {
 
     public int mBandId;
 
@@ -42,8 +40,8 @@ public class GrxEqualizerBandController extends LinearLayout implements SeekBar.
         mCallBack=listener;
     }
 
-    public VerticalSeekBar mVerticalSeekBar;
-    public AppCompatTextView mValueTextView;
+    private Slider mSlider;
+    public MaterialTextView mValueTextView;
 
     private void initView(){
         String tag = (String) getTag();
@@ -55,9 +53,30 @@ public class GrxEqualizerBandController extends LinearLayout implements SeekBar.
     @Override
     protected void onFinishInflate(){
         super.onFinishInflate();
-        mVerticalSeekBar = findViewById(R.id.eqseekbar);
-        mVerticalSeekBar.grxSetInitialized(false);
-        mVerticalSeekBar.setOnSeekBarChangeListener(this);
+        mSlider = findViewById(R.id.eqseekbar);
+        mSlider.addOnChangeListener((slider, value, fromUser) -> {
+            String newValue = String.valueOf(Math.round(value));
+            mValueTextView.setText(getContext().getString(R.string.db_value, newValue));
+            if (fromUser) {
+                mCurrentValue = newValue;
+                MoroSound.setEqValues(newValue, mBandId, getContext());
+            }
+        });
+        mSlider.addOnSliderTouchListener(new Slider.OnSliderTouchListener() {
+            @Override
+            public void onStartTrackingTouch(Slider slider) {
+                mOldValue = mCurrentValue;
+            }
+
+            @Override
+            public void onStopTrackingTouch(Slider slider) {
+                mCurrentValue = String.valueOf(Math.round(slider.getValue()));
+                if (!mCurrentValue.equals(mOldValue) && mCallBack != null) {
+                    mCallBack.EqValueChanged(mBandId, mCurrentValue);
+                }
+                mOldValue = mCurrentValue;
+            }
+        });
         mValueTextView = findViewById(R.id.value);
 
         TextView bandview = findViewById(R.id.band);
@@ -67,37 +86,26 @@ public class GrxEqualizerBandController extends LinearLayout implements SeekBar.
     }
 
     public void updateSeekBar(){
-        mVerticalSeekBar.grxSetCurrentKernelValue(mBandId);
-        mVerticalSeekBar.grxSetInitialized(true);
-        mValueTextView.setText(mVerticalSeekBar.grxGetNormalizedProgress() + " dB");
-
         mCurrentValue = MoroSound.getEqValue(mBandId);
         if(mCurrentValue==null || mCurrentValue.isEmpty()) mCurrentValue="0";
         mOldValue=mCurrentValue;
-        mVerticalSeekBar.grxSetSeekBarProgress(mCurrentValue);
+        setValue(mCurrentValue);
     }
 
-
-    /************** seekbar listener ***********/
-
-    public void onStopTrackingTouch(SeekBar seekBar) {
-        mCurrentValue = ((VerticalSeekBar) seekBar).grxGetNormalizedStringProgress();
-        if(mCurrentValue==null || mCurrentValue.isEmpty()) mCurrentValue="0";
-        if(mCurrentValue.equals(mOldValue)) return;
-        mOldValue=mCurrentValue;
-        if(mCallBack!=null) mCallBack.EqValueChanged(mBandId,mCurrentValue);
+    public void setValue(String value) {
+        float sliderValue;
+        try {
+            sliderValue = Float.parseFloat(value);
+        } catch (NumberFormatException ignored) {
+            sliderValue = 0;
+        }
+        sliderValue = Math.max(mSlider.getValueFrom(), Math.min(sliderValue, mSlider.getValueTo()));
+        mSlider.setValue(sliderValue);
+        mCurrentValue = String.valueOf(Math.round(sliderValue));
+        mValueTextView.setText(getContext().getString(R.string.db_value, mCurrentValue));
     }
 
-    public void onStartTrackingTouch(SeekBar seekBar) {
-            mOldValue=mCurrentValue;
+    public void setSliderEnabled(boolean enabled) {
+        mSlider.setEnabled(enabled);
     }
-
-    public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                 String newvalue = ((VerticalSeekBar) seekBar).grxGetNormalizedStringProgress();
-
-           if(newvalue!=null) {
-               mValueTextView.setText(newvalue + "dB");
-                MoroSound.setEqValues(newvalue, mBandId,getContext());
-           }
-     }
 }
