@@ -20,17 +20,15 @@
             android:background="?attr/colorPrimary"
             app:tabMode="scrollable" />
 
-        <com.google.android.material.floatingactionbutton.FloatingActionButton
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/done"
-            style="@style/Widget.Material3Expressive.FloatingActionButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            style="@style/Widget.hKtweaks.Material3Expressive.IconButton.Tonal"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
             android:layout_gravity="center_vertical"
+            android:layout_marginEnd="4dp"
             android:contentDescription="@string/save"
-            android:tint="@color/white"
-            app:fabSize="mini"
-            app:srcCompat="@drawable/ic_done"
-            app:useCompatPadding="true" />
+            app:icon="@drawable/ic_done" />
     </LinearLayout>
 
     <androidx.viewpager2.widget.ViewPager2

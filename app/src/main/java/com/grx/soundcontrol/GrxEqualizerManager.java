@@ -96,7 +96,6 @@ public class GrxEqualizerManager extends RecyclerViewItem
         mButtonCurrentProfile.setOnClickListener(v -> showProfileSelectionDialog());
 
         mButtonSaveEqProfile = view.findViewById(R.id.button_eq_save);
-        mButtonSaveEqProfile.setIconTint(ColorStateList.valueOf(mAccentColor));
         mButtonSaveEqProfile.setOnClickListener(v -> showSaveProfileDialog());
 
         if(mSelectedEqProfile == -1) {

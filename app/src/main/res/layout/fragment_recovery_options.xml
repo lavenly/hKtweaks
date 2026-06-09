@@ -21,25 +21,21 @@
     </FrameLayout>
 
     <com.google.android.material.button.MaterialButton
-        style="@style/Widget.Material3Expressive.Button.IconButton.Standard"
+        style="@style/Widget.hKtweaks.Material3Expressive.IconButton.Tonal"
         android:id="@+id/button"
-        android:layout_width="0dp"
+        android:layout_width="48dp"
         android:layout_height="48dp"
-        android:layout_weight="1"
+        android:layout_marginHorizontal="8dp"
         android:contentDescription="@string/ok"
-        app:icon="@drawable/ic_done"
-        app:iconPadding="0dp"
-        app:iconTint="?attr/colorAccent" />
+        app:icon="@drawable/ic_done" />
 
     <com.google.android.material.button.MaterialButton
-        style="@style/Widget.Material3Expressive.Button.IconButton.Standard"
+        style="@style/Widget.hKtweaks.Material3Expressive.IconButton.Tonal"
         android:id="@+id/reboot_button"
-        android:layout_width="0dp"
+        android:layout_width="48dp"
         android:layout_height="48dp"
-        android:layout_weight="1"
+        android:layout_marginHorizontal="8dp"
         android:contentDescription="@string/reboot"
-        app:icon="@drawable/ic_refresh"
-        app:iconPadding="0dp"
-        app:iconTint="?attr/colorAccent" />
+        app:icon="@drawable/ic_refresh" />
 
 </LinearLayout>

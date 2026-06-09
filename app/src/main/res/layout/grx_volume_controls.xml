@@ -29,39 +29,40 @@
 
             <LinearLayout
 
+                android:gravity="center"
                 android:orientation="horizontal"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
                 <com.google.android.material.button.MaterialButton
-                    style="@style/Widget.Material3Expressive.Button.IconButton.Standard"
+                    style="@style/Widget.hKtweaks.Material3Expressive.IconButton.Tonal"
                     android:id="@+id/linked"
-                    android:layout_width="0dp"
+                    android:layout_width="48dp"
                     android:layout_height="48dp"
-                    android:layout_weight="1"
+                    android:layout_marginHorizontal="8dp"
+                    android:checkable="true"
                     android:contentDescription="@string/headphones_linked"
-                    app:icon="@drawable/link"
-                    app:iconPadding="0dp" />
+                    app:icon="@drawable/link" />
 
                 <com.google.android.material.button.MaterialButton
-                    style="@style/Widget.Material3Expressive.Button.IconButton.Standard"
+                    style="@style/Widget.hKtweaks.Material3Expressive.IconButton.Tonal"
                     android:id="@+id/unlinked"
-                    android:layout_width="0dp"
+                    android:layout_width="48dp"
                     android:layout_height="48dp"
-                    android:layout_weight="1"
+                    android:layout_marginHorizontal="8dp"
+                    android:checkable="true"
                     android:contentDescription="@string/headphones_unlinked"
-                    app:icon="@drawable/unlink"
-                    app:iconPadding="0dp" />
+                    app:icon="@drawable/unlink" />
 
                 <com.google.android.material.button.MaterialButton
-                    style="@style/Widget.Material3Expressive.Button.IconButton.Standard"
+                    style="@style/Widget.hKtweaks.Material3Expressive.IconButton.Tonal"
                     android:id="@+id/linked_a"
-                    android:layout_width="0dp"
+                    android:layout_width="48dp"
                     android:layout_height="48dp"
-                    android:layout_weight="1"
+                    android:layout_marginHorizontal="8dp"
+                    android:checkable="true"
                     android:contentDescription="@string/headphones_linked_asymmetric"
-                    app:icon="@drawable/link_a"
-                    app:iconPadding="0dp" />
+                    app:icon="@drawable/link_a" />
 
             </LinearLayout>
 
@@ -181,5 +182,3 @@
         </LinearLayout>
 
     </LinearLayout>
-
-

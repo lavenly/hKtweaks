@@ -76,15 +76,14 @@
                 android:layout_height="wrap_content" />
 
             <com.google.android.material.button.MaterialButton
-                style="@style/Widget.Material3Expressive.Button.IconButton.Standard"
+                style="@style/Widget.hKtweaks.Material3Expressive.IconButton.Filled"
                 android:id="@+id/button_eq_save"
                 android:layout_width="48dp"
                 android:layout_height="48dp"
                 android:layout_gravity="center_vertical|end"
                 android:layout_marginStart="10dp"
                 android:contentDescription="@string/eq_profile_save"
-                app:icon="@drawable/ic_save"
-                app:iconPadding="0dp" />
+                app:icon="@drawable/ic_save" />
 
         </LinearLayout>
 

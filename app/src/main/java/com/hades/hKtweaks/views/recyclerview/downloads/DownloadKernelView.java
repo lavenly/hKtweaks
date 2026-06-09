@@ -20,11 +20,9 @@
 package com.hades.hKtweaks.views.recyclerview.downloads;
 
 import android.app.Activity;
-import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import androidx.core.content.ContextCompat;
-import androidx.core.graphics.drawable.DrawableCompat;
 import android.text.method.LinkMovementMethod;
 import android.view.View;
 import android.widget.TextView;
@@ -84,11 +82,9 @@ public class DownloadKernelView extends RecyclerViewItem {
 
         if (mDownloadDrawable == null) {
             mDownloadDrawable = ContextCompat.getDrawable(view.getContext(), R.drawable.ic_download);
-            DrawableCompat.setTint(mDownloadDrawable, Color.WHITE);
         }
         if (mCancelDrawable == null) {
             mCancelDrawable = ContextCompat.getDrawable(view.getContext(), R.drawable.ic_cancel);
-            DrawableCompat.setTint(mCancelDrawable, Color.WHITE);
         }
 
         final TextView title = view.findViewById(R.id.title);

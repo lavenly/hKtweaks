@@ -20,7 +20,7 @@
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/nav_header_fab"
-            style="@style/Widget.Material3Expressive.FloatingActionButton"
+            style="@style/Widget.hKtweaks.Material3Expressive.FloatingActionButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="top|end"
@@ -29,9 +29,7 @@
             android:layout_marginEnd="@dimen/nav_header_fab_margin_right"
             android:layout_marginBottom="@dimen/nav_header_fab_margin_bottom"
             android:contentDescription="@string/select_picture"
-            app:backgroundTint="?colorPrimary"
-            app:tint="?attr/colorOnPrimary"
-            app:fabSize="mini"
+            app:backgroundTint="?attr/colorPrimaryContainer"
             app:srcCompat="@drawable/ic_gallery" />
     </FrameLayout>
 

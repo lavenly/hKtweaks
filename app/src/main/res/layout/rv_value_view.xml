@@ -40,10 +40,10 @@
                 android:orientation="horizontal"
                 android:gravity="end|center_vertical">
 
-                <ImageView
-                    android:layout_width="18dp"
-                    android:layout_height="18dp"
-                    app:tint="?android:attr/textColorSecondary"
+                <com.google.android.material.imageview.ShapeableImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    app:tint="?attr/colorOnSurfaceVariant"
                     app:srcCompat="@drawable/ic_arrow_right" />
 
                 <TextView

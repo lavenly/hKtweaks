@@ -37,9 +37,9 @@
 
                 <com.google.android.material.imageview.ShapeableImageView
                     android:id="@+id/arrow_image"
-                    android:layout_width="20dp"
-                    android:layout_height="20dp"
-                    android:tint="?android:attr/textColorSecondary"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    app:tint="?attr/colorOnSurfaceVariant"
                     app:srcCompat="@drawable/ic_arrow" />
             </LinearLayout>
         </FrameLayout>
@@ -60,7 +60,7 @@
                 android:paddingRight="10dp" />
 
             <com.google.android.material.button.MaterialButton
-                style="@style/Widget.Material3Expressive.Button.IconButton.Standard"
+                style="@style/Widget.hKtweaks.Material3Expressive.IconButton.Standard"
                 android:id="@+id/menu_button"
                 android:layout_width="48dp"
                 android:layout_height="48dp"
@@ -72,9 +72,7 @@
                 android:contentDescription="@string/more"
                 android:rotation="90"
                 android:visibility="gone"
-                app:icon="@drawable/ic_dots"
-                app:iconPadding="0dp"
-                app:iconTint="?android:attr/textColorSecondary" />
+                app:icon="@drawable/ic_dots" />
         </LinearLayout>
     </LinearLayout>
 </com.google.android.material.card.MaterialCardView>

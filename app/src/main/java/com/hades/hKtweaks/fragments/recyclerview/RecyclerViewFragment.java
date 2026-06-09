@@ -38,6 +38,7 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.core.content.ContextCompat;
+import androidx.core.graphics.drawable.DrawableCompat;
 import androidx.core.view.ViewCompat;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.StaggeredGridLayoutManager;
@@ -46,6 +47,7 @@ import androidx.viewpager2.widget.ViewPager2;
 import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
+import com.google.android.material.color.MaterialColors;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -745,18 +747,29 @@ public abstract class RecyclerViewFragment extends BaseFragment {
 
         if (showViewPager()) {
             menu.add(0, 0, Menu.NONE, R.string.options)
-                    .setIcon(ContextCompat.getDrawable(getActivity(), R.drawable.ic_launcher_preview))
+                    .setIcon(getToolbarIcon(ContextCompat.getDrawable(
+                            getActivity(), R.drawable.ic_settings)))
                     .setShowAsActionFlags(MenuItem.SHOW_AS_ACTION_IF_ROOM);
         }
         if (showTopFab()) {
             menu.add(0, 1, Menu.NONE, R.string.more)
-                    .setIcon(getTopFabDrawable())
+                    .setIcon(getToolbarIcon(getTopFabDrawable()))
                     .setShowAsActionFlags(MenuItem.SHOW_AS_ACTION_IF_ROOM);
         } else if (showBottomFab()) {
             menu.add(0, 1, Menu.NONE, R.string.more)
-                    .setIcon(getBottomFabDrawable())
+                    .setIcon(getToolbarIcon(getBottomFabDrawable()))
                     .setShowAsActionFlags(MenuItem.SHOW_AS_ACTION_IF_ROOM);
         }
+    }
+
+    private Drawable getToolbarIcon(Drawable drawable) {
+        if (drawable == null) {
+            return null;
+        }
+        Drawable tinted = DrawableCompat.wrap(drawable.mutate());
+        DrawableCompat.setTint(tinted, MaterialColors.getColor(
+                requireContext(), com.google.android.material.R.attr.colorOnPrimary, Color.WHITE));
+        return tinted;
     }
 
     @Override

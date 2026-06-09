@@ -26,13 +26,13 @@
             android:layout_weight="1"
             android:textColor="?android:attr/textColorPrimary" />
 
-        <ImageView
+        <com.google.android.material.imageview.ShapeableImageView
             android:id="@+id/done_image"
-            android:layout_width="25dp"
-            android:layout_height="25dp"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
             android:layout_gravity="center_vertical"
-            android:tint="?attr/colorAccent"
             android:visibility="gone"
+            app:tint="?attr/colorPrimary"
             app:srcCompat="@drawable/ic_done" />
     </LinearLayout>
 </FrameLayout>
