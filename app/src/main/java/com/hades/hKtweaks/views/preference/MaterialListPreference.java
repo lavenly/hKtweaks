@@ -1,4 +1,4 @@
-package com.lavenly.hK3475.views.preference;
+package com.hades.hKtweaks.views.preference;
 
 import android.content.Context;
 import android.util.AttributeSet;
@@ -6,7 +6,7 @@ import android.util.AttributeSet;
 import androidx.preference.ListPreference;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
-import com.lavenly.hK3475.R;
+import com.hades.hKtweaks.R;
 
 public class MaterialListPreference extends ListPreference {
 

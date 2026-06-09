@@ -36,15 +36,16 @@ import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentPagerAdapter;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.core.content.ContextCompat;
 import androidx.core.view.ViewCompat;
-import androidx.viewpager.widget.ViewPager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.StaggeredGridLayoutManager;
+import androidx.viewpager2.adapter.FragmentStateAdapter;
+import androidx.viewpager2.widget.ViewPager2;
 import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.tabs.TabLayout;
+import com.google.android.material.tabs.TabLayoutMediator;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -55,7 +56,7 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.TextView;
 
-import com.lavenly.hKtweaks.R;
+import com.hades.hKtweaks.R;
 import com.hades.hKtweaks.activities.BaseActivity;
 import com.hades.hKtweaks.activities.NavigationActivity;
 import com.hades.hKtweaks.fragments.BaseFragment;
@@ -96,9 +97,10 @@ public abstract class RecyclerViewFragment extends BaseFragment {
     private List<Fragment> mViewPagerFragments;
     private ViewPagerAdapter mViewPagerAdapter;
     private View mViewPagerParent;
-    private ViewPager mViewPager;
+    private ViewPager2 mViewPager;
     private View mViewPagerShadow;
     private TabLayout mPageIndicator;
+    private TabLayoutMediator mPageIndicatorMediator;
 
     private FloatingActionButton mTopFab;
     private FloatingActionButton mBottomFab;
@@ -136,9 +138,12 @@ public abstract class RecyclerViewFragment extends BaseFragment {
         mRecyclerView = mRootView.findViewById(R.id.recyclerview);
 
         if (mViewPagerFragments != null) {
-            FragmentTransaction fragmentTransaction = getChildFragmentManager().beginTransaction();
+            FragmentManager fragmentManager = getChildFragmentManager();
+            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
             for (Fragment fragment : mViewPagerFragments) {
-                fragmentTransaction.remove(fragment);
+                if (fragment.getFragmentManager() == fragmentManager) {
+                    fragmentTransaction.remove(fragment);
+                }
             }
             fragmentTransaction.commitAllowingStateLoss();
             mViewPagerFragments.clear();
@@ -370,9 +375,12 @@ public abstract class RecyclerViewFragment extends BaseFragment {
     public void onViewFinished() {
         super.onViewFinished();
         if (showViewPager() && !hideBanner()) {
-            mViewPager.setAdapter(mViewPagerAdapter = new ViewPagerAdapter(getChildFragmentManager(),
+            mViewPager.setAdapter(mViewPagerAdapter = new ViewPagerAdapter(this,
                     mViewPagerFragments));
-            mPageIndicator.setupWithViewPager(mViewPager);
+            mPageIndicatorMediator = new TabLayoutMediator(
+                    mPageIndicator, mViewPager, (tab, position) -> {
+                    });
+            mPageIndicatorMediator.attach();
             mPageIndicator.setVisibility(
                     mViewPagerFragments.size() > 1 ? View.VISIBLE : View.GONE);
 
@@ -493,28 +501,30 @@ public abstract class RecyclerViewFragment extends BaseFragment {
     }
 
     protected void addViewPagerFragment(BaseFragment fragment) {
+        int position = mViewPagerFragments.size();
         mViewPagerFragments.add(fragment);
         if (mViewPagerAdapter != null) {
-            mViewPagerAdapter.notifyDataSetChanged();
+            mViewPagerAdapter.notifyItemInserted(position);
         }
     }
 
-    public static class ViewPagerAdapter extends FragmentPagerAdapter {
+    public static class ViewPagerAdapter extends FragmentStateAdapter {
 
         private final List<Fragment> mFragments;
 
-        public ViewPagerAdapter(FragmentManager fragmentManager, List<Fragment> fragments) {
-            super(fragmentManager);
+        public ViewPagerAdapter(@NonNull Fragment fragment, List<Fragment> fragments) {
+            super(fragment);
             mFragments = fragments;
         }
 
+        @NonNull
         @Override
-        public Fragment getItem(int position) {
+        public Fragment createFragment(int position) {
             return mFragments.get(position);
         }
 
         @Override
-        public int getCount() {
+        public int getItemCount() {
             return mFragments == null ? 0 : mFragments.size();
         }
     }
@@ -812,17 +822,11 @@ public abstract class RecyclerViewFragment extends BaseFragment {
     }
 
     protected Fragment getChildFragment(int position) {
-        if (hideBanner()) {
-            return mViewPagerFragments.get(position);
-        }
-        return getChildFragmentManager().getFragments().get(position);
+        return mViewPagerFragments.get(position);
     }
 
     protected int childFragmentCount() {
-        if (hideBanner()) {
-            return mViewPagerFragments.size();
-        }
-        return getChildFragmentManager().getFragments().size();
+        return mViewPagerFragments.size();
     }
 
     protected Fragment getDialogFragment() {
@@ -878,6 +882,19 @@ public abstract class RecyclerViewFragment extends BaseFragment {
 
     public void setViewPagerBackgroundColor(int color) {
         mViewPager.setBackgroundColor(color);
+    }
+
+    @Override
+    public void onDestroyView() {
+        if (mPageIndicatorMediator != null) {
+            mPageIndicatorMediator.detach();
+            mPageIndicatorMediator = null;
+        }
+        if (mViewPager != null) {
+            mViewPager.setAdapter(null);
+        }
+        mViewPagerAdapter = null;
+        super.onDestroyView();
     }
 
     @Override

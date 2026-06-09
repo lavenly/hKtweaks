@@ -24,7 +24,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
-import androidx.viewpager.widget.ViewPager;
+import androidx.viewpager2.widget.ViewPager2;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -33,6 +33,7 @@ import android.view.ViewTreeObserver;
 import com.hades.hKtweaks.R;
 import com.hades.hKtweaks.fragments.recyclerview.RecyclerViewFragment;
 import com.google.android.material.tabs.TabLayout;
+import com.google.android.material.tabs.TabLayoutMediator;
 
 import java.util.List;
 
@@ -51,6 +52,8 @@ public class ViewPagerDialog extends DialogFragment {
 
     private int mHeight;
     private List<Fragment> mFragments;
+    private ViewPager2 mViewPager;
+    private TabLayoutMediator mTabLayoutMediator;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -64,10 +67,13 @@ public class ViewPagerDialog extends DialogFragment {
                              @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.viewpager_view, container, false);
 
-        ViewPager viewPager = rootView.findViewById(R.id.viewpager);
+        mViewPager = rootView.findViewById(R.id.viewpager);
         TabLayout indicator = rootView.findViewById(R.id.indicator);
-        viewPager.setAdapter(new RecyclerViewFragment.ViewPagerAdapter(getChildFragmentManager(), mFragments));
-        indicator.setupWithViewPager(viewPager);
+        mViewPager.setAdapter(new RecyclerViewFragment.ViewPagerAdapter(this, mFragments));
+        mTabLayoutMediator = new TabLayoutMediator(indicator, mViewPager,
+                (tab, position) -> {
+                });
+        mTabLayoutMediator.attach();
         indicator.setVisibility(mFragments.size() > 1 ? View.VISIBLE : View.GONE);
 
         return rootView;
@@ -85,5 +91,18 @@ public class ViewPagerDialog extends DialogFragment {
                 view.requestLayout();
             }
         });
+    }
+
+    @Override
+    public void onDestroyView() {
+        if (mTabLayoutMediator != null) {
+            mTabLayoutMediator.detach();
+            mTabLayoutMediator = null;
+        }
+        if (mViewPager != null) {
+            mViewPager.setAdapter(null);
+            mViewPager = null;
+        }
+        super.onDestroyView();
     }
 }
