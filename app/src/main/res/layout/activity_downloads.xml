@@ -9,10 +9,10 @@
 
     <com.google.android.material.tabs.TabLayout
         android:id="@+id/tablayout"
+        style="@style/Widget.Material3.TabLayout"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
         android:background="?attr/colorPrimary"
-        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
         app:tabGravity="fill"
         app:tabMode="fixed" />
 

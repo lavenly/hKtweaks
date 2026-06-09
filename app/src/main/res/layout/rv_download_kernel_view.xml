@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    style="@style/Widget.Material3.CardView.Elevated"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    app:cardElevation="3dp"
     app:cardUseCompatPadding="true"
     app:contentPadding="10dp">
 
@@ -66,9 +66,9 @@
                     android:gravity="end"
                     android:textSize="12sp" />
 
-                <ProgressBar
+                <com.google.android.material.progressindicator.LinearProgressIndicator
+                    style="@style/Widget.Material3Expressive.LinearProgressIndicator"
                     android:id="@+id/progressbar"
-                    style="@style/Widget.AppCompat.ProgressBar.Horizontal"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:max="100" />
@@ -77,10 +77,12 @@
 
             <com.google.android.material.floatingactionbutton.FloatingActionButton
                 android:id="@+id/fab_button"
+                style="@style/Widget.Material3Expressive.FloatingActionButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="end|center_vertical"
                 android:layout_margin="8dp"
+                android:contentDescription="@string/downloads"
                 app:fabSize="mini" />
 
         </LinearLayout>
@@ -96,7 +98,8 @@
             android:paddingRight="16dp"
             android:visibility="gone">
 
-            <ProgressBar
+            <com.google.android.material.progressindicator.CircularProgressIndicator
+                style="@style/Widget.Material3Expressive.CircularProgressIndicator"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
 
@@ -117,13 +120,13 @@
             android:text="@string/md5_mismatch"
             android:visibility="gone" />
 
-        <androidx.appcompat.widget.AppCompatButton
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/install"
-            android:layout_width="100dp"
-            android:layout_height="30dp"
+            style="@style/Widget.Material3Expressive.Button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
-            android:background="?attr/selectableItemBackground"
             android:text="@string/install"
             android:visibility="gone" />
     </LinearLayout>
-</androidx.cardview.widget.CardView>
+</com.google.android.material.card.MaterialCardView>

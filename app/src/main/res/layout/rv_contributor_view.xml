@@ -11,12 +11,13 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal">
 
-        <com.mikhaellopez.circularimageview.CircularImageView
+        <com.google.android.material.imageview.ShapeableImageView
             android:id="@+id/image"
             android:layout_width="40dp"
             android:layout_height="40dp"
             android:layout_gravity="center"
-            app:civ_border_width="0dp" />
+            android:scaleType="centerCrop"
+            app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.hKtweaks.Circle" />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -26,14 +27,14 @@
             android:layout_marginStart="16dp"
             android:orientation="vertical">
 
-            <TextView
+            <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:ellipsize="middle"
                 android:textColor="?android:attr/textColorPrimary" />
 
-            <TextView
+            <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/contributions"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

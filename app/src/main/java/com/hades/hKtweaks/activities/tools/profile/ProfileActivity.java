@@ -28,10 +28,9 @@ import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentStatePagerAdapter;
-import androidx.core.graphics.drawable.DrawableCompat;
 import androidx.viewpager.widget.ViewPager;
-import androidx.appcompat.widget.AppCompatCheckBox;
-import androidx.appcompat.widget.AppCompatImageButton;
+import com.google.android.material.button.MaterialButton;
+import com.google.android.material.checkbox.MaterialCheckBox;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -79,6 +78,11 @@ public class ProfileActivity extends BaseActivity {
 
         ArrayList<NavigationActivity.NavigationFragment> fragments =
                 intent.getParcelableArrayListExtra(FRAGMENTS_INTENT);
+
+        if (fragments == null || fragments.isEmpty()) {
+            finish();
+            return;
+        }
 
         for (NavigationActivity.NavigationFragment navigationFragment : fragments) {
             mItems.put(getString(navigationFragment.mId), getFragment(navigationFragment.mId,
@@ -261,9 +265,9 @@ public class ProfileActivity extends BaseActivity {
             View rootView = inflater.inflate(R.layout.fragment_profile_dialog, container, false);
 
             LinearLayout checkBoxParent = rootView.findViewById(R.id.checkbox_parent);
-            final HashMap<AppCompatCheckBox, Class> checkBoxes = new HashMap<>();
+            final HashMap<MaterialCheckBox, Class> checkBoxes = new HashMap<>();
             for (final String name : mList.keySet()) {
-                AppCompatCheckBox compatCheckBox = new AppCompatCheckBox(getActivity());
+                MaterialCheckBox compatCheckBox = new MaterialCheckBox(getActivity());
                 compatCheckBox.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
                         ViewGroup.LayoutParams.WRAP_CONTENT));
                 compatCheckBox.setText(name);
@@ -273,20 +277,18 @@ public class ProfileActivity extends BaseActivity {
             }
 
             rootView.findViewById(R.id.select_all).setOnClickListener(v -> {
-                for (AppCompatCheckBox compatCheckBox : checkBoxes.keySet()) {
+                for (MaterialCheckBox compatCheckBox : checkBoxes.keySet()) {
                     compatCheckBox.setChecked(true);
                 }
             });
 
-            AppCompatImageButton cancel = rootView.findViewById(R.id.cancel);
-            DrawableCompat.setTint(cancel.getDrawable(), ViewUtils.getThemeAccentColor(getActivity()));
+            MaterialButton cancel = rootView.findViewById(R.id.cancel);
             cancel.setOnClickListener(v -> getActivity().finish());
 
-            AppCompatImageButton done = rootView.findViewById(R.id.done);
-            DrawableCompat.setTint(done.getDrawable(), ViewUtils.getThemeAccentColor(getActivity()));
+            MaterialButton done = rootView.findViewById(R.id.done);
             done.setOnClickListener(v -> {
                 List<String> categories = new ArrayList<>();
-                for (AppCompatCheckBox compatCheckBox : checkBoxes.keySet()) {
+                for (MaterialCheckBox compatCheckBox : checkBoxes.keySet()) {
                     if (compatCheckBox.isChecked()) {
                         categories.add(ApplyOnBootFragment.getAssignment(checkBoxes.get(compatCheckBox)));
                     }

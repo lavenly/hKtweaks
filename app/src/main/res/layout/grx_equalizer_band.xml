@@ -11,44 +11,35 @@
 
     android:layout_height="wrap_content">
 
-    <androidx.appcompat.widget.AppCompatTextView
+    <com.google.android.material.textview.MaterialTextView
         android:id="@+id/value"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textSize="10sp"
+        android:textSize="11sp"
         android:gravity="center"
         android:textColor="?android:attr/textColorPrimary"
         />
 
-    <com.grx.soundcontrol.VerticalSeekBarWrapper
+    <com.google.android.material.slider.Slider
+        android:id="@+id/eqseekbar"
+        style="@style/Widget.Material3Expressive.Slider.Xsmall"
         android:layout_width="wrap_content"
-         android:layout_height="190dp"
-        android:layout_gravity="center">
-        <com.grx.soundcontrol.VerticalSeekBar
-            android:id="@+id/eqseekbar"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:splitTrack="false"
-            android:max="24"
-            app:min="0"
-            android:progress="12"
-            app:zeroOffset="12"
-            app:dividerStep="3"
-            app:dividerLength="8dp"
-            app:dividerThickness="1dip"
-            app:progressThickness="2dp"
-            app:zeroOffsetCircleRadius="3dp"
-            app:showBackgroundTrack="true"
-            app:seekBarRotation="CW270" />
-    </com.grx.soundcontrol.VerticalSeekBarWrapper>
+        android:layout_height="190dp"
+        android:layout_gravity="center"
+        android:orientation="vertical"
+        android:stepSize="1"
+        android:value="0"
+        android:valueFrom="-12"
+        android:valueTo="12"
+        app:labelBehavior="gone" />
 
-    <androidx.appcompat.widget.AppCompatTextView
+    <com.google.android.material.textview.MaterialTextView
         android:id="@+id/band"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
         android:textColor="?android:attr/textColorPrimary"
-        android:textSize="10sp"
+        android:textSize="11sp"
          />
 
 </LinearLayout>

@@ -39,7 +39,7 @@ import androidx.core.content.ContextCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.appcompat.app.ActionBarDrawerToggle;
-import androidx.appcompat.widget.Toolbar;
+import com.google.android.material.appbar.MaterialToolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.SubMenu;
@@ -297,7 +297,7 @@ public class NavigationActivity extends BaseActivity
 
     private void init(Bundle savedInstanceState) {
         setContentView(R.layout.activity_navigation);
-        Toolbar toolbar = getToolBar();
+        MaterialToolbar toolbar = getToolBar();
         setSupportActionBar(toolbar);
 
         mDrawer = findViewById(R.id.drawer_layout);

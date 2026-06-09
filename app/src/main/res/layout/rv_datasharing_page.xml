@@ -4,12 +4,12 @@
     android:layout_height="wrap_content"
     android:orientation="horizontal">
 
-    <androidx.appcompat.widget.AppCompatButton
+    <com.google.android.material.button.MaterialButton
+        style="@style/Widget.Material3Expressive.Button.TextButton"
         android:id="@+id/previous_btn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_weight="1"
-        android:background="?attr/selectableItemBackgroundBorderless"
         android:text="@string/previous" />
 
     <TextView
@@ -21,11 +21,11 @@
         android:textSize="15sp"
         android:textStyle="bold" />
 
-    <androidx.appcompat.widget.AppCompatButton
+    <com.google.android.material.button.MaterialButton
+        style="@style/Widget.Material3Expressive.Button.TextButton"
         android:id="@+id/next_btn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_weight="1"
-        android:background="?attr/selectableItemBackgroundBorderless"
         android:text="@string/next" />
 </LinearLayout>

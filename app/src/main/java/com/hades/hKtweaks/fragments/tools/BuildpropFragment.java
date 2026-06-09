@@ -28,7 +28,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.core.content.ContextCompat;
 import androidx.core.graphics.drawable.DrawableCompat;
-import androidx.appcompat.widget.AppCompatEditText;
+import com.google.android.material.textfield.TextInputEditText;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
@@ -288,8 +288,8 @@ public class BuildpropFragment extends RecyclerViewFragment {
 
             View rootView = inflater.inflate(R.layout.fragment_buildprop_search, container, false);
 
-            AppCompatEditText keyEdit = rootView.findViewById(R.id.key_edittext);
-            AppCompatEditText valueEdit = rootView.findViewById(R.id.value_edittext);
+            TextInputEditText keyEdit = rootView.findViewById(R.id.key_edittext);
+            TextInputEditText valueEdit = rootView.findViewById(R.id.value_edittext);
 
             keyEdit.addTextChangedListener(new TextWatcher() {
                 @Override

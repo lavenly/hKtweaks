@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    style="@style/Widget.Material3.CardView.Elevated"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    app:cardCornerRadius="3dp"
-    app:cardElevation="3dp"
     app:cardUseCompatPadding="true"
     app:contentPadding="20dp">
 
@@ -26,46 +25,54 @@
                 android:layout_gravity="center"
                 android:orientation="horizontal">
 
-                <androidx.appcompat.widget.AppCompatImageButton
+                <com.google.android.material.button.MaterialButton
+                    style="@style/Widget.Material3Expressive.Button.IconButton.Standard"
                     android:id="@+id/xda_button"
-                    android:layout_width="25dp"
-                    android:layout_height="25dp"
+                    android:layout_width="0dp"
+                    android:layout_height="48dp"
                     android:layout_weight="1"
-                    android:background="?attr/selectableItemBackgroundBorderless"
-                    android:scaleType="fitCenter"
+                    android:contentDescription="@string/xda"
                     android:visibility="gone"
-                    app:srcCompat="@drawable/ic_xda" />
+                    app:icon="@drawable/ic_xda"
+                    app:iconPadding="0dp"
+                    app:iconTint="@null" />
 
-                <androidx.appcompat.widget.AppCompatImageButton
+                <com.google.android.material.button.MaterialButton
+                    style="@style/Widget.Material3Expressive.Button.IconButton.Standard"
                     android:id="@+id/github_button"
-                    android:layout_width="25dp"
-                    android:layout_height="25dp"
+                    android:layout_width="0dp"
+                    android:layout_height="48dp"
                     android:layout_gravity="center"
                     android:layout_weight="1"
-                    android:background="?attr/selectableItemBackgroundBorderless"
-                    android:scaleType="fitCenter"
+                    android:contentDescription="@string/github"
                     android:visibility="gone"
-                    app:srcCompat="@drawable/ic_github" />
+                    app:icon="@drawable/ic_github"
+                    app:iconPadding="0dp"
+                    app:iconTint="@null" />
 
-                <androidx.appcompat.widget.AppCompatImageButton
+                <com.google.android.material.button.MaterialButton
+                    style="@style/Widget.Material3Expressive.Button.IconButton.Standard"
                     android:id="@+id/googleplus_button"
-                    android:layout_width="25dp"
-                    android:layout_height="25dp"
+                    android:layout_width="0dp"
+                    android:layout_height="48dp"
                     android:layout_weight="1"
-                    android:background="?attr/selectableItemBackgroundBorderless"
-                    android:scaleType="fitCenter"
+                    android:contentDescription="@string/google_plus"
                     android:visibility="gone"
-                    app:srcCompat="@drawable/ic_googleplus" />
+                    app:icon="@drawable/ic_googleplus"
+                    app:iconPadding="0dp"
+                    app:iconTint="@null" />
 
-                <androidx.appcompat.widget.AppCompatImageButton
+                <com.google.android.material.button.MaterialButton
+                    style="@style/Widget.Material3Expressive.Button.IconButton.Standard"
                     android:id="@+id/paypal_button"
-                    android:layout_width="25dp"
-                    android:layout_height="25dp"
+                    android:layout_width="0dp"
+                    android:layout_height="48dp"
                     android:layout_weight="1"
-                    android:background="?attr/selectableItemBackgroundBorderless"
-                    android:scaleType="fitCenter"
+                    android:contentDescription="@string/paypal"
                     android:visibility="gone"
-                    app:srcCompat="@drawable/ic_paypal" />
+                    app:icon="@drawable/ic_paypal"
+                    app:iconPadding="0dp"
+                    app:iconTint="@null" />
 
             </LinearLayout>
 
@@ -91,4 +98,4 @@
             android:paddingTop="20dp"
             android:textIsSelectable="true" />
     </LinearLayout>
-</androidx.cardview.widget.CardView>
+</com.google.android.material.card.MaterialCardView>

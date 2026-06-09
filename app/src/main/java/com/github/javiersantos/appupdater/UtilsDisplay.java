@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.media.RingtoneManager;
 import com.google.android.material.snackbar.Snackbar;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import androidx.core.app.NotificationCompat;
 import androidx.appcompat.app.AlertDialog;
 import android.view.View;
@@ -19,7 +20,7 @@ import java.net.URL;
 class UtilsDisplay {
 
     static AlertDialog showUpdateAvailableDialog(final Context context, String title, String content, String btnNegative, String btnPositive, String btnNeutral, final DialogInterface.OnClickListener updateClickListener, final DialogInterface.OnClickListener dismissClickListener, final DialogInterface.OnClickListener disableClickListener) {
-        return new AlertDialog.Builder(context)
+        return new MaterialAlertDialogBuilder(context)
                 .setTitle(title)
                 .setMessage(content)
                 .setPositiveButton(btnPositive, updateClickListener)
@@ -29,7 +30,7 @@ class UtilsDisplay {
     }
 
     static AlertDialog showUpdateNotAvailableDialog(final Context context, String title, String content) {
-        return new AlertDialog.Builder(context)
+        return new MaterialAlertDialogBuilder(context)
                 .setTitle(title)
                 .setMessage(content)
                 .setPositiveButton(context.getResources().getString(android.R.string.ok), new DialogInterface.OnClickListener() {

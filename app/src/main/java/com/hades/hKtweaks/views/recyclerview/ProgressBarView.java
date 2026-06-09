@@ -1,9 +1,9 @@
 package com.hades.hKtweaks.views.recyclerview;
 
-import androidx.appcompat.widget.AppCompatTextView;
+import com.google.android.material.textview.MaterialTextView;
+import com.google.android.material.progressindicator.LinearProgressIndicator;
 import android.view.View;
 
-import com.akexorcist.roundcornerprogressbar.RoundCornerProgressBar;
 import com.hades.hKtweaks.R;
 
 /**
@@ -12,14 +12,14 @@ import com.hades.hKtweaks.R;
 
 public class ProgressBarView extends RecyclerViewItem {
 
-    private RoundCornerProgressBar mProgressBar;
-    private AppCompatTextView mTitle;
-    private AppCompatTextView mTotal;
-    private AppCompatTextView mUsed;
-    private AppCompatTextView mUsedLabel;
-    private AppCompatTextView mFree;
-    private AppCompatTextView mFreeLabel;
-    private AppCompatTextView mPercent;
+    private LinearProgressIndicator mProgressBar;
+    private MaterialTextView mTitle;
+    private MaterialTextView mTotal;
+    private MaterialTextView mUsed;
+    private MaterialTextView mUsedLabel;
+    private MaterialTextView mFree;
+    private MaterialTextView mFreeLabel;
+    private MaterialTextView mPercent;
 
     private String mTitleText;
     private String mTotalText;
@@ -177,12 +177,12 @@ public class ProgressBarView extends RecyclerViewItem {
             mFree.setText(text);
         }
         if (mProgressBar != null) {
-            mProgressBar.setProgress(mProgress);
             mProgressBar.setMax(mMax);
-            mProgressBar.setPadding(mPadding);
-            mProgressBar.setRadius(mRadius);
-            if (mColorProgress != 0) mProgressBar.setProgressColor(mColorProgress);
-            if (mColorBackground != 0) mProgressBar.setProgressBackgroundColor(mColorBackground);
+            mProgressBar.setProgressCompat((int) mProgress, true);
+            mProgressBar.setPadding(mPadding, 0, mPadding, 0);
+            mProgressBar.setTrackCornerRadius(mRadius);
+            if (mColorProgress != 0) mProgressBar.setIndicatorColor(mColorProgress);
+            if (mColorBackground != 0) mProgressBar.setTrackColor(mColorBackground);
             if (mPercent != null) {
                 if(mPercentText != null){
                     mPercent.setText(mPercentText);

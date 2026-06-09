@@ -20,24 +20,26 @@
             android:orientation="vertical" />
     </FrameLayout>
 
-    <androidx.appcompat.widget.AppCompatImageButton
+    <com.google.android.material.button.MaterialButton
+        style="@style/Widget.Material3Expressive.Button.IconButton.Standard"
         android:id="@+id/button"
-        android:layout_width="match_parent"
-        android:layout_height="30dp"
+        android:layout_width="0dp"
+        android:layout_height="48dp"
         android:layout_weight="1"
-        android:background="?attr/selectableItemBackgroundBorderless"
-        android:scaleType="fitCenter"
-        android:tint="?attr/colorAccent"
-        app:srcCompat="@drawable/ic_done" />
+        android:contentDescription="@string/ok"
+        app:icon="@drawable/ic_done"
+        app:iconPadding="0dp"
+        app:iconTint="?attr/colorAccent" />
 
-    <androidx.appcompat.widget.AppCompatImageButton
+    <com.google.android.material.button.MaterialButton
+        style="@style/Widget.Material3Expressive.Button.IconButton.Standard"
         android:id="@+id/reboot_button"
-        android:layout_width="match_parent"
-        android:layout_height="30dp"
+        android:layout_width="0dp"
+        android:layout_height="48dp"
         android:layout_weight="1"
-        android:background="?attr/selectableItemBackgroundBorderless"
-        android:scaleType="fitCenter"
-        android:tint="?attr/colorAccent"
-        app:srcCompat="@drawable/ic_refresh" />
+        android:contentDescription="@string/reboot"
+        app:icon="@drawable/ic_refresh"
+        app:iconPadding="0dp"
+        app:iconTint="?attr/colorAccent" />
 
 </LinearLayout>

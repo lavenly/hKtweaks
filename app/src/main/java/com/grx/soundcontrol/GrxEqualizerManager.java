@@ -1,16 +1,19 @@
 package com.grx.soundcontrol;
 
-import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.res.ColorStateList;
 import android.content.res.TypedArray;
 import android.util.TypedValue;
 import android.view.View;
-import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AlertDialog;
+
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import com.google.android.material.textfield.TextInputEditText;
+import com.google.android.material.textfield.TextInputLayout;
 import com.hades.hKtweaks.R;
 import com.hades.hKtweaks.utils.AppSettings;
 import com.hades.hKtweaks.utils.kernel.sound.MoroSound;
@@ -20,8 +23,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
 
-import androidx.appcompat.widget.AppCompatTextView;
-import androidx.appcompat.widget.SwitchCompat;
+import com.google.android.material.textview.MaterialTextView;
+import com.google.android.material.button.MaterialButton;
+import com.google.android.material.materialswitch.MaterialSwitch;
 
 import static android.view.View.INVISIBLE;
 import static android.view.View.VISIBLE;
@@ -34,13 +38,13 @@ public class GrxEqualizerManager extends RecyclerViewItem
     private int mAccentColor;
 
     private LinearLayout mSwitchContainer;
-    private SwitchCompat mEqSwitch;
-    private AppCompatTextView mEqSwitchSummary;
+    private MaterialSwitch mEqSwitch;
+    private MaterialTextView mEqSwitchSummary;
 
     private LinearLayout mBandsContainer, mProfilesContainer;
 
-    private ImageView mButtonSaveEqProfile;
-    private AppCompatTextView mButtonCurrentProfile;
+    private MaterialButton mButtonSaveEqProfile;
+    private MaterialTextView mButtonCurrentProfile;
 
     private int mNumOfMoroProfiles;
     private int mSelectedEqProfile = -1, mOldSelectedEqProfile = -1;
@@ -92,7 +96,7 @@ public class GrxEqualizerManager extends RecyclerViewItem
         mButtonCurrentProfile.setOnClickListener(v -> showProfileSelectionDialog());
 
         mButtonSaveEqProfile = view.findViewById(R.id.button_eq_save);
-        mButtonSaveEqProfile.setColorFilter(mAccentColor);
+        mButtonSaveEqProfile.setIconTint(ColorStateList.valueOf(mAccentColor));
         mButtonSaveEqProfile.setOnClickListener(v -> showSaveProfileDialog());
 
         if(mSelectedEqProfile == -1) {
@@ -118,7 +122,8 @@ public class GrxEqualizerManager extends RecyclerViewItem
         for(int i = 0; i < NUMBANDS; i++) {
             View view = mBandsContainer.findViewWithTag(String.valueOf(i));
             if(view!=null){
-                ((GrxEqualizerBandController)view).mVerticalSeekBar.grxSetEnabled(mSwitchEnabled & mMainSwitchEnabled); //bbb
+                ((GrxEqualizerBandController)view)
+                        .setSliderEnabled(mSwitchEnabled & mMainSwitchEnabled);
 
             }
         }
@@ -171,7 +176,7 @@ public class GrxEqualizerManager extends RecyclerViewItem
         mDismissControl=false;
         mDeleteProfileControl=false;
 
-        AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
+        MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(mContext);
         builder.setTitle(R.string.arizona_eqprofile_tit);
         builder.setSingleChoiceItems(getProfileNamesArray(), mSelectedEqProfile, (dialogInterface, i) -> {
             mSelectedEqProfile=i;
@@ -213,7 +218,7 @@ public class GrxEqualizerManager extends RecyclerViewItem
             if(view != null){
                 String value = mEquProfiles.get(mSelectedEqProfile).getBandValue(i);
                 MoroSound.setEqValues(value, i, mContext);
-                ((GrxEqualizerBandController)view).mVerticalSeekBar.grxSetSeekBarProgress(value);
+                ((GrxEqualizerBandController)view).setValue(value);
             }
         }
     }
@@ -254,19 +259,17 @@ public class GrxEqualizerManager extends RecyclerViewItem
     }
 
     private void showSaveProfileDialog(){
-        final EditText editText = new EditText(mContext);
+        TextInputLayout inputLayout = new TextInputLayout(mContext);
+        inputLayout.setBoxBackgroundMode(TextInputLayout.BOX_BACKGROUND_OUTLINE);
+        inputLayout.setHint(R.string.eq_profile_name);
+        int padding = mContext.getResources().getDimensionPixelSize(R.dimen.dialog_padding);
+        inputLayout.setPadding(padding, 0, padding, 0);
+        final TextInputEditText editText = new TextInputEditText(inputLayout.getContext());
+        inputLayout.addView(editText);
 
-        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT,
-                LinearLayout.LayoutParams.MATCH_PARENT);
-        layoutParams.setMarginStart(50);
-        layoutParams.setMarginEnd(50);
-        editText.setLayoutParams(layoutParams);
-        AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
+        MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(mContext);
         builder.setTitle(R.string.eq_profile_save);
-        builder.setMessage(R.string.eq_profile_name);
-
-        builder.setView(editText);
+        builder.setView(inputLayout);
 
         builder.setPositiveButton(android.R.string.ok, (dialogInterface, i)
                 -> saveCurrentProfile(editText.getText().toString()));

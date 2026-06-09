@@ -22,11 +22,11 @@ package com.hades.hKtweaks.views.recyclerview;
 import android.view.View;
 import android.widget.TextView;
 
+import com.google.android.material.imageview.ShapeableImageView;
 import com.hades.hKtweaks.R;
 import com.hades.hKtweaks.utils.Utils;
 import com.hades.hKtweaks.utils.ViewUtils;
 import com.hades.hKtweaks.utils.other.Contributors;
-import com.mikhaellopez.circularimageview.CircularImageView;
 
 /**
  * Created by willi on 23.07.16.
@@ -48,7 +48,7 @@ public class ContributorView extends RecyclerViewItem {
     public void onCreateView(View view) {
         super.onCreateView(view);
 
-        CircularImageView image = view.findViewById(R.id.image);
+        ShapeableImageView image = view.findViewById(R.id.image);
         TextView name = view.findViewById(R.id.name);
         TextView contributions = view.findViewById(R.id.contributions);
 

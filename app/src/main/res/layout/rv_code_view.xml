@@ -67,12 +67,12 @@
             android:text="@string/hit_test"
             android:textSize="12sp" />
 
-        <androidx.appcompat.widget.AppCompatButton
+        <com.google.android.material.button.MaterialButton
+            style="@style/Widget.Material3Expressive.Button.TextButton"
             android:id="@+id/test_button"
-            android:layout_width="50dp"
-            android:layout_height="30dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
-            android:background="?attr/selectableItemBackgroundBorderless"
             android:focusable="true"
             android:text="@string/test"
             android:textSize="12sp" />
@@ -106,7 +106,8 @@
                     android:textSize="12sp" />
             </HorizontalScrollView>
 
-            <ProgressBar
+            <com.google.android.material.progressindicator.CircularProgressIndicator
+                style="@style/Widget.Material3Expressive.CircularProgressIndicator"
                 android:id="@+id/progress"
                 android:layout_width="30dp"
                 android:layout_height="30dp" />

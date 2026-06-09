@@ -20,7 +20,7 @@
 package com.hades.hKtweaks.views.recyclerview;
 
 import android.animation.ValueAnimator;
-import androidx.appcompat.widget.AppCompatImageView;
+import com.google.android.material.imageview.ShapeableImageView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -39,7 +39,7 @@ public class DropDownView extends RecyclerViewItem {
 
     private TextView mTitle;
     private TextView mSummary;
-    private AppCompatImageView mArrow;
+    private ShapeableImageView mArrow;
     private LinearLayout mParent;
 
     private CharSequence mTitleText;

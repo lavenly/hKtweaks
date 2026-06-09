@@ -3,11 +3,12 @@
     android:layout_width="fill_parent"
     android:layout_height="wrap_content" >
 
-    <CheckBox
+    <com.google.android.material.checkbox.MaterialCheckBox
         android:id="@+id/chbox"
-        style="?android:attr/textColorPrimary"
+        style="@style/Widget.Material3.CompoundButton.CheckBox"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="20dp" />
+        android:layout_margin="20dp"
+        android:textColor="?android:attr/textColorPrimary" />
 
 </FrameLayout>

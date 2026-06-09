@@ -43,7 +43,7 @@
                 <ImageView
                     android:layout_width="18dp"
                     android:layout_height="18dp"
-                    android:tint="?android:attr/textColorSecondary"
+                    app:tint="?android:attr/textColorSecondary"
                     app:srcCompat="@drawable/ic_arrow_right" />
 
                 <TextView
@@ -53,11 +53,13 @@
                     android:gravity="center_vertical"
                     android:visibility="gone" />
 
-                <ProgressBar
+                <com.google.android.material.progressindicator.CircularProgressIndicator
+                    style="@style/Widget.Material3Expressive.CircularProgressIndicator"
                     android:id="@+id/progress"
-                    android:layout_width="30dp"
-                    android:layout_height="30dp"
-                    android:layout_gravity="end" />
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
+                    android:layout_gravity="end"
+                    app:indicatorSize="24dp" />
             </LinearLayout>
         </LinearLayout>
     </LinearLayout>

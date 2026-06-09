@@ -27,13 +27,14 @@
 
     <com.google.android.material.navigation.NavigationView
         android:id="@+id/nav_view"
+        style="@style/Widget.Material3.NavigationView"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:layout_gravity="start"
         android:fitsSystemWindows="true"
         android:focusable="false"
-        android:theme="@style/ItemTextAppearance"
-        android:background="?colorSecondary"
-        app:headerLayout="@layout/nav_header_layout" />
+        android:background="?attr/appSurfaceColor"
+        app:headerLayout="@layout/nav_header_layout"
+        app:itemTextAppearance="@style/TextAppearance.hKtweaks.NavigationItem" />
 
 </androidx.drawerlayout.widget.DrawerLayout>

@@ -19,12 +19,12 @@
             android:paddingRight="16dp"
             android:paddingTop="16dp" />
 
-        <androidx.appcompat.widget.AppCompatButton
+        <com.google.android.material.button.MaterialButton
+            style="@style/Widget.Material3Expressive.Button.TextButton"
             android:id="@+id/select_all"
             android:layout_width="match_parent"
-            android:layout_height="30dp"
+            android:layout_height="wrap_content"
             android:layout_marginBottom="5dp"
-            android:background="?attr/selectableItemBackground"
             android:text="@string/select_all"
             android:textSize="12sp" />
 
@@ -34,25 +34,27 @@
             android:orientation="horizontal"
             android:paddingBottom="16dp">
 
-            <androidx.appcompat.widget.AppCompatImageButton
+            <com.google.android.material.button.MaterialButton
+                style="@style/Widget.Material3Expressive.Button.IconButton.Standard"
                 android:id="@+id/cancel"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
+                android:layout_width="0dp"
+                android:layout_height="48dp"
                 android:layout_weight="1"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                android:scaleType="fitCenter"
-                android:tint="?attr/colorAccent"
-                app:srcCompat="@drawable/ic_cancel" />
+                android:contentDescription="@string/cancel"
+                app:icon="@drawable/ic_cancel"
+                app:iconPadding="0dp"
+                app:iconTint="?attr/colorAccent" />
 
-            <androidx.appcompat.widget.AppCompatImageButton
+            <com.google.android.material.button.MaterialButton
+                style="@style/Widget.Material3Expressive.Button.IconButton.Standard"
                 android:id="@+id/done"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
+                android:layout_width="0dp"
+                android:layout_height="48dp"
                 android:layout_weight="1"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                android:scaleType="fitCenter"
-                android:tint="?attr/colorAccent"
-                app:srcCompat="@drawable/ic_done" />
+                android:contentDescription="@string/ok"
+                app:icon="@drawable/ic_done"
+                app:iconPadding="0dp"
+                app:iconTint="?attr/colorAccent" />
         </LinearLayout>
     </LinearLayout>
 </ScrollView>

@@ -33,7 +33,7 @@ import androidx.annotation.Nullable;
 import com.google.android.material.snackbar.Snackbar;
 import androidx.core.content.ContextCompat;
 import androidx.core.graphics.drawable.DrawableCompat;
-import androidx.appcompat.widget.SwitchCompat;
+import com.google.android.material.materialswitch.MaterialSwitch;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -564,7 +564,7 @@ public class ProfileFragment extends RecyclerViewFragment {
             View rootView = inflater.inflate(R.layout.fragment_apply_on_boot, container, false);
 
             ((TextView) rootView.findViewById(R.id.title)).setText(getString(R.string.profile_tasker_toast));
-            SwitchCompat switchCompat = rootView.findViewById(R.id.switcher);
+            MaterialSwitch switchCompat = rootView.findViewById(R.id.switcher);
             switchCompat.setChecked(AppSettings.isShowTaskerToast(getActivity()));
             switchCompat.setOnCheckedChangeListener((compoundButton, b)
                     -> AppSettings.saveShowTaskerToast(b, getActivity()));

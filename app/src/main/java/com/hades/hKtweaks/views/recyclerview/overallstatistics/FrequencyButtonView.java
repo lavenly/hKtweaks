@@ -21,7 +21,7 @@ package com.hades.hKtweaks.views.recyclerview.overallstatistics;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
-import androidx.appcompat.widget.AppCompatImageButton;
+import com.google.android.material.button.MaterialButton;
 import android.view.View;
 import android.view.ViewPropertyAnimator;
 
@@ -44,9 +44,9 @@ public class FrequencyButtonView extends RecyclerViewItem {
 
     @Override
     public void onCreateView(View view) {
-        AppCompatImageButton refresh = view.findViewById(R.id.frequency_refresh);
-        AppCompatImageButton reset = view.findViewById(R.id.frequency_reset);
-        AppCompatImageButton restore = view.findViewById(R.id.frequency_restore);
+        MaterialButton refresh = view.findViewById(R.id.frequency_refresh);
+        MaterialButton reset = view.findViewById(R.id.frequency_reset);
+        MaterialButton restore = view.findViewById(R.id.frequency_restore);
 
         refresh.setOnClickListener(v -> {
             rotate(v, false);

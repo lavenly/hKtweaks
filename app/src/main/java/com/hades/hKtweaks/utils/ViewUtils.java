@@ -28,7 +28,6 @@ import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
-import androidx.appcompat.widget.AppCompatEditText;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.ViewGroup;
@@ -36,6 +35,8 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 
 import com.bumptech.glide.Glide;
+import com.google.android.material.textfield.TextInputEditText;
+import com.google.android.material.textfield.TextInputLayout;
 import com.hades.hKtweaks.R;
 import com.hades.hKtweaks.views.dialog.Dialog;
 
@@ -120,30 +121,17 @@ public class ViewUtils {
         int padding = (int) context.getResources().getDimension(R.dimen.dialog_padding);
         layout.setPadding(padding, padding, padding, padding);
 
-        final AppCompatEditText editText = new AppCompatEditText(context);
-        editText.setLayoutParams(new LinearLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+        final TextInputEditText editText = addTextInput(layout, hint, context);
         if (text != null) {
             editText.append(text);
         }
-        if (hint != null) {
-            editText.setHint(hint);
-        }
         editText.setSingleLine(true);
 
-        final AppCompatEditText editText2 = new AppCompatEditText(context);
-        editText2.setLayoutParams(new LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT));
+        final TextInputEditText editText2 = addTextInput(layout, hint2, context);
         if (text2 != null) {
             editText2.setText(text2);
         }
-        if (hint2 != null) {
-            editText2.setHint(hint2);
-        }
         editText2.setSingleLine(true);
-
-        layout.addView(editText);
-        layout.addView(editText2);
 
         Dialog dialog = new Dialog(context).setView(layout);
         if (negativeListener != null) {
@@ -176,10 +164,8 @@ public class ViewUtils {
         int padding = (int) context.getResources().getDimension(R.dimen.dialog_padding);
         layout.setPadding(padding, padding, padding, padding);
 
-        final AppCompatEditText editText = new AppCompatEditText(context);
+        final TextInputEditText editText = addTextInput(layout, null, context);
         editText.setGravity(Gravity.CENTER);
-        editText.setLayoutParams(new LinearLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
         if (text != null) {
             editText.append(text);
         }
@@ -187,9 +173,6 @@ public class ViewUtils {
         if (inputType >= 0) {
             editText.setInputType(inputType);
         }
-
-        layout.addView(editText);
-
         Dialog dialog = new Dialog(context).setView(layout);
         if (negativeListener != null) {
             dialog.setNegativeButton(context.getString(R.string.cancel), negativeListener);
@@ -204,6 +187,22 @@ public class ViewUtils {
                     });
         }
         return dialog;
+    }
+
+    private static TextInputEditText addTextInput(LinearLayout parent, String hint,
+                                                   Context context) {
+        TextInputLayout inputLayout = new TextInputLayout(context);
+        inputLayout.setBoxBackgroundMode(TextInputLayout.BOX_BACKGROUND_OUTLINE);
+        inputLayout.setHint(hint);
+        inputLayout.setLayoutParams(new LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+
+        TextInputEditText editText = new TextInputEditText(inputLayout.getContext());
+        editText.setLayoutParams(new LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+        inputLayout.addView(editText);
+        parent.addView(inputLayout);
+        return editText;
     }
 
     public static Dialog dialogBuilder(CharSequence message, DialogInterface.OnClickListener negativeListener,

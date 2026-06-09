@@ -20,16 +20,18 @@
 package com.hades.hKtweaks.views;
 
 import android.app.Activity;
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import androidx.annotation.Nullable;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
+import android.view.ViewAnimationUtils;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
@@ -41,9 +43,6 @@ import com.hades.hKtweaks.views.dialog.Dialog;
 
 import java.io.IOException;
 import java.io.InputStream;
-
-import io.codetail.animation.SupportAnimator;
-import io.codetail.animation.ViewAnimationUtils;
 
 /**
  * Created by willi on 28.12.15.
@@ -126,13 +125,7 @@ public class NavHeaderView extends LinearLayout {
         protected void onCreate(Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
 
-            Intent intent;
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-                intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
-            } else {
-                intent = new Intent();
-                intent.setAction(Intent.ACTION_GET_CONTENT);
-            }
+            Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
             intent.setType("image/*");
             intent.addCategory(Intent.CATEGORY_OPENABLE);
             startActivityForResult(Intent.createChooser(intent, getString(R.string.select_picture)), 0);
@@ -163,11 +156,11 @@ public class NavHeaderView extends LinearLayout {
         int cx = mImage.getWidth();
         int cy = mImage.getHeight();
 
-        SupportAnimator animator = ViewAnimationUtils.createCircularReveal(mImage, cx, cy, 0, Math.max(cx, cy));
-        animator.addListener(new SupportAnimator.SimpleAnimatorListener() {
+        Animator animator = ViewAnimationUtils.createCircularReveal(
+                mImage, cx, cy, 0, Math.max(cx, cy));
+        animator.addListener(new AnimatorListenerAdapter() {
             @Override
-            public void onAnimationStart() {
-                super.onAnimationStart();
+            public void onAnimationStart(Animator animation) {
                 mImage.setVisibility(VISIBLE);
             }
         });
@@ -191,8 +184,8 @@ public class NavHeaderView extends LinearLayout {
     }
 
     private static Bitmap uriToBitmap(Uri uri, Context context) throws IOException {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
-            context.getContentResolver().takePersistableUriPermission(uri, Intent.FLAG_GRANT_READ_URI_PERMISSION);
+        context.getContentResolver()
+                .takePersistableUriPermission(uri, Intent.FLAG_GRANT_READ_URI_PERMISSION);
         InputStream inputStream = context.getContentResolver().openInputStream(uri);
         if (inputStream != null) {
             Bitmap bitmap = BitmapFactory.decodeStream(inputStream);

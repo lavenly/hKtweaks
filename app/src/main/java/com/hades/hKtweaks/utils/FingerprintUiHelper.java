@@ -15,19 +15,24 @@
  */
 package com.hades.hKtweaks.utils;
 
+import android.annotation.SuppressLint;
 import androidx.core.hardware.fingerprint.FingerprintManagerCompat;
 import androidx.core.os.CancellationSignal;
 
-import com.mattprecious.swirl.SwirlView;
+import android.view.View;
 
+import com.google.android.material.color.MaterialColors;
+import com.google.android.material.progressindicator.CircularProgressIndicator;
+import com.hades.hKtweaks.R;
 /**
  * Small helper class to manage text/icon around fingerprint authentication UI.
  */
+@SuppressLint("RestrictedApi")
 public class FingerprintUiHelper extends FingerprintManagerCompat.AuthenticationCallback {
 
     private boolean mListening;
     private final FingerprintManagerCompat mFingerprintManagerCompat;
-    private final SwirlView mSwirlView;
+    private final CircularProgressIndicator mIndicator;
     private final Callback mCallback;
     private CancellationSignal mCancellationSignal;
 
@@ -44,8 +49,8 @@ public class FingerprintUiHelper extends FingerprintManagerCompat.Authentication
             mFingerprintManagerCompat = fingerprintManagerCompat;
         }
 
-        public FingerprintUiHelper build(SwirlView swirlView, Callback callback) {
-            return new FingerprintUiHelper(mFingerprintManagerCompat, swirlView, callback);
+        public FingerprintUiHelper build(CircularProgressIndicator indicator, Callback callback) {
+            return new FingerprintUiHelper(mFingerprintManagerCompat, indicator, callback);
         }
     }
 
@@ -53,10 +58,11 @@ public class FingerprintUiHelper extends FingerprintManagerCompat.Authentication
      * Constructor for {@link FingerprintUiHelper}. This method is expected to be called from
      * only the {@link FingerprintUiHelperBuilder} class.
      */
-    private FingerprintUiHelper(FingerprintManagerCompat fingerprintManagerCompat, SwirlView swirlView,
+    private FingerprintUiHelper(FingerprintManagerCompat fingerprintManagerCompat,
+                                CircularProgressIndicator indicator,
                                 Callback callback) {
         mFingerprintManagerCompat = fingerprintManagerCompat;
-        mSwirlView = swirlView;
+        mIndicator = indicator;
         mCallback = callback;
     }
 
@@ -67,7 +73,9 @@ public class FingerprintUiHelper extends FingerprintManagerCompat.Authentication
             mSelfCancelled = false;
             mFingerprintManagerCompat
                     .authenticate(cryptoObject, 0, mCancellationSignal, this, null);
-            mSwirlView.setState(SwirlView.State.ON);
+            mIndicator.setIndicatorColor(MaterialColors.getColor(mIndicator,
+                    R.attr.colorPrimary));
+            mIndicator.setVisibility(View.VISIBLE);
         }
     }
 
@@ -100,12 +108,13 @@ public class FingerprintUiHelper extends FingerprintManagerCompat.Authentication
 
     @Override
     public void onAuthenticationSucceeded(FingerprintManagerCompat.AuthenticationResult result) {
-        mSwirlView.setState(SwirlView.State.OFF);
-        mSwirlView.postDelayed(mCallback::onAuthenticated, 100);
+        mIndicator.setVisibility(View.INVISIBLE);
+        mIndicator.postDelayed(mCallback::onAuthenticated, 100);
     }
 
-    private void showError() {
-        mSwirlView.setState(SwirlView.State.ERROR);
+    public void showError() {
+        mIndicator.setIndicatorColor(MaterialColors.getColor(mIndicator,
+                R.attr.colorError));
     }
 
     public interface Callback {

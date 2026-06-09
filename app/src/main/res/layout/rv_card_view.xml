@@ -1,13 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    style="@style/Widget.Material3.CardView.Elevated"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:focusable="false"
     android:foreground="?attr/selectableItemBackground"
-    app:cardCornerRadius="@dimen/cardview_radius"
-    app:cardElevation="@dimen/cardview_elevation"
-    app:cardBackgroundColor="?colorSecondary"
     app:cardUseCompatPadding="true">
 
     <LinearLayout
@@ -37,7 +35,7 @@
                     android:textColor="?android:attr/textColorSecondary"
                     android:textSize="18sp" />
 
-                <androidx.appcompat.widget.AppCompatImageView
+                <com.google.android.material.imageview.ShapeableImageView
                     android:id="@+id/arrow_image"
                     android:layout_width="20dp"
                     android:layout_height="20dp"
@@ -61,21 +59,22 @@
                 android:paddingLeft="10dp"
                 android:paddingRight="10dp" />
 
-            <androidx.appcompat.widget.AppCompatImageButton
+            <com.google.android.material.button.MaterialButton
+                style="@style/Widget.Material3Expressive.Button.IconButton.Standard"
                 android:id="@+id/menu_button"
-                android:layout_width="30dp"
-                android:layout_height="20dp"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
                 android:layout_gravity="end"
                 android:layout_marginBottom="10dp"
                 android:layout_marginLeft="10dp"
                 android:layout_marginRight="10dp"
                 android:layout_marginTop="5dp"
-                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="@string/more"
                 android:rotation="90"
-                android:scaleType="fitCenter"
-                android:tint="?android:attr/textColorSecondary"
                 android:visibility="gone"
-                app:srcCompat="@drawable/ic_dots" />
+                app:icon="@drawable/ic_dots"
+                app:iconPadding="0dp"
+                app:iconTint="?android:attr/textColorSecondary" />
         </LinearLayout>
     </LinearLayout>
-</androidx.cardview.widget.CardView>
+</com.google.android.material.card.MaterialCardView>

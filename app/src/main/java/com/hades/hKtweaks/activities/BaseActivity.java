@@ -28,9 +28,9 @@ import android.os.Bundle;
 import android.os.LocaleList;
 import androidx.annotation.Nullable;
 import com.google.android.material.appbar.AppBarLayout;
+import com.google.android.material.appbar.MaterialToolbar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
-import androidx.appcompat.widget.Toolbar;
 import android.view.Window;
 import android.view.WindowManager;
 
@@ -108,12 +108,12 @@ public abstract class BaseActivity extends AppCompatActivity {
         return findViewById(R.id.appbarlayout);
     }
 
-    public Toolbar getToolBar() {
+    public MaterialToolbar getToolBar() {
         return findViewById(R.id.toolbar);
     }
 
     public void initToolBar() {
-        Toolbar toolbar = getToolBar();
+        MaterialToolbar toolbar = getToolBar();
         if (toolbar != null) {
             setSupportActionBar(toolbar);
             toolbar.setNavigationOnClickListener(v -> finish());
