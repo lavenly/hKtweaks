@@ -27,10 +27,11 @@ import com.google.android.material.tabs.TabLayout;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentStatePagerAdapter;
-import androidx.viewpager.widget.ViewPager;
+import androidx.viewpager2.adapter.FragmentStateAdapter;
+import androidx.viewpager2.widget.ViewPager2;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.checkbox.MaterialCheckBox;
+import com.google.android.material.tabs.TabLayoutMediator;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -134,7 +135,7 @@ public class ProfileActivity extends BaseActivity {
         Control.clearProfileCommands();
         Control.setProfileMode(true);
 
-        final ViewPager viewPager = findViewById(R.id.viewpager);
+        final ViewPager2 viewPager = findViewById(R.id.viewpager);
 
         if (savedInstanceState != null) {
             mHideWarningDialog = savedInstanceState.getBoolean("hidewarningdialog");
@@ -145,27 +146,17 @@ public class ProfileActivity extends BaseActivity {
                     }, dialog -> mHideWarningDialog = true, this).show();
         }
 
-        viewPager.setOffscreenPageLimit(mItems.size());
-        PagerAdapter pagerAdapter = new PagerAdapter(getSupportFragmentManager(), mItems);
+        viewPager.setOffscreenPageLimit(Math.max(1, mItems.size()));
+        PagerAdapter pagerAdapter = new PagerAdapter(mItems);
         viewPager.setAdapter(pagerAdapter);
 
         TabLayout tabLayout = findViewById(R.id.tablayout);
-        tabLayout.setupWithViewPager(viewPager);
-
-        viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
-        viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
-            @Override
-            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-                mCurPosition = position;
-            }
-
+        new TabLayoutMediator(tabLayout, viewPager,
+                (tab, position) -> tab.setText(pagerAdapter.getPageTitle(position))).attach();
+        viewPager.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
             @Override
             public void onPageSelected(int position) {
                 mCurPosition = position;
-            }
-
-            @Override
-            public void onPageScrollStateChanged(int state) {
             }
         });
 
@@ -216,27 +207,27 @@ public class ProfileActivity extends BaseActivity {
         }
     }
 
-    private class PagerAdapter extends FragmentStatePagerAdapter {
+    private class PagerAdapter extends FragmentStateAdapter {
 
         private final LinkedHashMap<String, Fragment> mFragments;
 
-        private PagerAdapter(FragmentManager fm, LinkedHashMap<String, Fragment> fragments) {
-            super(fm);
+        private PagerAdapter(LinkedHashMap<String, Fragment> fragments) {
+            super(ProfileActivity.this);
             mFragments = fragments;
         }
 
+        @NonNull
         @Override
-        public Fragment getItem(int position) {
+        public Fragment createFragment(int position) {
             return mFragments.get(mFragments.keySet().toArray(new String[mFragments.size()])[position]);
         }
 
         @Override
-        public int getCount() {
+        public int getItemCount() {
             return mFragments.size();
         }
 
-        @Override
-        public CharSequence getPageTitle(int position) {
+        private CharSequence getPageTitle(int position) {
             return mFragments.keySet().toArray(new String[mFragments.size()])[position];
         }
     }

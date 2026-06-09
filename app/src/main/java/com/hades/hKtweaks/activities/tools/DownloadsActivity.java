@@ -20,12 +20,13 @@
 package com.hades.hKtweaks.activities.tools;
 
 import android.os.Bundle;
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import com.google.android.material.tabs.TabLayout;
+import com.google.android.material.tabs.TabLayoutMediator;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentStatePagerAdapter;
-import androidx.viewpager.widget.ViewPager;
+import androidx.viewpager2.adapter.FragmentStateAdapter;
+import androidx.viewpager2.widget.ViewPager2;
 
 import com.hades.hKtweaks.R;
 import com.hades.hKtweaks.activities.BaseActivity;
@@ -55,7 +56,7 @@ public class DownloadsActivity extends BaseActivity {
         SupportedDownloads.KernelContent content = new SupportedDownloads.KernelContent(getIntent().getStringExtra(JSON_INTENT));
         getSupportActionBar().setTitle(Utils.htmlFrom(content.getName()).toString());
 
-        final ViewPager viewPager = findViewById(R.id.viewpager);
+        final ViewPager2 viewPager = findViewById(R.id.viewpager);
 
         LinkedHashMap<String, Fragment> items = new LinkedHashMap<>();
 
@@ -74,37 +75,36 @@ public class DownloadsActivity extends BaseActivity {
             items.put(getString(R.string.downloads), DownloadKernelFragment.newInstance(downloads));
         }
 
-        viewPager.setOffscreenPageLimit(items.size());
-        PagerAdapter pagerAdapter = new PagerAdapter(getSupportFragmentManager(), items);
+        viewPager.setOffscreenPageLimit(Math.max(1, items.size()));
+        PagerAdapter pagerAdapter = new PagerAdapter(items);
         viewPager.setAdapter(pagerAdapter);
 
         TabLayout tabLayout = findViewById(R.id.tablayout);
-        tabLayout.setupWithViewPager(viewPager);
-
-        viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
+        new TabLayoutMediator(tabLayout, viewPager,
+                (tab, position) -> tab.setText(pagerAdapter.getPageTitle(position))).attach();
     }
 
-    private class PagerAdapter extends FragmentStatePagerAdapter {
+    private class PagerAdapter extends FragmentStateAdapter {
 
         private final LinkedHashMap<String, Fragment> mFragments;
 
-        private PagerAdapter(FragmentManager fm, LinkedHashMap<String, Fragment> fragments) {
-            super(fm);
+        private PagerAdapter(LinkedHashMap<String, Fragment> fragments) {
+            super(DownloadsActivity.this);
             mFragments = fragments;
         }
 
+        @NonNull
         @Override
-        public Fragment getItem(int position) {
+        public Fragment createFragment(int position) {
             return mFragments.get(mFragments.keySet().toArray(new String[mFragments.size()])[position]);
         }
 
         @Override
-        public int getCount() {
+        public int getItemCount() {
             return mFragments.size();
         }
 
-        @Override
-        public CharSequence getPageTitle(int position) {
+        private CharSequence getPageTitle(int position) {
             return mFragments.keySet().toArray(new String[mFragments.size()])[position];
         }
 
