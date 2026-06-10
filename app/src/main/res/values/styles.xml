@@ -11,6 +11,7 @@
         <item name="android:textColorPrimaryInverse">?attr/colorOnSurfaceInverse</item>
         <item name="android:textAlignment">gravity</item>
         <item name="android:textDirection">locale</item>
+        <item name="android:textViewStyle">@style/Widget.hKtweaks.Material3Expressive.TextView</item>
         <item name="colorAccent">?attr/colorPrimary</item>
         <item name="dynamicColorThemeOverlay">@null</item>
         <item name="dim_dialog_background">@color/dim_foreground_disabled_material_dark</item>
@@ -27,6 +28,7 @@
         <item name="android:textColorPrimaryInverse">?attr/colorOnSurfaceInverse</item>
         <item name="android:textAlignment">gravity</item>
         <item name="android:textDirection">locale</item>
+        <item name="android:textViewStyle">@style/Widget.hKtweaks.Material3Expressive.TextView</item>
         <item name="colorAccent">?attr/colorPrimary</item>
         <item name="dynamicColorThemeOverlay">@null</item>
         <item name="dim_dialog_background">@color/dim_foreground_disabled_material_light</item>
@@ -57,6 +59,11 @@
         <item name="navigationIconTint">?attr/colorOnSurface</item>
         <item name="subtitleTextColor">?attr/colorOnSurfaceVariant</item>
         <item name="titleTextColor">?attr/colorOnSurface</item>
+    </style>
+
+    <style name="Widget.hKtweaks.Material3Expressive.TextView"
+        parent="Widget.MaterialComponents.TextView">
+        <item name="android:textAppearance">@style/TextAppearance.hKtweaks.Body</item>
     </style>
 
     <style name="Widget.hKtweaks.Material3Expressive.IconButton.Standard"
@@ -111,13 +118,13 @@
         <item name="colorControlNormal">@color/white</item>
         <item name="colorControlActivated">?attr/colorPrimary</item>
         <item name="android:textColor">@color/white</item>
-        <item name="android:textSize">14sp</item>
+        <item name="android:textAppearance">@style/TextAppearance.hKtweaks.Body</item>
     </style>
 
     <style name="PreferenceThemeOverlay.hKtweaks.Material3" parent="PreferenceThemeOverlay">
         <item name="preferenceStyle">@style/Preference.hKtweaks.Material3</item>
         <item name="preferenceCategoryStyle">@style/Preference.Category.hKtweaks.Material3</item>
-        <item name="preferenceCategoryTitleTextAppearance">@style/TextAppearance.Material3.TitleSmall</item>
+        <item name="preferenceCategoryTitleTextAppearance">@style/TextAppearance.hKtweaks.ItemTitleSmall</item>
     </style>
 
     <style name="Preference.hKtweaks.Material3" parent="Preference.Material">
@@ -137,6 +144,51 @@
     <style name="ShapeAppearanceOverlay.hKtweaks.Circle" parent="">
         <item name="cornerFamily">rounded</item>
         <item name="cornerSize">50%</item>
+    </style>
+
+    <style name="TextAppearance.hKtweaks.ScreenTitle"
+        parent="TextAppearance.Material3.TitleLarge.Emphasized" />
+
+    <style name="TextAppearance.hKtweaks.SectionTitle"
+        parent="TextAppearance.Material3.TitleMedium.Emphasized" />
+
+    <style name="TextAppearance.hKtweaks.ItemTitle"
+        parent="TextAppearance.Material3.TitleMedium" />
+
+    <style name="TextAppearance.hKtweaks.ItemTitle.Emphasized"
+        parent="TextAppearance.Material3.TitleMedium.Emphasized" />
+
+    <style name="TextAppearance.hKtweaks.ItemTitleSmall"
+        parent="TextAppearance.Material3.TitleSmall" />
+
+    <style name="TextAppearance.hKtweaks.Body"
+        parent="TextAppearance.Material3.BodyMedium" />
+
+    <style name="TextAppearance.hKtweaks.BodyLarge"
+        parent="TextAppearance.Material3.BodyLarge" />
+
+    <style name="TextAppearance.hKtweaks.Body.Emphasized"
+        parent="TextAppearance.Material3.BodyMedium.Emphasized" />
+
+    <style name="TextAppearance.hKtweaks.Supporting"
+        parent="TextAppearance.Material3.BodySmall" />
+
+    <style name="TextAppearance.hKtweaks.Supporting.Emphasized"
+        parent="TextAppearance.Material3.BodySmall.Emphasized" />
+
+    <style name="TextAppearance.hKtweaks.Label"
+        parent="TextAppearance.Material3.LabelMedium" />
+
+    <style name="TextAppearance.hKtweaks.Label.Emphasized"
+        parent="TextAppearance.Material3.LabelMedium.Emphasized" />
+
+    <style name="TextAppearance.hKtweaks.LabelSmall"
+        parent="TextAppearance.Material3.LabelSmall" />
+
+    <style name="TextAppearance.hKtweaks.Code"
+        parent="TextAppearance.Material3.BodySmall">
+        <item name="fontFamily">monospace</item>
+        <item name="android:fontFamily">monospace</item>
     </style>
 
     <style name="TextAppearance.hKtweaks.NavigationItem"

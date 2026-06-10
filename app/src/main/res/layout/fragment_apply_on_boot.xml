@@ -12,8 +12,9 @@
         android:layout_height="wrap_content"
         android:gravity="center"
         android:text="@string/apply_on_boot"
+        android:textAppearance="@style/TextAppearance.hKtweaks.SectionTitle"
         android:textColor="?attr/colorOnPrimaryContainer"
-        android:textSize="16sp" />
+        />
 
     <com.google.android.material.materialswitch.MaterialSwitch
         android:id="@+id/switcher"

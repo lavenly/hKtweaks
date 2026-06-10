@@ -16,6 +16,7 @@
             android:id="@+id/title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:textAppearance="@style/TextAppearance.hKtweaks.ItemTitle"
             android:textColor="?android:attr/textColorPrimary" />
 
         <LinearLayout
@@ -28,7 +29,8 @@
                 android:id="@+id/summary"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1" />
+                android:layout_weight="1"
+                android:textAppearance="@style/TextAppearance.hKtweaks.Body" />
 
             <LinearLayout
                 android:id="@+id/value_parent"
@@ -51,6 +53,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:gravity="center_vertical"
+                    android:textAppearance="@style/TextAppearance.hKtweaks.Body.Emphasized"
                     android:visibility="gone" />
 
                 <com.google.android.material.progressindicator.CircularProgressIndicator

@@ -30,13 +30,15 @@
                     android:id="@+id/title"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:textAppearance="@style/TextAppearance.hKtweaks.ItemTitle"
                     android:textColor="?android:attr/textColorPrimary" />
 
                 <TextView
                     android:id="@+id/summary"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="2dp" />
+                    android:layout_marginTop="2dp"
+                    android:textAppearance="@style/TextAppearance.hKtweaks.Body" />
 
             </LinearLayout>
 

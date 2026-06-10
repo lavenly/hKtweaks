@@ -19,8 +19,8 @@
         android:gravity="center"
         android:text="@string/offline"
         android:textAllCaps="true"
+        android:textAppearance="@style/TextAppearance.hKtweaks.ItemTitle.Emphasized"
         android:textColor="?attr/colorOnPrimaryContainer"
-        android:textSize="16sp"
         android:visibility="gone"
         android:singleLine="true" />
 
@@ -30,8 +30,9 @@
         android:layout_height="wrap_content"
         android:focusable="false"
         android:padding="3dp"
+        android:textAppearance="@style/TextAppearance.hKtweaks.Label"
         android:textColor="?attr/colorOnPrimaryContainer"
-        android:textSize="12sp" />
+        />
 
     <TextView
         android:id="@+id/usage_freq_text"
@@ -40,8 +41,9 @@
         android:layout_gravity="center_horizontal"
         android:focusable="false"
         android:padding="3dp"
+        android:textAppearance="@style/TextAppearance.hKtweaks.Label"
         android:textColor="?attr/colorOnPrimaryContainer"
-        android:textSize="12sp" />
+        />
 
     <TextView
         android:id="@+id/usage_core_text"
@@ -50,6 +52,7 @@
         android:layout_gravity="end"
         android:focusable="false"
         android:padding="3dp"
+        android:textAppearance="@style/TextAppearance.hKtweaks.Label"
         android:textColor="?attr/colorOnPrimaryContainer"
-        android:textSize="12sp" />
+        />
 </FrameLayout>

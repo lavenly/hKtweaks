@@ -18,8 +18,9 @@
         android:paddingLeft="38dp"
         android:paddingStart="38dp"
         android:text="@string/checking_info"
+        android:textAppearance="@style/TextAppearance.hKtweaks.ScreenTitle"
         android:textColor="?attr/colorOnPrimaryContainer"
-        android:textSize="22sp" />
+        />
 
     <FrameLayout
         android:layout_width="match_parent"
@@ -37,21 +38,24 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:padding="20dp"
-                android:text="@string/checking_root" />
+                android:text="@string/checking_root"
+                android:textAppearance="@style/TextAppearance.hKtweaks.BodyLarge" />
 
             <TextView
                 android:id="@+id/busybox_text"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:padding="20dp"
-                android:text="@string/searching_busybox" />
+                android:text="@string/searching_busybox"
+                android:textAppearance="@style/TextAppearance.hKtweaks.BodyLarge" />
 
             <TextView
                 android:id="@+id/info_collect_text"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:padding="20dp"
-                android:text="@string/collecting_info" />
+                android:text="@string/collecting_info"
+                android:textAppearance="@style/TextAppearance.hKtweaks.BodyLarge" />
 
         </LinearLayout>
 

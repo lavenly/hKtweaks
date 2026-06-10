@@ -25,8 +25,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="5dp"
-            android:text="@string/select_all"
-            android:textSize="12sp" />
+            android:text="@string/select_all" />
 
         <LinearLayout
             android:layout_width="match_parent"

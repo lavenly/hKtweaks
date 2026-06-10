@@ -10,5 +10,6 @@
     android:paddingRight="10dp"
     android:paddingStart="10dp"
     android:paddingTop="10dp"
+    android:textAppearance="@style/TextAppearance.hKtweaks.SectionTitle"
     android:textIsSelectable="true"
-    android:textSize="18sp" />
+    />

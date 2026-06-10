@@ -28,7 +28,7 @@
             android:gravity="center"
             android:padding="10dp"
             android:text="@string/ad_here"
-            android:textSize="18sp"
+            android:textAppearance="@style/TextAppearance.hKtweaks.SectionTitle"
             android:visibility="gone" />
 
         <com.google.android.material.progressindicator.CircularProgressIndicator

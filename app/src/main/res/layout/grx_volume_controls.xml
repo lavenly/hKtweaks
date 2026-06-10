@@ -20,7 +20,7 @@
             <TextView
                 android:paddingTop="15dp"
                 android:paddingBottom="8dp"
-                android:textSize="15sp"
+                android:textAppearance="@style/TextAppearance.hKtweaks.ItemTitle"
                 android:gravity="center"
                 android:text="@string/headphones_volume"
                 android:textColor="?attr/colorSecondary"
@@ -122,7 +122,7 @@
                 <TextView
                     android:layout_gravity="center"
                     android:gravity="center"
-                    android:textSize="15sp"
+                    android:textAppearance="@style/TextAppearance.hKtweaks.ItemTitle"
                     android:textColor="?attr/colorSecondary"
                     android:text="@string/speaker_gain"
                     android:layout_width="match_parent"
@@ -156,7 +156,7 @@
                 <TextView
                     android:layout_gravity="center"
                     android:gravity="center"
-                    android:textSize="15sp"
+                    android:textAppearance="@style/TextAppearance.hKtweaks.ItemTitle"
                     android:textColor="?attr/colorSecondary"
                     android:text="@string/earpiece_gain"
                     android:layout_width="match_parent"

@@ -8,5 +8,5 @@
     android:paddingTop="12dp"
     android:paddingEnd="16dp"
     android:paddingBottom="8dp"
-    android:textAppearance="@style/TextAppearance.Material3.TitleSmall"
+    android:textAppearance="@style/TextAppearance.hKtweaks.ItemTitleSmall"
     android:textColor="?attr/colorPrimary" />

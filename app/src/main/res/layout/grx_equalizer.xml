@@ -20,6 +20,7 @@
             android:text="@string/arizona_eq_sw"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:textAppearance="@style/TextAppearance.hKtweaks.ItemTitle"
             android:textColor="?android:attr/textColorPrimary" />
 
         <LinearLayout
@@ -32,7 +33,8 @@
                 android:id="@+id/summary"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="1" />
+                android:layout_weight="1"
+                android:textAppearance="@style/TextAppearance.hKtweaks.Body" />
 
             <com.google.android.material.materialswitch.MaterialSwitch
                 android:id="@+id/switcher"
@@ -58,6 +60,7 @@
             android:text="@string/eq_profile"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:textAppearance="@style/TextAppearance.hKtweaks.ItemTitleSmall"
             android:textColor="?android:attr/textColorPrimary" />
 
         <LinearLayout
@@ -73,7 +76,8 @@
                 android:layout_width="0dp"
                 android:layout_weight="1"
                 android:layout_gravity="center_vertical"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                android:textAppearance="@style/TextAppearance.hKtweaks.Body.Emphasized" />
 
             <com.google.android.material.button.MaterialButton
                 style="@style/Widget.hKtweaks.Material3Expressive.IconButton.Filled"

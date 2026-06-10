@@ -31,13 +31,15 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:focusable="false"
+                android:textAppearance="@style/TextAppearance.hKtweaks.ItemTitle"
                 android:textColor="?android:attr/textColorPrimary" />
 
             <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/summary"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:focusable="false" />
+                android:focusable="false"
+                android:textAppearance="@style/TextAppearance.hKtweaks.Body" />
 
         </LinearLayout>
 

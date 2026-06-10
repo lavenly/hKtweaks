@@ -11,8 +11,7 @@
         android:layout_height="wrap_content"
         android:ellipsize="end"
         android:maxLines="1"
-        android:textSize="12sp"
-        android:textStyle="bold" />
+        android:textAppearance="@style/TextAppearance.hKtweaks.Label.Emphasized" />
 
     <com.google.android.material.textfield.TextInputLayout
         style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
@@ -24,7 +23,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:maxLines="1"
-            android:textSize="16sp" />
+            android:textAppearance="@style/TextAppearance.hKtweaks.BodyLarge" />
 
     </com.google.android.material.textfield.TextInputLayout>
 </LinearLayout>

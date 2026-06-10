@@ -25,8 +25,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
+                android:textAppearance="@style/TextAppearance.hKtweaks.Label"
                 android:textColor="?android:attr/textColorPrimary"
-                android:textSize="12sp" />
+                />
 
             <TextView
                 android:id="@+id/percentage"
@@ -34,7 +35,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:gravity="end"
-                android:textSize="12sp" />
+                android:textAppearance="@style/TextAppearance.hKtweaks.Label" />
 
             <TextView
                 android:id="@+id/duration"
@@ -42,7 +43,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:gravity="end"
-                android:textSize="12sp" />
+                android:textAppearance="@style/TextAppearance.hKtweaks.Label" />
 
         </LinearLayout>
 

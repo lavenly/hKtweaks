@@ -106,8 +106,9 @@
                     android:paddingLeft="16dp"
                     android:paddingRight="16dp"
                     android:paddingStart="16dp"
+                    android:textAppearance="@style/TextAppearance.hKtweaks.SectionTitle"
                     android:textColor="?attr/colorOnSurface"
-                    android:textSize="17sp" />
+                    />
 
                 <FrameLayout
                     android:id="@+id/foreground_content"
