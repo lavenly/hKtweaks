@@ -27,6 +27,7 @@ import com.hades.hKtweaks.fragments.ApplyOnBootFragment;
 import com.hades.hKtweaks.fragments.recyclerview.RecyclerViewFragment;
 import com.hades.hKtweaks.utils.AppSettings;
 import com.hades.hKtweaks.utils.Device;
+import com.hades.hKtweaks.utils.ViewUtils;
 import com.hades.hKtweaks.utils.kernel.vm.VM;
 import com.hades.hKtweaks.utils.kernel.vm.ZRAM;
 import com.hades.hKtweaks.utils.kernel.vm.ZSwap;
@@ -85,7 +86,7 @@ public class VMFragment extends RecyclerViewFragment {
         swap.setTitle("SWAP");
         swap.setItems(swap_total, swap_progress);
         swap.setUnit(getResources().getString(R.string.mb));
-        swap.setProgressColor(getResources().getColor(R.color.blueAccent));
+        swap.setProgressColor(ViewUtils.getColorSecondaryColor(requireContext()));
         card.addItem(swap);
 
         long mem_total = mMemInfo.getItemMb("MemTotal");
@@ -95,7 +96,7 @@ public class VMFragment extends RecyclerViewFragment {
         mem.setTitle("RAM");
         mem.setItems(mem_total, mem_progress);
         mem.setUnit(getResources().getString(R.string.mb));
-        mem.setProgressColor(getResources().getColor(R.color.orangeAccent));
+        mem.setProgressColor(ViewUtils.getThemeColor(requireContext(), R.attr.colorTertiary));
         card.addItem(mem);
         card.setFullSpan(true);
         items.add(card);

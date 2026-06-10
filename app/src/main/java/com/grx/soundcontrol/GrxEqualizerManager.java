@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.res.ColorStateList;
 import android.content.res.TypedArray;
-import android.util.TypedValue;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.Toast;
@@ -35,7 +34,7 @@ public class GrxEqualizerManager extends RecyclerViewItem
 
     private boolean mMainSwitchEnabled=false;
 
-    private int mAccentColor;
+    private int mThemeColor;
 
     private LinearLayout mSwitchContainer;
     private MaterialSwitch mEqSwitch;
@@ -66,7 +65,7 @@ public class GrxEqualizerManager extends RecyclerViewItem
     @Override
     public void onCreateView(View view) {
         mContext = view.getContext();
-        setAccentColor();
+        setThemeColor();
         initEqProfilesList();
 
 
@@ -91,7 +90,7 @@ public class GrxEqualizerManager extends RecyclerViewItem
 
         mButtonCurrentProfile = view.findViewById(R.id.button_eq_profile);
         mButtonCurrentProfile.setAllCaps(false);
-        mButtonCurrentProfile.setTextColor(mAccentColor);
+        mButtonCurrentProfile.setTextColor(mThemeColor);
 
         mButtonCurrentProfile.setOnClickListener(v -> showProfileSelectionDialog());
 
@@ -110,10 +109,9 @@ public class GrxEqualizerManager extends RecyclerViewItem
         updateEqSwitch();
     }
 
-    private void setAccentColor(){
-        TypedValue typedValue = new TypedValue();
-        TypedArray b = mContext.obtainStyledAttributes(typedValue.data, new int[] { android.R.attr.colorAccent });
-        mAccentColor = b.getColor(0, 0);
+    private void setThemeColor(){
+        TypedArray b = mContext.obtainStyledAttributes(new int[]{R.attr.colorSecondary});
+        mThemeColor = b.getColor(0, 0);
         b.recycle();
     }
 

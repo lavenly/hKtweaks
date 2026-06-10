@@ -62,13 +62,9 @@
             android:summary="@string/force_cards_summary"
             android:title="@string/force_cards" />
         <Preference
-            android:key="primary_color"
-            android:title="@string/primary_color"
-            android:widgetLayout="@layout/preference_primary_color_view" />
-        <Preference
-            android:key="accent_color"
-            android:title="@string/accent_color"
-            android:widgetLayout="@layout/preference_accent_color_view" />
+            android:key="theme_color"
+            android:title="@string/theme_color"
+            android:widgetLayout="@layout/preference_theme_color_view" />
         <com.hades.hKtweaks.views.preference.MaterialSwitchPreference
             android:defaultValue="true"
             android:key="section_icons"

@@ -12,7 +12,7 @@
         android:layout_marginBottom="10dp"
         android:gravity="center"
         android:text="@string/global_offset"
-        android:textColor="@color/white"
+        android:textColor="?attr/colorOnPrimaryContainer"
         android:textSize="20sp" />
 
     <RelativeLayout
@@ -30,7 +30,7 @@
             android:layout_toStartOf="@+id/offset"
             android:gravity="center"
             android:text="@string/minus"
-            android:textColor="@color/white" />
+            android:textColor="?attr/colorOnPrimaryContainer" />
 
         <TextView
             android:id="@+id/offset"
@@ -41,7 +41,7 @@
             android:layout_marginLeft="16dp"
             android:layout_marginRight="16dp"
             android:gravity="center"
-            android:textColor="@color/white" />
+            android:textColor="?attr/colorOnPrimaryContainer" />
 
         <com.google.android.material.button.MaterialButton
             style="@style/Widget.Material3Expressive.Button.TextButton"
@@ -53,6 +53,6 @@
             android:layout_toRightOf="@+id/offset"
             android:gravity="center"
             android:text="@string/plus"
-            android:textColor="@color/white" />
+            android:textColor="?attr/colorOnPrimaryContainer" />
     </RelativeLayout>
 </LinearLayout>

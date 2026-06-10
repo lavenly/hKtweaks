@@ -23,6 +23,7 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
+import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
@@ -45,6 +46,7 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import com.google.android.material.color.MaterialColors;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 import com.hades.hKtweaks.R;
@@ -84,8 +86,7 @@ public class SettingsFragment extends PreferenceFragmentCompat implements
     //private static final String KEY_MATERIAL_ICON = "materialicon";
     private static final String KEY_BANNER_RESIZER = "banner_resizer";
     private static final String KEY_HIDE_BANNER = "hide_banner";
-    private static final String KEY_PRIMARY_COLOR = "primary_color";
-    private static final String KEY_ACCENT_COLOR = "accent_color";
+    private static final String KEY_THEME_COLOR = "theme_color";
     private static final String KEY_SECTIONS_ICON = "section_icons";
     private static final String KEY_APPLY_ON_BOOT_TEST = "applyonboottest";
     private static final String KEY_DEBUGGING_CATEGORY = "debugging_category";
@@ -167,8 +168,7 @@ public class SettingsFragment extends PreferenceFragmentCompat implements
         darkThemeMode.setOnPreferenceChangeListener(this);
         findPreference(KEY_BANNER_RESIZER).setOnPreferenceClickListener(this);
         findPreference(KEY_HIDE_BANNER).setOnPreferenceChangeListener(this);
-        findPreference(KEY_PRIMARY_COLOR).setOnPreferenceClickListener(this);
-        findPreference(KEY_ACCENT_COLOR).setOnPreferenceClickListener(this);
+        findPreference(KEY_THEME_COLOR).setOnPreferenceClickListener(this);
         findPreference(KEY_SECTIONS_ICON).setOnPreferenceChangeListener(this);
         findPreference(KEY_APPLY_ON_BOOT_TEST).setOnPreferenceClickListener(this);
         findPreference(KEY_LOGCAT).setOnPreferenceClickListener(this);
@@ -297,11 +297,8 @@ public class SettingsFragment extends PreferenceFragmentCompat implements
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 startActivity(intent);
                 return true;
-            case KEY_PRIMARY_COLOR:
-                colorDialog(true);
-                return true;
-            case KEY_ACCENT_COLOR:
-                colorDialog(false);
+            case KEY_THEME_COLOR:
+                colorDialog();
                 return true;
             case KEY_APPLY_ON_BOOT_TEST:
                 if (Utils.isServiceRunning(ApplyOnBootService.class, getActivity())) {
@@ -490,22 +487,12 @@ public class SettingsFragment extends PreferenceFragmentCompat implements
         return editText;
     }
 
-    private void colorDialog(boolean primaryColor) {
+    private void colorDialog() {
         mColorSelection = -1;
-        List<String> colors = new ArrayList<>(primaryColor ?
-                Themes.sPrimaryColors : Themes.sAccentColors);
-        String counterPartColor = primaryColor ?
-                Themes.getAccentColor(getActivity()) : Themes.getPrimaryColor(getActivity());
-        String counterPartColorName = counterPartColor.replaceAll("[A-Z].+", "");
-        for (int i = 0; i < colors.size(); i++) {
-            if (colors.get(i).contains(counterPartColorName)) {
-                colors.remove(i);
-                break;
-            }
-        }
-
-        int selection = colors.indexOf(primaryColor ?
-                Themes.getPrimaryColor(getActivity()) : Themes.getAccentColor(getActivity()));
+        List<String> colors = new ArrayList<>(Themes.THEME_COLORS);
+        int selection = colors.indexOf(Themes.getThemeColor(getActivity()));
+        int outlineColor = MaterialColors.getColor(requireContext(),
+                R.attr.colorOutline, ContextCompat.getColor(requireContext(), R.color.textcolor_light));
         LinearLayout linearLayout = new LinearLayout(getActivity());
         linearLayout.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT));
@@ -526,10 +513,12 @@ public class SettingsFragment extends PreferenceFragmentCompat implements
 
             BorderCircleView circle = new BorderCircleView(getActivity());
             circle.setChecked(i == selection);
-            circle.setCircleColor(ContextCompat.getColor(getActivity(),
-                    Themes.getColor(colors.get(i), getActivity())));
-            circle.setBorderColor(ContextCompat.getColor(getActivity(),
-                    Themes.getColor(counterPartColor, getActivity())));
+            int seedColor = ContextCompat.getColor(getActivity(),
+                    Themes.getColor(colors.get(i)));
+            circle.setCircleColor(seedColor);
+            circle.setCheckColor(MaterialColors.isColorLight(seedColor)
+                    ? Color.BLACK : Color.WHITE);
+            circle.setBorderColor(outlineColor);
             LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
                     ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT, 1);
             int margin = (int) getResources().getDimension(R.dimen.color_dialog_margin);
@@ -550,18 +539,16 @@ public class SettingsFragment extends PreferenceFragmentCompat implements
             subView.addView(circle);
         }
 
-        new Dialog(getActivity()).setView(linearLayout)
+        new Dialog(getActivity()).setTitle(getString(R.string.theme_color))
+                .setView(linearLayout)
                 .setNegativeButton(getString(R.string.cancel), (dialog, which) -> {
                 })
                 .setPositiveButton(getString(R.string.ok), (dialog, which) -> {
-                    if (mColorSelection >= 0) {
-                        if (primaryColor) {
-                            Themes.savePrimaryColor(colors.get(mColorSelection), getActivity());
-                        } else {
-                            Themes.saveAccentColor(colors.get(mColorSelection), getActivity());
-                        }
-                        Widget.updateAll(requireContext().getApplicationContext());
+                    if (mColorSelection < 0) {
+                        return;
                     }
+                    Themes.saveThemeColor(colors.get(mColorSelection), getActivity());
+                    Widget.updateAll(requireContext().getApplicationContext());
                     getActivity().finish();
                     Intent intent = new Intent(getActivity(), MainActivity.class);
                     intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);

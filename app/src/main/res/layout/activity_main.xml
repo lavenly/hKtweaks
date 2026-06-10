@@ -8,17 +8,17 @@
         android:id="@+id/splash_background"
         android:layout_width="match_parent"
         android:layout_height="160dp"
-        android:background="?attr/colorPrimary" />
+        android:background="?attr/colorPrimaryContainer" />
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="68dp"
-        android:background="?attr/colorPrimaryDark"
+        android:background="?attr/colorPrimaryContainer"
         android:gravity="center_vertical"
         android:paddingLeft="38dp"
         android:paddingStart="38dp"
         android:text="@string/checking_info"
-        android:textColor="@color/white"
+        android:textColor="?attr/colorOnPrimaryContainer"
         android:textSize="22sp" />
 
     <FrameLayout

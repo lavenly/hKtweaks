@@ -3,48 +3,15 @@
     <style name="AppTheme" parent="Theme.Material3Expressive.Light.NoActionBar">
         <item name="preferenceTheme">@style/PreferenceThemeOverlay.hKtweaks.Material3</item>
         <item name="banner_frame_drawable">@drawable/drawable_frame_light</item>
-        <item name="appSurfaceColor">@color/white</item>
-        <item name="android:colorBackground">?attr/appSurfaceColor</item>
-        <item name="android:textColorPrimary">@color/black</item>
-        <item name="android:textColorSecondary">@color/textcolor_light</item>
-        <item name="android:textColorPrimaryInverse">@color/white</item>
+        <item name="appSurfaceColor">?attr/colorSurface</item>
+        <item name="android:colorBackground">?attr/colorSurface</item>
+        <item name="android:windowBackground">?attr/colorSurface</item>
+        <item name="android:textColorPrimary">?attr/colorOnSurface</item>
+        <item name="android:textColorSecondary">?attr/colorOnSurfaceVariant</item>
+        <item name="android:textColorPrimaryInverse">?attr/colorOnSurfaceInverse</item>
         <item name="android:textAlignment">gravity</item>
         <item name="android:textDirection">locale</item>
-        <item name="colorSecondary">?attr/colorAccent</item>
-        <item name="colorTertiary">?attr/colorAccent</item>
-        <item name="colorOnPrimary">@color/white</item>
-        <item name="colorOnPrimaryContainer">@color/white</item>
-        <item name="colorPrimaryContainer">?attr/colorPrimary</item>
-        <item name="colorPrimaryFixed">?attr/colorPrimary</item>
-        <item name="colorPrimaryFixedDim">?attr/colorPrimaryDark</item>
-        <item name="colorOnPrimaryFixed">@color/white</item>
-        <item name="colorOnPrimaryFixedVariant">@color/white</item>
-        <item name="colorOnSecondary">@color/black</item>
-        <item name="colorOnSecondaryContainer">@color/black</item>
-        <item name="colorSecondaryContainer">?attr/colorAccent</item>
-        <item name="colorSecondaryFixed">?attr/colorAccent</item>
-        <item name="colorSecondaryFixedDim">?attr/colorAccent</item>
-        <item name="colorOnSecondaryFixed">@color/black</item>
-        <item name="colorOnSecondaryFixedVariant">@color/black</item>
-        <item name="colorOnTertiary">@color/black</item>
-        <item name="colorOnTertiaryContainer">@color/black</item>
-        <item name="colorTertiaryContainer">?attr/colorAccent</item>
-        <item name="colorOnBackground">@color/black</item>
-        <item name="colorSurface">?attr/appSurfaceColor</item>
-        <item name="colorSurfaceVariant">?attr/appSurfaceColor</item>
-        <item name="colorSurfaceBright">?attr/appSurfaceColor</item>
-        <item name="colorSurfaceDim">?attr/appSurfaceColor</item>
-        <item name="colorSurfaceContainer">?attr/appSurfaceColor</item>
-        <item name="colorSurfaceContainerLow">?attr/appSurfaceColor</item>
-        <item name="colorSurfaceContainerHigh">?attr/appSurfaceColor</item>
-        <item name="colorSurfaceContainerLowest">?attr/appSurfaceColor</item>
-        <item name="colorSurfaceContainerHighest">?attr/appSurfaceColor</item>
-        <item name="colorOnSurface">@color/black</item>
-        <item name="colorOnSurfaceVariant">@color/textcolor_light</item>
-        <item name="colorSurfaceInverse">@color/black</item>
-        <item name="colorOnSurfaceInverse">@color/white</item>
-        <item name="colorOutline">@color/textcolor_light</item>
-        <item name="colorOutlineVariant">@color/textcolor_light</item>
+        <item name="colorAccent">?attr/colorPrimary</item>
         <item name="dynamicColorThemeOverlay">@null</item>
         <item name="dim_dialog_background">@color/dim_foreground_disabled_material_dark</item>
     </style>
@@ -52,51 +19,18 @@
     <style name="AppThemeDark" parent="Theme.Material3Expressive.Dark.NoActionBar">
         <item name="preferenceTheme">@style/PreferenceThemeOverlay.hKtweaks.Material3</item>
         <item name="banner_frame_drawable">@drawable/drawable_frame_dark</item>
-        <item name="appSurfaceColor">@color/blueSecondaryDark</item>
-        <item name="android:colorBackground">?attr/appSurfaceColor</item>
-        <item name="android:textColorPrimary">@color/white</item>
-        <item name="android:textColorSecondary">@color/textcolor_dark</item>
-        <item name="android:textColorPrimaryInverse">@color/black</item>
+        <item name="appSurfaceColor">?attr/colorSurface</item>
+        <item name="android:colorBackground">?attr/colorSurface</item>
+        <item name="android:windowBackground">?attr/colorSurface</item>
+        <item name="android:textColorPrimary">?attr/colorOnSurface</item>
+        <item name="android:textColorSecondary">?attr/colorOnSurfaceVariant</item>
+        <item name="android:textColorPrimaryInverse">?attr/colorOnSurfaceInverse</item>
         <item name="android:textAlignment">gravity</item>
         <item name="android:textDirection">locale</item>
-        <item name="colorSecondary">?attr/colorAccent</item>
-        <item name="colorTertiary">?attr/colorAccent</item>
-        <item name="colorOnPrimary">@color/white</item>
-        <item name="colorOnPrimaryContainer">@color/white</item>
-        <item name="colorPrimaryContainer">?attr/colorPrimary</item>
-        <item name="colorPrimaryFixed">?attr/colorPrimary</item>
-        <item name="colorPrimaryFixedDim">?attr/colorPrimaryDark</item>
-        <item name="colorOnPrimaryFixed">@color/white</item>
-        <item name="colorOnPrimaryFixedVariant">@color/white</item>
-        <item name="colorOnSecondary">@color/black</item>
-        <item name="colorOnSecondaryContainer">@color/black</item>
-        <item name="colorSecondaryContainer">?attr/colorAccent</item>
-        <item name="colorSecondaryFixed">?attr/colorAccent</item>
-        <item name="colorSecondaryFixedDim">?attr/colorAccent</item>
-        <item name="colorOnSecondaryFixed">@color/black</item>
-        <item name="colorOnSecondaryFixedVariant">@color/black</item>
-        <item name="colorOnTertiary">@color/black</item>
-        <item name="colorOnTertiaryContainer">@color/black</item>
-        <item name="colorTertiaryContainer">?attr/colorAccent</item>
-        <item name="colorOnBackground">@color/white</item>
-        <item name="colorSurface">?attr/appSurfaceColor</item>
-        <item name="colorSurfaceVariant">?attr/appSurfaceColor</item>
-        <item name="colorSurfaceBright">?attr/appSurfaceColor</item>
-        <item name="colorSurfaceDim">?attr/appSurfaceColor</item>
-        <item name="colorSurfaceContainer">?attr/appSurfaceColor</item>
-        <item name="colorSurfaceContainerLow">?attr/appSurfaceColor</item>
-        <item name="colorSurfaceContainerHigh">?attr/appSurfaceColor</item>
-        <item name="colorSurfaceContainerLowest">?attr/appSurfaceColor</item>
-        <item name="colorSurfaceContainerHighest">?attr/appSurfaceColor</item>
-        <item name="colorOnSurface">@color/white</item>
-        <item name="colorOnSurfaceVariant">@color/textcolor_dark</item>
-        <item name="colorSurfaceInverse">@color/white</item>
-        <item name="colorOnSurfaceInverse">@color/black</item>
-        <item name="colorOutline">@color/textcolor_dark</item>
-        <item name="colorOutlineVariant">@color/textcolor_dark</item>
+        <item name="colorAccent">?attr/colorPrimary</item>
         <item name="dynamicColorThemeOverlay">@null</item>
         <item name="dim_dialog_background">@color/dim_foreground_disabled_material_light</item>
-        <item name="android:navigationBarColor">?attr/appSurfaceColor</item>
+        <item name="android:navigationBarColor">?attr/colorSurface</item>
     </style>
 
     <style name="AppThemeParent" parent="AppTheme" />
@@ -118,11 +52,11 @@
     <style name="Widget.hKtweaks.Material3Expressive.Toolbar"
         parent="Widget.Material3Expressive.Toolbar">
         <item name="android:background">@android:color/transparent</item>
-        <item name="actionMenuTextColor">?attr/colorOnPrimary</item>
-        <item name="colorControlNormal">?attr/colorOnPrimary</item>
-        <item name="navigationIconTint">?attr/colorOnPrimary</item>
-        <item name="subtitleTextColor">?attr/colorOnPrimary</item>
-        <item name="titleTextColor">?attr/colorOnPrimary</item>
+        <item name="actionMenuTextColor">?attr/colorOnSurface</item>
+        <item name="colorControlNormal">?attr/colorOnSurface</item>
+        <item name="navigationIconTint">?attr/colorOnSurface</item>
+        <item name="subtitleTextColor">?attr/colorOnSurfaceVariant</item>
+        <item name="titleTextColor">?attr/colorOnSurface</item>
     </style>
 
     <style name="Widget.hKtweaks.Material3Expressive.IconButton.Standard"
@@ -175,7 +109,7 @@
 
     <style name="ThemeOverlay.hKtweaks.RecoveryCheckBox" parent="">
         <item name="colorControlNormal">@color/white</item>
-        <item name="colorControlActivated">?attr/colorAccent</item>
+        <item name="colorControlActivated">?attr/colorPrimary</item>
         <item name="android:textColor">@color/white</item>
         <item name="android:textSize">14sp</item>
     </style>

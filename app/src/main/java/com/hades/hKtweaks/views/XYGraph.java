@@ -71,13 +71,13 @@ public class XYGraph extends View {
 
         TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.XYGraph, defStyleAttr, 0);
 
-        int accentColor = ViewUtils.getThemeAccentColor(getContext());
-        mPaintLine.setColor(a.getColor(R.styleable.XYGraph_linecolor, accentColor));
-        mPaintEdge.setColor(a.getColor(R.styleable.XYGraph_edgecolor, accentColor));
+        int secondaryColor = ViewUtils.getColorSecondaryColor(getContext());
+        mPaintLine.setColor(a.getColor(R.styleable.XYGraph_linecolor, secondaryColor));
+        mPaintEdge.setColor(a.getColor(R.styleable.XYGraph_edgecolor, secondaryColor));
         mPaintEdge.setStrokeWidth(a.getDimension(R.styleable.XYGraph_edgestrokewidth,
                 getResources().getDimension(R.dimen.xygraph_edge_stroke_width)));
 
-        int graphColor = a.getColor(R.styleable.XYGraph_graphcolor, accentColor);
+        int graphColor = a.getColor(R.styleable.XYGraph_graphcolor, secondaryColor);
 
         mPaintGraphStroke.setColor(graphColor);
         mPaintGraphStroke.setStyle(Paint.Style.STROKE);

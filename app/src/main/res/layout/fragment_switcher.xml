@@ -11,7 +11,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:gravity="center"
-        android:textColor="@color/white"
+        android:textColor="?attr/colorOnPrimaryContainer"
         android:textSize="16sp" />
 
     <TextView
@@ -20,7 +20,7 @@
         android:layout_height="wrap_content"
         android:gravity="center"
         android:linksClickable="true"
-        android:textColor="@color/textcolor_dark"
+        android:textColor="?attr/colorOnPrimaryContainer"
         android:textIsSelectable="true" />
 
     <com.google.android.material.materialswitch.MaterialSwitch

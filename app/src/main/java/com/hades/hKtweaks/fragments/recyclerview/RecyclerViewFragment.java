@@ -437,9 +437,10 @@ public abstract class RecyclerViewFragment extends BaseFragment {
         if (isForeground()) return;
         Activity activity;
         if ((activity = getActivity()) != null && mAppBarLayout != null && mToolBar != null) {
-            int colorPrimary = ViewUtils.getColorPrimaryColor(activity);
-            mAppBarLayout.setBackgroundDrawable(new ColorDrawable(Color.argb(alpha, Color.red(colorPrimary),
-                    Color.green(colorPrimary), Color.blue(colorPrimary))));
+            int primaryContainer = ViewUtils.getThemeColor(activity, R.attr.colorPrimaryContainer);
+            mAppBarLayout.setBackgroundDrawable(new ColorDrawable(Color.argb(alpha,
+                    Color.red(primaryContainer), Color.green(primaryContainer),
+                    Color.blue(primaryContainer))));
             mToolBar.setTitleTextColor(Color.argb(alpha, 255, 255, 255));
         }
     }
