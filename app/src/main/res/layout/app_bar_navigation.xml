@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.appbar.AppBarLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/appbarlayout"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="?attr/colorSurface"
+    app:elevation="0dp"
+    tools:ignore="Overdraw">
+
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/toolbar"
+        style="@style/Widget.hKtweaks.Material3Expressive.Toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:theme="@style/ThemeOverlay.Material3.Toolbar.CircleNavigationButton"
+        app:popupTheme="@style/AppTheme.PopupOverlay"
+        app:title="@string/app_name" />
+
+    <com.google.android.material.tabs.TabLayout
+        android:id="@+id/navigation_tabs"
+        style="@style/Widget.Material3.TabLayout"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:background="?attr/colorSurface"
+        app:tabGravity="start"
+        app:tabIconTint="@color/navigation_tab_icon"
+        app:tabIndicatorAnimationMode="elastic"
+        app:tabIndicatorColor="?attr/colorPrimary"
+        app:tabIndicatorFullWidth="false"
+        app:tabInlineLabel="true"
+        app:tabMinWidth="72dp"
+        app:tabMode="scrollable"
+        app:tabRippleColor="?attr/colorSecondaryContainer"
+        app:tabSelectedTextColor="?attr/colorPrimary"
+        app:tabTextAppearance="@style/TextAppearance.hKtweaks.Label.Emphasized"
+        app:tabTextColor="?attr/colorOnSurfaceVariant" />
+
+</com.google.android.material.appbar.AppBarLayout>

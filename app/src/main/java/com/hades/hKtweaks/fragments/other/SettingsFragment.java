@@ -82,6 +82,7 @@ public class SettingsFragment extends PreferenceFragmentCompat implements
     private static final String KEY_FORCE_ENGLISH = "forceenglish";
     //private static final String KEY_USER_INTERFACE = "user_interface";
     private static final String KEY_THEME_MODE = "theme_mode";
+    private static final String KEY_NAVIGATION_MODE = "navigation_mode";
     //private static final String KEY_MATERIAL_ICON = "materialicon";
     private static final String KEY_BANNER_RESIZER = "banner_resizer";
     private static final String KEY_HIDE_BANNER = "hide_banner";
@@ -113,8 +114,13 @@ public class SettingsFragment extends PreferenceFragmentCompat implements
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = super.onCreateView(inflater, container, savedInstanceState);
+        int topPadding = Math.round(ViewUtils.getActionBarSize(getActivity()));
+        if (getActivity() instanceof NavigationActivity
+                && ((NavigationActivity) getActivity()).usesFixedNavigationAppBar()) {
+            topPadding = 0;
+        }
         rootView.setPadding(rootView.getPaddingLeft(),
-                Math.round(ViewUtils.getActionBarSize(getActivity())),
+                topPadding,
                 rootView.getPaddingRight(), rootView.getPaddingBottom());
         return rootView;
     }
@@ -139,6 +145,10 @@ public class SettingsFragment extends PreferenceFragmentCompat implements
                 (MaterialListPreference) findPreference(KEY_THEME_MODE);
         themeMode.setValue(Themes.getThemeMode(requireContext()));
 
+        MaterialListPreference navigationMode =
+                (MaterialListPreference) findPreference(KEY_NAVIGATION_MODE);
+        navigationMode.setValue(AppSettings.getNavigationMode(requireContext()));
+
         MaterialSwitchPreference forceEnglish =
                 (MaterialSwitchPreference) findPreference(KEY_FORCE_ENGLISH);
         if (Resources.getSystem().getConfiguration().locale.getLanguage().startsWith("en")) {
@@ -158,6 +168,7 @@ public class SettingsFragment extends PreferenceFragmentCompat implements
         findPreference(KEY_UPDATE_NOTIFICATION).setOnPreferenceChangeListener(this);
         findPreference(KEY_CHECK_UPDATE).setOnPreferenceClickListener(this);
         themeMode.setOnPreferenceChangeListener(this);
+        navigationMode.setOnPreferenceChangeListener(this);
         findPreference(KEY_BANNER_RESIZER).setOnPreferenceClickListener(this);
         findPreference(KEY_HIDE_BANNER).setOnPreferenceChangeListener(this);
         findPreference(KEY_THEME_COLOR).setOnPreferenceClickListener(this);
@@ -220,6 +231,10 @@ public class SettingsFragment extends PreferenceFragmentCompat implements
             case KEY_THEME_MODE:
                 Themes.saveThemeMode(String.valueOf(o), requireContext());
                 updateWidgetsAfterPreferenceChange();
+                restartSettings();
+                return true;
+            case KEY_NAVIGATION_MODE:
+                AppSettings.saveNavigationMode(String.valueOf(o), requireContext());
                 restartSettings();
                 return true;
 /*

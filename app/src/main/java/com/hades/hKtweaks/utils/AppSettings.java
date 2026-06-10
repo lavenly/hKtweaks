@@ -47,6 +47,7 @@ public class AppSettings {
     private static final String GAMMA_CONTROL_PROFILE = "gamma_control_profile";
     private static final String DSI_PANEL_PROFILE = "dsi_panel_profile";
     private static final String DATA_SHARING = "data_sharing";
+    private static final String NAVIGATION_MODE = "navigation_mode";
     private static final String SECTION_ICONS = "section_icons";
     private static final String FRAGMENT_OPENED_POSTFIX = "%s_opened";
     private static final String FINGERPRINT = "fingerprint";
@@ -59,6 +60,9 @@ public class AppSettings {
     private static final String PREVIEW_PICTURE_EMPTY = "previewpictureempty";
     private static final String CPU_GLOBAL_OFFSET_CL0 = "globalOffset_Cl0";
     private static final String CPU_GLOBAL_OFFSET_CL1 = "globalOffset_Cl1";
+
+    public static final String NAVIGATION_MODE_TOP_TABS = "top_tabs";
+    public static final String NAVIGATION_MODE_DRAWER = "drawer";
 
     public static boolean getBoolean(String key, boolean defaults, Context context) {
         return Prefs.getBoolean(key, defaults, context);
@@ -246,6 +250,18 @@ public class AppSettings {
 
     public static void saveDataSharing(boolean enabled, Context context) {
         Prefs.saveBoolean(DATA_SHARING, enabled, context);
+    }
+
+    public static String getNavigationMode(Context context) {
+        return Prefs.getString(NAVIGATION_MODE, NAVIGATION_MODE_TOP_TABS, context);
+    }
+
+    public static void saveNavigationMode(String mode, Context context) {
+        Prefs.saveString(NAVIGATION_MODE, mode, context);
+    }
+
+    public static boolean isTopTabsNavigation(Context context) {
+        return NAVIGATION_MODE_TOP_TABS.equals(getNavigationMode(context));
     }
 
     public static boolean isSectionIcons(Context context) {

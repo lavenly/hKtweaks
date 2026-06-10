@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.drawerlayout.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/drawer_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
+    tools:context="com.hades.hKtweaks.activities.NavigationActivity"
+    tools:openDrawer="start">
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="?attr/colorSurface">
+
+        <FrameLayout
+            android:id="@+id/navigation_content"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="invisible">
+
+            <FrameLayout
+                android:id="@+id/content_frame"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+
+            <include
+                android:id="@+id/appbarlayout"
+                layout="@layout/app_bar_main"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+        </FrameLayout>
+
+        <com.google.android.material.loadingindicator.LoadingIndicator
+            android:id="@+id/navigation_loading"
+            style="@style/Widget.hKtweaks.Material3Expressive.LoadingIndicator.Contained"
+            android:layout_width="64dp"
+            android:layout_height="64dp"
+            android:layout_gravity="center" />
+    </FrameLayout>
+
+    <com.google.android.material.navigation.NavigationView
+        android:id="@+id/nav_view"
+        style="@style/Widget.Material3.NavigationView"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_gravity="start"
+        android:background="?attr/appSurfaceColor"
+        android:fitsSystemWindows="true"
+        android:focusable="false"
+        app:headerLayout="@layout/nav_header_layout"
+        app:itemTextAppearance="@style/TextAppearance.hKtweaks.NavigationItem" />
+
+</androidx.drawerlayout.widget.DrawerLayout>
