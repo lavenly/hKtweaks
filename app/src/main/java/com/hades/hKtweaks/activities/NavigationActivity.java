@@ -43,6 +43,7 @@ import com.google.android.material.appbar.MaterialToolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.SubMenu;
+import android.view.View;
 
 import com.hades.hKtweaks.R;
 import com.hades.hKtweaks.fragments.BaseFragment;
@@ -130,6 +131,7 @@ public class NavigationActivity extends BaseActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
     private static final String PACKAGE = NavigationActivity.class.getCanonicalName();
+    private static final long STARTUP_ROOT_COMMAND_TIMEOUT_MS = 10_000;
     public static final String INTENT_SECTION = PACKAGE + ".INTENT.SECTION";
 
     private ArrayList<NavigationFragment> mFragments = new ArrayList<>();
@@ -137,6 +139,8 @@ public class NavigationActivity extends BaseActivity
 
     private DrawerLayout mDrawer;
     private NavigationView mNavigationView;
+    private View mNavigationContent;
+    private View mNavigationLoading;
     private long mLastTimeBackbuttonPressed;
 
     private int mSelection;
@@ -144,6 +148,9 @@ public class NavigationActivity extends BaseActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_navigation);
+        mNavigationContent = findViewById(R.id.navigation_content);
+        mNavigationLoading = findViewById(R.id.navigation_loading);
 
         if (savedInstanceState == null) {
             new FragmentLoader(this).execute();
@@ -165,7 +172,12 @@ public class NavigationActivity extends BaseActivity
         protected Void doInBackground(Void... voids) {
             NavigationActivity activity = mRefActivity.get();
             if (activity == null) return null;
-            activity.initFragments();
+            RootUtils.setCommandTimeoutForCurrentThread(STARTUP_ROOT_COMMAND_TIMEOUT_MS);
+            try {
+                activity.initFragments();
+            } finally {
+                RootUtils.clearCommandTimeoutForCurrentThread();
+            }
             return null;
         }
 
@@ -292,7 +304,6 @@ public class NavigationActivity extends BaseActivity
     }
 
     private void init(Bundle savedInstanceState) {
-        setContentView(R.layout.activity_navigation);
         MaterialToolbar toolbar = getToolBar();
         setSupportActionBar(toolbar);
 
@@ -334,6 +345,9 @@ public class NavigationActivity extends BaseActivity
         if (AppSettings.isDataSharing(this)) {
             startService(new Intent(this, Monitor.class));
         }
+
+        mNavigationContent.setVisibility(View.VISIBLE);
+        mNavigationLoading.setVisibility(View.GONE);
     }
 
     private int firstTab() {

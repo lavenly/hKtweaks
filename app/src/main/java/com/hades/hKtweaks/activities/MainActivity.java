@@ -19,15 +19,18 @@
  */
 package com.hades.hKtweaks.activities;
 
+import android.animation.AnimatorSet;
+import android.animation.ObjectAnimator;
+import android.content.res.ColorStateList;
 import android.content.Intent;
-import android.content.res.Configuration;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import androidx.annotation.Nullable;
-import androidx.core.content.ContextCompat;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.google.android.material.color.MaterialColors;
 import com.hades.hKtweaks.R;
 import com.hades.hKtweaks.database.tools.profiles.Profiles;
 import com.hades.hKtweaks.fragments.kernel.BusCamFragment;
@@ -40,6 +43,7 @@ import com.hades.hKtweaks.fragments.kernel.GPUFragment;
 import com.hades.hKtweaks.services.profile.Tile;
 import com.hades.hKtweaks.utils.AppSettings;
 import com.hades.hKtweaks.utils.Device;
+import com.hades.hKtweaks.utils.ExpressiveMotion;
 import com.hades.hKtweaks.utils.Log;
 import com.hades.hKtweaks.utils.Utils;
 import com.hades.hKtweaks.utils.kernel.battery.Battery;
@@ -76,9 +80,14 @@ import java.lang.ref.WeakReference;
  */
 public class MainActivity extends BaseActivity {
 
+    private static final long STARTUP_ROOT_COMMAND_TIMEOUT_MS = 10_000;
+
     private TextView mRootAccess;
     private TextView mBusybox;
     private TextView mCollectInfo;
+    private ImageView mRootAccessStatus;
+    private ImageView mBusyboxStatus;
+    private ImageView mCollectInfoStatus;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -86,15 +95,12 @@ public class MainActivity extends BaseActivity {
 
         setContentView(R.layout.activity_main);
 
-        View splashBackground = findViewById(R.id.splash_background);
         mRootAccess = findViewById(R.id.root_access_text);
         mBusybox = findViewById(R.id.busybox_text);
         mCollectInfo = findViewById(R.id.info_collect_text);
-
-        // Hide huge banner in landscape mode
-        if (Utils.getOrientation(this) == Configuration.ORIENTATION_LANDSCAPE) {
-            splashBackground.setVisibility(View.GONE);
-        }
+        mRootAccessStatus = findViewById(R.id.root_access_status);
+        mBusyboxStatus = findViewById(R.id.busybox_status);
+        mCollectInfoStatus = findViewById(R.id.info_collect_status);
 
         if (savedInstanceState == null) {
             /*
@@ -133,24 +139,67 @@ public class MainActivity extends BaseActivity {
 
     private void launch() {
         Intent intent = new Intent(this, NavigationActivity.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         if (getIntent().getExtras() != null) {
             intent.putExtras(getIntent().getExtras());
         }
         startActivity(intent);
-        finish();
         overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
+        finish();
     }
 
-    private static class CheckingTask extends AsyncTask<Void, Integer, Void> {
+    private void updateCheckStatus(TextView textView, ImageView statusView, boolean success) {
+        int containerColor = MaterialColors.getColor(statusView,
+                success ? R.attr.colorPrimaryContainer : R.attr.colorErrorContainer);
+        int contentColor = MaterialColors.getColor(statusView,
+                success ? R.attr.colorOnPrimaryContainer : R.attr.colorOnErrorContainer);
+
+        statusView.setImageResource(success ? R.drawable.ic_done : R.drawable.ic_cancel);
+        statusView.setBackgroundTintList(ColorStateList.valueOf(containerColor));
+        statusView.setImageTintList(ColorStateList.valueOf(contentColor));
+        textView.setTextColor(contentColor);
+
+        statusView.setAlpha(0f);
+        statusView.setScaleX(0.75f);
+        statusView.setScaleY(0.75f);
+        AnimatorSet reveal = new AnimatorSet();
+        reveal.playTogether(
+                ObjectAnimator.ofFloat(statusView, View.ALPHA, 0f, 1f),
+                ObjectAnimator.ofFloat(statusView, View.SCALE_X, 0.75f, 1f),
+                ObjectAnimator.ofFloat(statusView, View.SCALE_Y, 0.75f, 1f));
+        ExpressiveMotion.applyEmphasizedDecelerate(reveal, this,
+                com.google.android.material.R.attr.motionDurationMedium2, 300);
+        reveal.start();
+    }
+
+    private static class CheckingTask
+            extends AsyncTask<Void, CheckingTask.CheckProgress, CheckingTask.StartupResult> {
+
+        private static final int CHECK_ROOT = 0;
+        private static final int CHECK_BUSYBOX = 1;
+        private static final int CHECK_INFO = 2;
 
         private final WeakReference<MainActivity> mRefActivity;
 
-        private boolean mHasRoot;
-        private boolean mHasBusybox;
-
         private CheckingTask(MainActivity activity) {
             mRefActivity = new WeakReference<>(activity);
+        }
+
+        private enum StartupResult {
+            NO_ROOT,
+            NO_BUSYBOX,
+            READY
+        }
+
+        private static class CheckProgress {
+
+            private final int stage;
+            private final boolean success;
+
+            private CheckProgress(int stage, boolean success) {
+                this.stage = stage;
+                this.success = success;
+            }
         }
 
         private void checkInitVariables(){
@@ -319,30 +368,37 @@ public class MainActivity extends BaseActivity {
         }
 
         @Override
-        protected Void doInBackground(Void... params) {
-            mHasRoot = RootUtils.rootAccess();
-            publishProgress(0);
-
-            if (mHasRoot) {
-                mHasBusybox = RootUtils.busyboxInstalled();
-                publishProgress(1);
-
-                if (mHasBusybox) {
-                    try {
-                        collectData();
-                    } catch (RuntimeException exception) {
-                        Log.e("Startup data collection failed: " + exception);
-                    }
-                    publishProgress(2);
-
-                    try {
-                        checkInitVariables();
-                    } catch (RuntimeException exception) {
-                        Log.e("Startup initialization failed: " + exception);
-                    }
+        protected StartupResult doInBackground(Void... params) {
+            RootUtils.setCommandTimeoutForCurrentThread(STARTUP_ROOT_COMMAND_TIMEOUT_MS);
+            try {
+                boolean hasRoot = RootUtils.rootAccess();
+                publishProgress(new CheckProgress(CHECK_ROOT, hasRoot));
+                if (!hasRoot) {
+                    return StartupResult.NO_ROOT;
                 }
+
+                boolean hasBusybox = RootUtils.busyboxInstalled();
+                publishProgress(new CheckProgress(CHECK_BUSYBOX, hasBusybox));
+                if (!hasBusybox) {
+                    return StartupResult.NO_BUSYBOX;
+                }
+
+                try {
+                    collectData();
+                } catch (RuntimeException exception) {
+                    Log.e("Startup data collection failed: " + exception);
+                }
+
+                try {
+                    checkInitVariables();
+                } catch (RuntimeException exception) {
+                    Log.e("Startup initialization failed: " + exception);
+                }
+                publishProgress(new CheckProgress(CHECK_INFO, true));
+                return StartupResult.READY;
+            } finally {
+                RootUtils.clearCommandTimeoutForCurrentThread();
             }
-            return null;
         }
 
         /**
@@ -384,35 +440,34 @@ public class MainActivity extends BaseActivity {
         /**
          * Let the user know what we are doing right now
          *
-         * @param values progress
-         *               0: Checking root
-         *               1: Checking busybox/toybox
-         *               2: Collecting information
+         * @param values progress updates
          */
         @Override
-        protected void onProgressUpdate(Integer... values) {
+        protected void onProgressUpdate(CheckProgress... values) {
             super.onProgressUpdate(values);
             MainActivity activity = mRefActivity.get();
-            if (activity == null) return;
+            if (activity == null || values.length == 0) return;
 
-            int red = ContextCompat.getColor(activity, R.color.red);
-            int green = ContextCompat.getColor(activity, R.color.green);
-            switch (values[0]) {
-                case 0:
-                    activity.mRootAccess.setTextColor(mHasRoot ? green : red);
+            CheckProgress progress = values[0];
+            switch (progress.stage) {
+                case CHECK_ROOT:
+                    activity.updateCheckStatus(activity.mRootAccess,
+                            activity.mRootAccessStatus, progress.success);
                     break;
-                case 1:
-                    activity.mBusybox.setTextColor(mHasBusybox ? green : red);
+                case CHECK_BUSYBOX:
+                    activity.updateCheckStatus(activity.mBusybox,
+                            activity.mBusyboxStatus, progress.success);
                     break;
-                case 2:
-                    activity.mCollectInfo.setTextColor(green);
+                case CHECK_INFO:
+                    activity.updateCheckStatus(activity.mCollectInfo,
+                            activity.mCollectInfoStatus, progress.success);
                     break;
             }
         }
 
         @Override
-        protected void onPostExecute(Void aVoid) {
-            super.onPostExecute(aVoid);
+        protected void onPostExecute(StartupResult result) {
+            super.onPostExecute(result);
             MainActivity activity = mRefActivity.get();
             if (activity == null) return;
 
@@ -421,15 +476,18 @@ public class MainActivity extends BaseActivity {
              * launch text activity which let the user know
              * what the problem is.
              */
-            if (!mHasRoot || !mHasBusybox) {
+            if (result != StartupResult.READY) {
+                boolean hasRoot = result != StartupResult.NO_ROOT;
                 Intent intent = new Intent(activity, TextActivity.class);
-                intent.putExtra(TextActivity.MESSAGE_INTENT, activity.getString(mHasRoot ?
+                intent.putExtra(TextActivity.MESSAGE_INTENT, activity.getString(hasRoot ?
                         R.string.no_busybox : R.string.no_root));
                 intent.putExtra(TextActivity.SUMMARY_INTENT,
-                        mHasRoot ? "https://play.google.com/store/apps/details?id=stericson.busybox" :
+                        hasRoot ? "https://play.google.com/store/apps/details?id=stericson.busybox" :
                                 "https://www.google.com/search?site=&source=hp&q=root+"
                                         + Device.getVendor() + "+" + Device.getModel());
                 activity.startActivity(intent);
+                activity.overridePendingTransition(
+                        android.R.anim.fade_in, android.R.anim.fade_out);
                 activity.finish();
 
                 return;

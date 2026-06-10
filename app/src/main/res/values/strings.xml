@@ -2,6 +2,7 @@
     <string name="app_name">hKtweaks</string>
 
     <string name="checking_info">Checking info…</string>
+    <string name="checking_info_summary">Preparing your device settings</string>
     <string name="checking_root">Checking root access</string>
     <string name="searching_busybox">Searching for busybox</string>
     <string name="collecting_info">Collecting info</string>
