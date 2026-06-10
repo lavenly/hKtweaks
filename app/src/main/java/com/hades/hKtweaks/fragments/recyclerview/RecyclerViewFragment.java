@@ -167,15 +167,6 @@ public abstract class RecyclerViewFragment extends BaseFragment {
         mAppBarLayout = ((BaseActivity) getActivity()).getAppBarLayout();
         mToolBar = ((BaseActivity) getActivity()).getToolBar();
 
-        if (mAppBarLayout != null && !isForeground()) {
-            mAppBarLayout.postDelayed(() -> {
-                if (mAppBarLayout != null && isAdded() && getActivity() != null) {
-                    ViewCompat.setElevation(mAppBarLayout, showViewPager() && !hideBanner() ?
-                            0 : getResources().getDimension(R.dimen.app_bar_elevation));
-                }
-            }, 150);
-        }
-
         mTopFab = mRootView.findViewById(R.id.top_fab);
         mBottomFab = mRootView.findViewById(R.id.bottom_fab);
 
@@ -437,11 +428,12 @@ public abstract class RecyclerViewFragment extends BaseFragment {
         if (isForeground()) return;
         Activity activity;
         if ((activity = getActivity()) != null && mAppBarLayout != null && mToolBar != null) {
-            int primaryContainer = ViewUtils.getThemeColor(activity, R.attr.colorPrimaryContainer);
+            int surface = ViewUtils.getThemeColor(activity, R.attr.colorSurface);
+            int onSurface = ViewUtils.getThemeColor(activity, R.attr.colorOnSurface);
             mAppBarLayout.setBackgroundDrawable(new ColorDrawable(Color.argb(alpha,
-                    Color.red(primaryContainer), Color.green(primaryContainer),
-                    Color.blue(primaryContainer))));
-            mToolBar.setTitleTextColor(Color.argb(alpha, 255, 255, 255));
+                    Color.red(surface), Color.green(surface), Color.blue(surface))));
+            mToolBar.setTitleTextColor(Color.argb(alpha, Color.red(onSurface),
+                    Color.green(onSurface), Color.blue(onSurface)));
         }
     }
 
