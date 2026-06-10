@@ -19,7 +19,13 @@
  */
 package com.hades.hKtweaks.views.recyclerview;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.animation.ValueAnimator;
+
+import androidx.dynamicanimation.animation.DynamicAnimation;
+import androidx.dynamicanimation.animation.SpringAnimation;
+
 import com.google.android.material.imageview.ShapeableImageView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -28,6 +34,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.hades.hKtweaks.R;
+import com.hades.hKtweaks.utils.ExpressiveMotion;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -52,6 +59,7 @@ public class DropDownView extends RecyclerViewItem {
 
     private float mItemHeight;
     private ValueAnimator mAnimator;
+    private SpringAnimation mArrowAnimator;
 
     private OnDropDownListener mOnDropDownListener;
 
@@ -161,35 +169,61 @@ public class DropDownView extends RecyclerViewItem {
     }
 
     private void expand() {
-        mExpanded = true;
-        if (mArrow != null) {
-            mArrow.animate().rotationX(0).setDuration(500).start();
-            if (mAnimator != null) {
-                mAnimator.cancel();
-            }
-            if (mItems == null) return;
-            mAnimator = ValueAnimator.ofFloat(0, mItemHeight * mItems.size());
-            mAnimator.addUpdateListener(animation
-                    -> setHeight(Math.round((float) animation.getAnimatedValue())));
-            mAnimator.setDuration(500);
-            mAnimator.start();
-        }
+        animateExpansion(true);
     }
 
     private void collapse() {
-        mExpanded = false;
-        if (mArrow != null) {
-            mArrow.animate().rotationX(180).setDuration(500).start();
-            if (mAnimator != null) {
-                mAnimator.cancel();
-            }
-            if (mItems == null) return;
-            mAnimator = ValueAnimator.ofFloat(mItemHeight * mItems.size(), 0);
-            mAnimator.addUpdateListener(animation
-                    -> setHeight(Math.round((float) animation.getAnimatedValue())));
-            mAnimator.setDuration(500);
-            mAnimator.start();
+        animateExpansion(false);
+    }
+
+    private void animateExpansion(boolean expanded) {
+        mExpanded = expanded;
+        if (mArrow == null) {
+            return;
         }
+
+        if (mArrowAnimator != null) {
+            mArrowAnimator.cancel();
+        }
+        mArrowAnimator = ExpressiveMotion.spring(
+                mArrow,
+                DynamicAnimation.ROTATION_X,
+                expanded ? 0 : 180,
+                com.google.android.material.R.attr.motionSpringDefaultSpatial,
+                R.style.Motion_hKtweaks_Material3Expressive_Default_Spatial);
+        mArrowAnimator.addEndListener((animation, canceled, value, velocity) -> {
+            if (mArrowAnimator == animation) {
+                mArrowAnimator = null;
+            }
+        });
+        mArrowAnimator.start();
+
+        if (mAnimator != null) {
+            mAnimator.cancel();
+        }
+        if (mItems == null) {
+            return;
+        }
+
+        float targetHeight = expanded ? mItemHeight * mItems.size() : 0;
+        ValueAnimator animator = ValueAnimator.ofFloat(mParent.getHeight(), targetHeight);
+        animator.addUpdateListener(animation
+                -> setHeight(Math.round((float) animation.getAnimatedValue())));
+        animator.addListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                if (mAnimator == animation) {
+                    mAnimator = null;
+                }
+            }
+        });
+        ExpressiveMotion.applyEmphasized(
+                animator,
+                mArrow.getContext(),
+                com.google.android.material.R.attr.motionDurationMedium4,
+                400);
+        mAnimator = animator;
+        animator.start();
     }
 
     private void setHeight(int height) {

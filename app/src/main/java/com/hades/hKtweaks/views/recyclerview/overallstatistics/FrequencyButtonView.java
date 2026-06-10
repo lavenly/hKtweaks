@@ -19,14 +19,17 @@
  */
 package com.hades.hKtweaks.views.recyclerview.overallstatistics;
 
-import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
+import androidx.dynamicanimation.animation.DynamicAnimation;
+import androidx.dynamicanimation.animation.SpringAnimation;
 import com.google.android.material.button.MaterialButton;
 import android.view.View;
-import android.view.ViewPropertyAnimator;
 
 import com.hades.hKtweaks.R;
+import com.hades.hKtweaks.utils.ExpressiveMotion;
 import com.hades.hKtweaks.views.recyclerview.RecyclerViewItem;
+
+import java.util.Map;
+import java.util.WeakHashMap;
 
 /**
  * Created by willi on 30.04.16.
@@ -36,6 +39,7 @@ public class FrequencyButtonView extends RecyclerViewItem {
     private View.OnClickListener mRefreshListener;
     private View.OnClickListener mResetListener;
     private View.OnClickListener mRestoreListener;
+    private final Map<View, SpringAnimation> mRotationAnimations = new WeakHashMap<>();
 
     @Override
     public int getLayoutRes() {
@@ -84,14 +88,25 @@ public class FrequencyButtonView extends RecyclerViewItem {
     }
 
     private void rotate(final View v, boolean reverse) {
-        ViewPropertyAnimator animator = v.animate().setDuration(500).rotation(reverse ? -360 : 360);
-        animator.setListener(new AnimatorListenerAdapter() {
-            @Override
-            public void onAnimationEnd(Animator animation) {
-                super.onAnimationEnd(animation);
+        SpringAnimation runningAnimation = mRotationAnimations.remove(v);
+        if (runningAnimation != null) {
+            runningAnimation.cancel();
+        }
+        v.setRotation(0);
+
+        SpringAnimation animator = ExpressiveMotion.spring(
+                v,
+                DynamicAnimation.ROTATION,
+                reverse ? -360 : 360,
+                com.google.android.material.R.attr.motionSpringFastSpatial,
+                R.style.Motion_hKtweaks_Material3Expressive_Fast_Spatial);
+        animator.addEndListener((animation, canceled, value, velocity) -> {
+            if (mRotationAnimations.get(v) == animation) {
+                mRotationAnimations.remove(v);
                 v.setRotation(0);
             }
         });
+        mRotationAnimations.put(v, animator);
         animator.start();
     }
 }

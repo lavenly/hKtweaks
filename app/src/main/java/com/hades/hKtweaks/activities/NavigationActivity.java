@@ -90,6 +90,7 @@ import com.hades.hKtweaks.fragments.tools.downloads.DownloadsFragment;
 import com.hades.hKtweaks.services.monitor.Monitor;
 import com.hades.hKtweaks.utils.AppSettings;
 import com.hades.hKtweaks.utils.Device;
+import com.hades.hKtweaks.utils.ExpressiveMotion;
 import com.hades.hKtweaks.utils.Utils;
 import com.hades.hKtweaks.utils.kernel.battery.Battery;
 import com.hades.hKtweaks.utils.kernel.bus.VoltageCam;
@@ -513,7 +514,10 @@ public class NavigationActivity extends BaseActivity
                     getSupportFragmentManager().beginTransaction().replace(
                             R.id.content_frame, fragment, res + "_key").commitAllowingStateLoss();
                 },
-                250);
+                ExpressiveMotion.resolveDuration(
+                        this,
+                        com.google.android.material.R.attr.motionDurationMedium1,
+                        250));
     }
 
     private Fragment getFragment(int res) {
