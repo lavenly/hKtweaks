@@ -1269,6 +1269,9 @@
     <string name="theme_mode_light">Light</string>
     <string name="theme_mode_dark">Dark</string>
     <string name="theme_mode_amoled">AMOLED black</string>
+    <string name="navigation_mode">Navigation style</string>
+    <string name="navigation_mode_top_tabs">Top tabs</string>
+    <string name="navigation_mode_drawer">Navigation drawer</string>
     <string name="material_icon">Material icon</string>
     <string name="banner_resizer">Banner resizer</string>
     <string name="hide_banner">Hide banner</string>
@@ -1277,7 +1280,7 @@
     <string name="primary_color">Primary color</string>
     <string name="accent_color">Accent Color</string>
     <string name="section_icons">Section Icons</string>
-    <string name="section_icons_summary">Show icons for each section in navigation drawer.</string>
+    <string name="section_icons_summary">Show icons in navigation.</string>
     <string name="instant">Instant</string>
     <string name="five_sec">5 seconds</string>
     <string name="ten_sec">10 seconds</string>

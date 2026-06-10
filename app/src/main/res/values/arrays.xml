@@ -242,4 +242,14 @@
         <item>amoled</item>
     </string-array>
 
+    <string-array name="navigation_modes">
+        <item>@string/navigation_mode_top_tabs</item>
+        <item>@string/navigation_mode_drawer</item>
+    </string-array>
+
+    <string-array name="navigation_mode_values">
+        <item>top_tabs</item>
+        <item>drawer</item>
+    </string-array>
+
 </resources>

@@ -25,25 +25,30 @@ import android.content.pm.ShortcutManager;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.Icon;
 import android.os.AsyncTask;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.os.SystemClock;
-import androidx.annotation.NonNull;
-import com.google.android.material.navigation.NavigationView;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
-import androidx.core.content.ContextCompat;
-import androidx.core.view.GravityCompat;
-import androidx.drawerlayout.widget.DrawerLayout;
-import androidx.appcompat.app.ActionBarDrawerToggle;
-import com.google.android.material.appbar.MaterialToolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.SubMenu;
 import android.view.View;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBarDrawerToggle;
+import androidx.core.content.ContextCompat;
+import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
+import androidx.viewpager2.adapter.FragmentStateAdapter;
+import androidx.viewpager2.widget.ViewPager2;
+
+import com.google.android.material.appbar.MaterialToolbar;
+import com.google.android.material.navigation.NavigationView;
+import com.google.android.material.tabs.TabLayout;
+import com.google.android.material.tabs.TabLayoutMediator;
 
 import com.hades.hKtweaks.R;
 import com.hades.hKtweaks.fragments.BaseFragment;
@@ -91,7 +96,6 @@ import com.hades.hKtweaks.fragments.tools.downloads.DownloadsFragment;
 import com.hades.hKtweaks.services.monitor.Monitor;
 import com.hades.hKtweaks.utils.AppSettings;
 import com.hades.hKtweaks.utils.Device;
-import com.hades.hKtweaks.utils.ExpressiveMotion;
 import com.hades.hKtweaks.utils.Utils;
 import com.hades.hKtweaks.utils.kernel.battery.Battery;
 import com.hades.hKtweaks.utils.kernel.bus.VoltageCam;
@@ -136,19 +140,28 @@ public class NavigationActivity extends BaseActivity
 
     private ArrayList<NavigationFragment> mFragments = new ArrayList<>();
     private final Map<Integer, Class<? extends Fragment>> mActualFragments = new LinkedHashMap<>();
+    private final ArrayList<Integer> mTabIds = new ArrayList<>();
+    private final Map<Integer, Fragment> mPagerFragments = new LinkedHashMap<>();
 
     private DrawerLayout mDrawer;
     private NavigationView mNavigationView;
+    private TabLayout mNavigationTabs;
+    private ViewPager2 mNavigationPager;
+    private NavigationPagerAdapter mPagerAdapter;
     private View mNavigationContent;
     private View mNavigationLoading;
     private long mLastTimeBackbuttonPressed;
+    private boolean mUseTopTabs;
 
     private int mSelection;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_navigation);
+        mUseTopTabs = AppSettings.isTopTabsNavigation(this);
+        setContentView(mUseTopTabs
+                ? R.layout.activity_navigation
+                : R.layout.activity_navigation_drawer);
         mNavigationContent = findViewById(R.id.navigation_content);
         mNavigationLoading = findViewById(R.id.navigation_loading);
 
@@ -306,19 +319,12 @@ public class NavigationActivity extends BaseActivity
     private void init(Bundle savedInstanceState) {
         MaterialToolbar toolbar = getToolBar();
         setSupportActionBar(toolbar);
-
-        mDrawer = findViewById(R.id.drawer_layout);
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, mDrawer, toolbar, 0, 0);
-        mDrawer.addDrawerListener(toggle);
-        toggle.syncState();
-
-        mNavigationView = findViewById(R.id.nav_view);
-        mNavigationView.setNavigationItemSelectedListener(this);
-        mNavigationView.setOnFocusChangeListener((v, hasFocus) -> {
-            if (hasFocus) {
-                v.clearFocus();
-            }
-        });
+        if (mUseTopTabs) {
+            toolbar.setTitle(R.string.app_name);
+            initTopTabs();
+        } else {
+            initDrawer(toolbar);
+        }
 
         if (savedInstanceState != null) {
             mSelection = savedInstanceState.getInt(INTENT_SECTION);
@@ -365,36 +371,122 @@ public class NavigationActivity extends BaseActivity
 
     private void appendFragments(boolean setShortcuts) {
         mActualFragments.clear();
-        Menu menu = mNavigationView.getMenu();
-        menu.clear();
+        mTabIds.clear();
 
         SubMenu lastSubMenu = null;
+        Menu menu = null;
+        if (!mUseTopTabs) {
+            menu = mNavigationView.getMenu();
+            menu.clear();
+        }
         for (NavigationFragment navigationFragment : mFragments) {
             Class<? extends Fragment> fragmentClass = navigationFragment.mFragmentClass;
             int id = navigationFragment.mId;
 
-            Drawable drawable = ContextCompat.getDrawable(this,
-                        AppSettings.isSectionIcons(this)
-                        && navigationFragment.mDrawable != 0 ? navigationFragment.mDrawable :
-                        R.drawable.ic_blank);
-
             if (fragmentClass == null) {
-                lastSubMenu = menu.addSubMenu(id);
+                if (!mUseTopTabs) {
+                    lastSubMenu = menu.addSubMenu(id);
+                }
                 mActualFragments.put(id, null);
             } else if (AppSettings.isFragmentEnabled(fragmentClass, this)) {
-                MenuItem menuItem = lastSubMenu == null ? menu.add(0, id, 0, id) :
-                        lastSubMenu.add(0, id, 0, id);
-                menuItem.setIcon(drawable);
-                menuItem.setCheckable(true);
-                if (mSelection != 0) {
-                    mNavigationView.setCheckedItem(mSelection);
+                if (mUseTopTabs) {
+                    mTabIds.add(id);
+                } else {
+                    Drawable drawable = ContextCompat.getDrawable(this,
+                            AppSettings.isSectionIcons(this) && navigationFragment.mDrawable != 0
+                                    ? navigationFragment.mDrawable
+                                    : R.drawable.ic_blank);
+                    MenuItem menuItem = lastSubMenu == null
+                            ? menu.add(0, id, 0, id)
+                            : lastSubMenu.add(0, id, 0, id);
+                    menuItem.setIcon(drawable);
+                    menuItem.setCheckable(true);
                 }
                 mActualFragments.put(id, fragmentClass);
             }
         }
+        if (mUseTopTabs && mPagerAdapter != null) {
+            mPagerFragments.keySet().removeIf(section -> !mTabIds.contains(section));
+            mPagerAdapter.notifyDataSetChanged();
+        }
+
+        if (mActualFragments.get(mSelection) == null) {
+            mSelection = firstTab();
+        }
+        selectNavigationSurface(mSelection);
+
         if (setShortcuts) {
             setShortcuts();
         }
+    }
+
+    private void initTopTabs() {
+        mNavigationTabs = findViewById(R.id.navigation_tabs);
+        mNavigationPager = findViewById(R.id.navigation_pager);
+        mPagerAdapter = new NavigationPagerAdapter();
+        mNavigationPager.setAdapter(mPagerAdapter);
+        new TabLayoutMediator(mNavigationTabs, mNavigationPager,
+                (tab, position) -> bindTab(tab, position)).attach();
+        mNavigationPager.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
+            @Override
+            public void onPageSelected(int position) {
+                if (position >= 0 && position < mTabIds.size()) {
+                    int section = mTabIds.get(position);
+                    if (section != mSelection) {
+                        onItemSelected(section, true);
+                    }
+                }
+            }
+        });
+    }
+
+    private void initDrawer(MaterialToolbar toolbar) {
+        mDrawer = findViewById(R.id.drawer_layout);
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, mDrawer, toolbar, 0, 0);
+        mDrawer.addDrawerListener(toggle);
+        toggle.syncState();
+
+        mNavigationView = findViewById(R.id.nav_view);
+        mNavigationView.setNavigationItemSelectedListener(this);
+        mNavigationView.setOnFocusChangeListener((v, hasFocus) -> {
+            if (hasFocus) {
+                v.clearFocus();
+            }
+        });
+    }
+
+    private void bindTab(TabLayout.Tab tab, int position) {
+        if (position < 0 || position >= mTabIds.size()) return;
+        int id = mTabIds.get(position);
+        tab.setText(id);
+        NavigationFragment navigationFragment = findNavigationFragmentById(id);
+        if (navigationFragment != null
+                && AppSettings.isSectionIcons(this)
+                && navigationFragment.mDrawable != 0) {
+            tab.setIcon(navigationFragment.mDrawable);
+        } else {
+            tab.setIcon(null);
+        }
+    }
+
+    private void selectNavigationSurface(int section) {
+        if (mUseTopTabs) {
+            int position = mTabIds.indexOf(section);
+            if (position >= 0 && mNavigationPager.getCurrentItem() != position) {
+                mNavigationPager.setCurrentItem(position, false);
+            }
+        } else {
+            mNavigationView.setCheckedItem(section);
+        }
+    }
+
+    private NavigationFragment findNavigationFragmentById(int id) {
+        for (NavigationFragment navigationFragment : mFragments) {
+            if (navigationFragment.mId == id) {
+                return navigationFragment;
+            }
+        }
+        return null;
     }
 
     private NavigationFragment findNavigationFragmentByClass(Class<? extends Fragment> fragmentClass) {
@@ -408,8 +500,6 @@ public class NavigationActivity extends BaseActivity
     }
 
     private void setShortcuts() {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N_MR1) return;
-
         PriorityQueue<Class<? extends Fragment>> queue = new PriorityQueue<>(
                 (o1, o2) -> {
                     int opened1 = AppSettings.getFragmentOpened(o1, this);
@@ -456,21 +546,26 @@ public class NavigationActivity extends BaseActivity
         return mActualFragments;
     }
 
+    public boolean usesFixedNavigationAppBar() {
+        return mUseTopTabs;
+    }
+
     @Override
     public void onBackPressed() {
         if (mDrawer != null && mDrawer.isDrawerOpen(GravityCompat.START)) {
             mDrawer.closeDrawer(GravityCompat.START);
-        } else {
-            Fragment currentFragment = getFragment(mSelection);
-            if (!(currentFragment instanceof BaseFragment)
-                    || !((BaseFragment) currentFragment).onBackPressed()) {
-                long currentTime = SystemClock.elapsedRealtime();
-                if (currentTime - mLastTimeBackbuttonPressed > 2000) {
-                    mLastTimeBackbuttonPressed = currentTime;
-                    Utils.toast(R.string.press_back_again_exit, this);
-                } else {
-                    super.onBackPressed();
-                }
+            return;
+        }
+
+        Fragment currentFragment = getCurrentFragment();
+        if (!(currentFragment instanceof BaseFragment)
+                || !((BaseFragment) currentFragment).onBackPressed()) {
+            long currentTime = SystemClock.elapsedRealtime();
+            if (currentTime - mLastTimeBackbuttonPressed > 2000) {
+                mLastTimeBackbuttonPressed = currentTime;
+                Utils.toast(R.string.press_back_again_exit, this);
+            } else {
+                super.onBackPressed();
             }
         }
     }
@@ -478,15 +573,17 @@ public class NavigationActivity extends BaseActivity
     @Override
     public void finish() {
         super.finish();
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        for (int id : mActualFragments.keySet()) {
-            Fragment fragment = fragmentManager.findFragmentByTag(id + "_key");
-            if (fragment != null) {
-                fragmentTransaction.remove(fragment);
+        if (!mUseTopTabs) {
+            FragmentManager fragmentManager = getSupportFragmentManager();
+            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+            for (int id : mActualFragments.keySet()) {
+                Fragment fragment = fragmentManager.findFragmentByTag(id + "_key");
+                if (fragment != null) {
+                    fragmentTransaction.remove(fragment);
+                }
             }
+            fragmentTransaction.commitAllowingStateLoss();
         }
-        fragmentTransaction.commitAllowingStateLoss();
         RootUtils.closeSU();
     }
 
@@ -505,28 +602,34 @@ public class NavigationActivity extends BaseActivity
     }
 
     private void onItemSelected(final int res, boolean saveOpened) {
-        mDrawer.closeDrawer(GravityCompat.START);
-        getSupportActionBar().setTitle(getString(res));
-        mNavigationView.setCheckedItem(res);
+        if (mActualFragments.get(res) == null) return;
+
         mSelection = res;
-        final Fragment fragment = getFragment(res);
+        Class<? extends Fragment> fragmentClass = mActualFragments.get(res);
+        if (fragmentClass == null) return;
+        selectNavigationSurface(res);
 
         if (saveOpened) {
-            AppSettings.saveFragmentOpened(fragment.getClass(),
-                    AppSettings.getFragmentOpened(fragment.getClass(), this) + 1,
+            AppSettings.saveFragmentOpened(fragmentClass,
+                    AppSettings.getFragmentOpened(fragmentClass, this) + 1,
                     this);
         }
         setShortcuts();
 
-        mDrawer.postDelayed(()
-                        -> {
-                    getSupportFragmentManager().beginTransaction().replace(
-                            R.id.content_frame, fragment, res + "_key").commitAllowingStateLoss();
-                },
-                ExpressiveMotion.resolveDuration(
-                        this,
-                        com.google.android.material.R.attr.motionDurationMedium1,
-                        250));
+        if (mUseTopTabs) return;
+
+        if (mDrawer != null) {
+            mDrawer.closeDrawer(GravityCompat.START);
+        }
+        getSupportActionBar().setTitle(getString(res));
+        final Fragment fragment = getFragment(res);
+        if (fragment == null) return;
+        getSupportFragmentManager().beginTransaction()
+                .setCustomAnimations(
+                        R.anim.m3_expressive_fade_enter,
+                        R.anim.m3_expressive_fade_exit)
+                .replace(R.id.content_frame, fragment, res + "_key")
+                .commitAllowingStateLoss();
     }
 
     private Fragment getFragment(int res) {
@@ -537,6 +640,57 @@ public class NavigationActivity extends BaseActivity
                     mActualFragments.get(res).getCanonicalName());
         }
         return fragment;
+    }
+
+    private Fragment getCurrentFragment() {
+        if (mUseTopTabs) {
+            Fragment fragment = mPagerFragments.get(mSelection);
+            if (fragment != null) {
+                return fragment;
+            }
+            if (mPagerAdapter != null && mNavigationPager != null
+                    && mNavigationPager.getCurrentItem() < mPagerAdapter.getItemCount()) {
+                long itemId = mPagerAdapter.getItemId(mNavigationPager.getCurrentItem());
+                fragment = getSupportFragmentManager().findFragmentByTag("f" + itemId);
+                if (fragment != null) {
+                    return fragment;
+                }
+            }
+            return null;
+        }
+        return getFragment(mSelection);
+    }
+
+    private class NavigationPagerAdapter extends FragmentStateAdapter {
+
+        NavigationPagerAdapter() {
+            super(NavigationActivity.this);
+        }
+
+        @NonNull
+        @Override
+        public Fragment createFragment(int position) {
+            int section = mTabIds.get(position);
+            Fragment fragment = Fragment.instantiate(NavigationActivity.this,
+                    mActualFragments.get(section).getCanonicalName());
+            mPagerFragments.put(section, fragment);
+            return fragment;
+        }
+
+        @Override
+        public int getItemCount() {
+            return mTabIds.size();
+        }
+
+        @Override
+        public long getItemId(int position) {
+            return mTabIds.get(position);
+        }
+
+        @Override
+        public boolean containsItem(long itemId) {
+            return mTabIds.contains((int) itemId);
+        }
     }
 
     public static class NavigationFragment implements Parcelable {

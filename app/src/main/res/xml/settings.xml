@@ -40,6 +40,13 @@
             android:entries="@array/theme_modes"
             android:entryValues="@array/theme_mode_values"
             />
+        <com.hades.hKtweaks.views.preference.MaterialListPreference
+            android:key="navigation_mode"
+            android:title="@string/navigation_mode"
+            android:summary="%s"
+            android:defaultValue="top_tabs"
+            android:entries="@array/navigation_modes"
+            android:entryValues="@array/navigation_mode_values" />
         <com.hades.hKtweaks.views.preference.MaterialSwitchPreference
             android:key="forceenglish"
             android:title="@string/force_english" />

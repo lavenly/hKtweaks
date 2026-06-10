@@ -166,12 +166,15 @@ public abstract class RecyclerViewFragment extends BaseFragment {
 
         mAppBarLayout = ((BaseActivity) getActivity()).getAppBarLayout();
         mToolBar = ((BaseActivity) getActivity()).getToolBar();
+        if (usesFixedNavigationAppBar() && mAppBarLayout != null) {
+            mAppBarLayout.setTranslationY(0f);
+        }
 
         mTopFab = mRootView.findViewById(R.id.top_fab);
         mBottomFab = mRootView.findViewById(R.id.bottom_fab);
 
         mRecyclerView.clearOnScrollListeners();
-        if (showViewPager() && !hideBanner()) {
+        if (showViewPager() && !hideBanner() && !usesFixedNavigationAppBar()) {
             mScroller = new Scroller();
             mRecyclerView.addOnScrollListener(mScroller);
         }
@@ -382,10 +385,11 @@ public abstract class RecyclerViewFragment extends BaseFragment {
             mPageIndicator.setVisibility(
                     mViewPagerFragments.size() > 1 ? View.VISIBLE : View.GONE);
 
-            setAppBarLayoutAlpha(0);
+            setAppBarLayoutAlpha(usesFixedNavigationAppBar() ? 255 : 0);
             adjustScrollPosition();
         } else {
-            mRecyclerView.setPadding(mRecyclerView.getPaddingLeft(), isForeground() ? 0 : mToolBar.getHeight(),
+            mRecyclerView.setPadding(mRecyclerView.getPaddingLeft(),
+                    isForeground() || usesFixedNavigationAppBar() ? 0 : mToolBar.getHeight(),
                     mRecyclerView.getPaddingRight(), mRecyclerView.getPaddingBottom());
             mRecyclerView.setClipToPadding(true);
             ViewGroup.LayoutParams layoutParams = mViewPagerParent.getLayoutParams();
@@ -435,6 +439,11 @@ public abstract class RecyclerViewFragment extends BaseFragment {
             mToolBar.setTitleTextColor(Color.argb(alpha, Color.red(onSurface),
                     Color.green(onSurface), Color.blue(onSurface)));
         }
+    }
+
+    private boolean usesFixedNavigationAppBar() {
+        return getActivity() instanceof NavigationActivity
+                && ((NavigationActivity) getActivity()).usesFixedNavigationAppBar();
     }
 
     protected void addItem(RecyclerViewItem recyclerViewItem) {
