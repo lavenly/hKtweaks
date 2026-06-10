@@ -22,7 +22,7 @@ import androidx.core.os.CancellationSignal;
 import android.view.View;
 
 import com.google.android.material.color.MaterialColors;
-import com.google.android.material.progressindicator.CircularProgressIndicator;
+import com.google.android.material.loadingindicator.LoadingIndicator;
 import com.hades.hKtweaks.R;
 /**
  * Small helper class to manage text/icon around fingerprint authentication UI.
@@ -32,7 +32,7 @@ public class FingerprintUiHelper extends FingerprintManagerCompat.Authentication
 
     private boolean mListening;
     private final FingerprintManagerCompat mFingerprintManagerCompat;
-    private final CircularProgressIndicator mIndicator;
+    private final LoadingIndicator mIndicator;
     private final Callback mCallback;
     private CancellationSignal mCancellationSignal;
 
@@ -49,7 +49,7 @@ public class FingerprintUiHelper extends FingerprintManagerCompat.Authentication
             mFingerprintManagerCompat = fingerprintManagerCompat;
         }
 
-        public FingerprintUiHelper build(CircularProgressIndicator indicator, Callback callback) {
+        public FingerprintUiHelper build(LoadingIndicator indicator, Callback callback) {
             return new FingerprintUiHelper(mFingerprintManagerCompat, indicator, callback);
         }
     }
@@ -59,7 +59,7 @@ public class FingerprintUiHelper extends FingerprintManagerCompat.Authentication
      * only the {@link FingerprintUiHelperBuilder} class.
      */
     private FingerprintUiHelper(FingerprintManagerCompat fingerprintManagerCompat,
-                                CircularProgressIndicator indicator,
+                                LoadingIndicator indicator,
                                 Callback callback) {
         mFingerprintManagerCompat = fingerprintManagerCompat;
         mIndicator = indicator;

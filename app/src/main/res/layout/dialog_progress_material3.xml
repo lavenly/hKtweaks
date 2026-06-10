@@ -6,11 +6,10 @@
     android:orientation="horizontal"
     android:padding="24dp">
 
-    <com.google.android.material.progressindicator.CircularProgressIndicator
-        style="@style/Widget.Material3Expressive.CircularProgressIndicator"
+    <com.google.android.material.loadingindicator.LoadingIndicator
+        style="@style/Widget.hKtweaks.Material3Expressive.LoadingIndicator"
         android:layout_width="48dp"
-        android:layout_height="48dp"
-        android:indeterminate="true" />
+        android:layout_height="48dp" />
 
     <com.google.android.material.textview.MaterialTextView
         android:layout_width="wrap_content"

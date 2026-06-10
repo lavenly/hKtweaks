@@ -37,15 +37,14 @@
         android:textColor="@color/red"
         android:visibility="gone" />
 
-    <com.google.android.material.progressindicator.CircularProgressIndicator
+    <com.google.android.material.loadingindicator.LoadingIndicator
         android:id="@+id/fingerprint_indicator"
-        style="@style/Widget.Material3Expressive.CircularProgressIndicator"
+        style="@style/Widget.hKtweaks.Material3Expressive.LoadingIndicator"
         android:layout_width="48dp"
         android:layout_height="48dp"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
         android:layout_margin="16dp"
-        android:indeterminate="true"
         android:visibility="gone" />
 
 </RelativeLayout>

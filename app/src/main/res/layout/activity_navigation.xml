@@ -34,7 +34,7 @@
 
         <com.google.android.material.loadingindicator.LoadingIndicator
             android:id="@+id/navigation_loading"
-            style="@style/Widget.Material3.LoadingIndicator.Contained"
+            style="@style/Widget.hKtweaks.Material3Expressive.LoadingIndicator.Contained"
             android:layout_width="64dp"
             android:layout_height="64dp"
             android:layout_gravity="center" />

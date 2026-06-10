@@ -54,7 +54,7 @@
             android:textColor="?attr/colorOnSurfaceVariant" />
 
         <com.google.android.material.loadingindicator.LoadingIndicator
-            style="@style/Widget.Material3.LoadingIndicator.Contained"
+            style="@style/Widget.hKtweaks.Material3Expressive.LoadingIndicator.Contained"
             android:layout_width="48dp"
             android:layout_height="48dp"
             android:layout_marginTop="12dp" />

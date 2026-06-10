@@ -100,10 +100,10 @@
             android:paddingRight="16dp"
             android:visibility="gone">
 
-            <com.google.android.material.progressindicator.CircularProgressIndicator
-                style="@style/Widget.Material3Expressive.CircularProgressIndicator"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
+            <com.google.android.material.loadingindicator.LoadingIndicator
+                style="@style/Widget.hKtweaks.Material3Expressive.LoadingIndicator"
+                android:layout_width="48dp"
+                android:layout_height="48dp" />
 
             <TextView
                 android:layout_width="match_parent"

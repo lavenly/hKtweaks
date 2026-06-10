@@ -107,11 +107,11 @@
                     android:textAppearance="@style/TextAppearance.hKtweaks.Code" />
             </HorizontalScrollView>
 
-            <com.google.android.material.progressindicator.CircularProgressIndicator
-                style="@style/Widget.Material3Expressive.CircularProgressIndicator"
+            <com.google.android.material.loadingindicator.LoadingIndicator
+                style="@style/Widget.hKtweaks.Material3Expressive.LoadingIndicator.Small"
                 android:id="@+id/progress"
-                android:layout_width="30dp"
-                android:layout_height="30dp" />
+                android:layout_width="32dp"
+                android:layout_height="32dp" />
         </LinearLayout>
     </LinearLayout>
 </FrameLayout>
