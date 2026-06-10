@@ -127,11 +127,11 @@ public class FilePickerActivity extends BaseActivity {
             if (mExtension == null) {
                 mExtension = getArguments().getString(EXTENSION_INTENT);
             }
-            int accentColor = ViewUtils.getThemeAccentColor(getContext());
+            int secondaryColor = ViewUtils.getColorSecondaryColor(getContext());
             if (mDirImage == null) {
                 mDirImage = DrawableCompat.wrap(
                         ContextCompat.getDrawable(getActivity(), R.drawable.ic_dir));
-                DrawableCompat.setTint(mDirImage, accentColor);
+                DrawableCompat.setTint(mDirImage, secondaryColor);
             }
             if (mFileImage == null) {
                 mFileImage = DrawableCompat.wrap(

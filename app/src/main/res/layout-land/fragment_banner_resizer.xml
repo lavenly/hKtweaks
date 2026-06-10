@@ -22,7 +22,7 @@
                 android:id="@+id/banner_view"
                 android:layout_width="match_parent"
                 android:layout_height="55dp"
-                android:background="?attr/colorPrimary"
+                android:background="?attr/colorPrimaryContainer"
                 android:elevation="3dp" />
 
             <com.google.android.material.card.MaterialCardView

@@ -25,7 +25,10 @@ import android.appwidget.AppWidgetProvider;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.content.res.ColorStateList;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.Paint;
+import android.graphics.RectF;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -86,10 +89,18 @@ public class Widget extends AppWidgetProvider {
                     getListPendingIntent(context, appWidgetId));
             widget.setOnClickPendingIntent(R.id.widget_header,
                     getProfilesPendingIntent(context, appWidgetId));
-            applyWidgetColors(widget, context);
+            applyWidgetColors(widget, context,
+                    appWidgetManager.getAppWidgetOptions(appWidgetId));
 
             appWidgetManager.updateAppWidget(appWidgetId, widget);
         }
+    }
+
+    @Override
+    public void onAppWidgetOptionsChanged(Context context, AppWidgetManager appWidgetManager,
+                                          int appWidgetId, Bundle newOptions) {
+        super.onAppWidgetOptionsChanged(context, appWidgetManager, appWidgetId, newOptions);
+        onUpdate(context, appWidgetManager, new int[]{appWidgetId});
     }
 
     private PendingIntent getListPendingIntent(Context context, int appWidgetId) {
@@ -112,33 +123,72 @@ public class Widget extends AppWidgetProvider {
                 PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
     }
 
-    private static void applyWidgetColors(RemoteViews views, Context context) {
+    private static void applyWidgetColors(RemoteViews views, Context context, Bundle options) {
         boolean darkTheme = Themes.isDarkTheme(context);
         boolean amoledTheme = darkTheme && Themes.isAmoledBlack(context);
-        int surfaceDrawable = darkTheme
-                ? amoledTheme
-                        ? R.drawable.widget_profile_surface_amoled
-                        : R.drawable.widget_profile_surface_dark
-                : R.drawable.widget_profile_surface_light;
-        views.setInt(R.id.widget_container, "setBackgroundResource", surfaceDrawable);
 
         ContextThemeWrapper themedContext = getThemedContext(context);
-        int primary = resolveColor(themedContext, R.attr.colorPrimary, R.color.widget_primary);
-        int onPrimary = resolveColor(themedContext, R.attr.colorOnPrimary, R.color.widget_on_primary);
-        int surface = resolveColor(themedContext, R.attr.colorSurfaceContainer,
+        int primaryContainer = resolveColor(themedContext, R.attr.colorPrimaryContainer,
+                R.color.widget_primary);
+        int onPrimaryContainer = resolveColor(themedContext, R.attr.colorOnPrimaryContainer,
+                R.color.widget_on_primary);
+        int surface = resolveColor(themedContext, R.attr.colorSurface,
                 darkTheme ? R.color.widget_surface_dark : R.color.widget_surface_light);
         int onSurfaceVariant = resolveColor(themedContext, R.attr.colorOnSurfaceVariant,
                 darkTheme ? R.color.widget_on_surface_variant : R.color.textcolor_light);
+        int outline = resolveColor(themedContext, R.attr.colorOutlineVariant,
+                R.color.widget_outline_dark);
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            views.setColorStateList(R.id.widget_container, "setBackgroundTintList",
-                    ColorStateList.valueOf(surface));
-            views.setColorStateList(R.id.widget_header, "setBackgroundTintList",
-                    ColorStateList.valueOf(primary));
-        }
-        views.setTextColor(R.id.widget_title, onPrimary);
+        int widgetWidth = optionDimension(options,
+                AppWidgetManager.OPTION_APPWIDGET_MIN_WIDTH, 180);
+        int widgetHeight = optionDimension(options,
+                AppWidgetManager.OPTION_APPWIDGET_MIN_HEIGHT, 110);
+        views.setImageViewBitmap(R.id.widget_surface_background,
+                createRoundedBackground(context, widgetWidth - 8, widgetHeight - 8,
+                        28, surface, amoledTheme ? outline : 0));
+        views.setImageViewBitmap(R.id.widget_header_background,
+                createRoundedBackground(context, widgetWidth - 24, 52,
+                        22, primaryContainer, 0));
+        views.setTextColor(R.id.widget_title, onPrimaryContainer);
         views.setTextColor(R.id.profile_empty, onSurfaceVariant);
-        views.setInt(R.id.widget_header_icon, "setColorFilter", onPrimary);
+        views.setInt(R.id.widget_header_icon, "setColorFilter", onPrimaryContainer);
+    }
+
+    private static int optionDimension(Bundle options, String key, int fallback) {
+        if (options == null) {
+            return fallback;
+        }
+        return Math.max(options.getInt(key, fallback), fallback);
+    }
+
+    private static Bitmap createRoundedBackground(Context context, int widthDp, int heightDp,
+                                                  int radiusDp, int fillColor, int strokeColor) {
+        float density = context.getResources().getDisplayMetrics().density;
+        float width = Math.max(1, widthDp * density);
+        float height = Math.max(1, heightDp * density);
+        float bitmapScale = Math.min(1f, 512f / Math.max(width, height));
+        int bitmapWidth = Math.max(1, Math.round(width * bitmapScale));
+        int bitmapHeight = Math.max(1, Math.round(height * bitmapScale));
+        float radius = radiusDp * density * bitmapScale;
+        float strokeWidth = density * bitmapScale;
+
+        Bitmap bitmap = Bitmap.createBitmap(bitmapWidth, bitmapHeight, Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(bitmap);
+        Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        paint.setColor(fillColor);
+        canvas.drawRoundRect(new RectF(0, 0, bitmapWidth, bitmapHeight),
+                radius, radius, paint);
+
+        if (strokeColor != 0) {
+            paint.setStyle(Paint.Style.STROKE);
+            paint.setStrokeWidth(strokeWidth);
+            paint.setColor(strokeColor);
+            float inset = strokeWidth / 2f;
+            canvas.drawRoundRect(new RectF(inset, inset,
+                            bitmapWidth - inset, bitmapHeight - inset),
+                    radius - inset, radius - inset, paint);
+        }
+        return bitmap;
     }
 
     private static ContextThemeWrapper getThemedContext(Context context) {

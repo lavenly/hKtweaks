@@ -142,11 +142,6 @@ public class NavigationActivity extends BaseActivity
     private int mSelection;
 
     @Override
-    protected boolean setStatusBarColor() {
-        return false;
-    }
-
-    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 

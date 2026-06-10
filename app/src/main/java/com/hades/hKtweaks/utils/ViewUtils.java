@@ -23,7 +23,10 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.res.TypedArray;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.graphics.drawable.Drawable;
+
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
@@ -78,21 +81,25 @@ public class ViewUtils {
     }
 
     public static int getColorPrimaryColor(Context context) {
-        TypedValue value = new TypedValue();
-        context.getTheme().resolveAttribute(R.attr.colorPrimary, value, true);
-        return value.data;
+        return getThemeColor(context, R.attr.colorPrimary);
     }
 
-    public static int getColorPrimaryDarkColor(Context context) {
-        TypedValue value = new TypedValue();
-        context.getTheme().resolveAttribute(R.attr.colorPrimaryDark, value, true);
-        return value.data;
+    public static int getColorSecondaryColor(Context context) {
+        return getThemeColor(context, R.attr.colorSecondary);
     }
 
-    public static int getThemeAccentColor(Context context) {
+    public static int getColorOutlineColor(Context context) {
+        return getThemeColor(context, R.attr.colorOutline);
+    }
+
+    public static int getThemeColor(Context context, int attribute) {
         TypedValue value = new TypedValue();
-        context.getTheme().resolveAttribute(R.attr.colorAccent, value, true);
-        return value.data;
+        if (!context.getTheme().resolveAttribute(attribute, value, true)) {
+            return Color.TRANSPARENT;
+        }
+        return value.resourceId != 0
+                ? ContextCompat.getColor(context, value.resourceId)
+                : value.data;
     }
 
     public interface OnDialogEditTextListener {

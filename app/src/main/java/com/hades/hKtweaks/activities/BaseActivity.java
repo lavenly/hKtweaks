@@ -26,14 +26,19 @@ import android.content.res.Resources;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.LocaleList;
+
 import androidx.annotation.Nullable;
-import com.google.android.material.appbar.AppBarLayout;
-import com.google.android.material.appbar.MaterialToolbar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
+import androidx.core.view.WindowCompat;
+import androidx.core.view.WindowInsetsControllerCompat;
+
 import android.view.Window;
 import android.view.WindowManager;
 
+import com.google.android.material.appbar.AppBarLayout;
+import com.google.android.material.appbar.MaterialToolbar;
+import com.google.android.material.color.MaterialColors;
 import com.hades.hKtweaks.R;
 import com.hades.hKtweaks.utils.AppSettings;
 import com.hades.hKtweaks.utils.Themes;
@@ -66,7 +71,11 @@ public abstract class BaseActivity extends AppCompatActivity {
             Window window = getWindow();
             window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
             window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-            window.setStatusBarColor(statusBarColor());
+            int statusBarColor = statusBarColor();
+            window.setStatusBarColor(statusBarColor);
+            WindowInsetsControllerCompat controller =
+                    WindowCompat.getInsetsController(window, window.getDecorView());
+            controller.setAppearanceLightStatusBars(MaterialColors.isColorLight(statusBarColor));
         }
     }
 
@@ -126,7 +135,7 @@ public abstract class BaseActivity extends AppCompatActivity {
     }
 
     protected int statusBarColor() {
-        return ViewUtils.getColorPrimaryDarkColor(this);
+        return ViewUtils.getThemeColor(this, R.attr.colorSurface);
     }
 
 }

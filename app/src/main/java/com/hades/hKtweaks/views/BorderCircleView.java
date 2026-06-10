@@ -63,9 +63,9 @@ public class BorderCircleView extends FrameLayout {
         TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.BorderCircleView, defStyleAttr, 0);
 
         int primaryColor = ViewUtils.getColorPrimaryColor(getContext());
-        int accentColor = ViewUtils.getThemeAccentColor(getContext());
-        mPaint.setColor(a.getColor(R.styleable.BorderCircleView_circlecolor, accentColor));
-        mPaintBorder.setColor(a.getColor(R.styleable.BorderCircleView_bordercolor, primaryColor));
+        int outlineColor = ViewUtils.getColorOutlineColor(getContext());
+        mPaint.setColor(a.getColor(R.styleable.BorderCircleView_circlecolor, primaryColor));
+        mPaintBorder.setColor(a.getColor(R.styleable.BorderCircleView_bordercolor, outlineColor));
 
         a.recycle();
 
@@ -82,6 +82,11 @@ public class BorderCircleView extends FrameLayout {
 
     public void setBorderColor(int color) {
         mPaintBorder.setColor(color);
+        invalidate();
+    }
+
+    public void setCheckColor(int color) {
+        DrawableCompat.setTint(mCheck, color);
         invalidate();
     }
 

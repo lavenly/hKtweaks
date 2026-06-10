@@ -20,7 +20,6 @@
 package com.hades.hKtweaks.fragments.tools;
 
 import android.app.Activity;
-import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import androidx.annotation.NonNull;
@@ -140,11 +139,8 @@ public class BuildpropFragment extends RecyclerViewFragment {
                 continue;
             }
 
-            int color = ViewUtils.getThemeAccentColor(getActivity());
-            String colorCode = "#"
-                    + Integer.toHexString(Color.red(color))
-                    + Integer.toHexString(Color.green(color))
-                    + Integer.toHexString(Color.blue(color));
+            int color = ViewUtils.getColorSecondaryColor(getActivity());
+            String colorCode = String.format("#%06X", color & 0xFFFFFF);
 
             DescriptionView descriptionView = new DescriptionView();
             if (mKeyText != null && !mKeyText.isEmpty()) {

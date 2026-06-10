@@ -16,9 +16,10 @@ import android.graphics.Paint;
 import android.graphics.RectF;
 import android.util.AttributeSet;
 import android.util.Log;
-import android.util.TypedValue;
 import android.view.MotionEvent;
 import android.view.View;
+
+import com.hades.hKtweaks.R;
 
 public class GrxVolumeControlView extends View {
 
@@ -65,32 +66,29 @@ public class GrxVolumeControlView extends View {
         init();
     }
 
-    public int mGrxAccentColor;
-
     void init() {
 
-        TypedValue typedValue = new TypedValue();
-        TypedArray b = getContext().obtainStyledAttributes(typedValue.data, new int[] { android.R.attr.colorAccent });
-        int mGrxAccentColor = b.getColor(0, 0);
+        TypedArray b = getContext().obtainStyledAttributes(new int[]{R.attr.colorSecondary});
+        int themeColor = b.getColor(0, 0);
         b.recycle();
 
         textPaint = new Paint();
-        textPaint.setColor(mGrxAccentColor);
+        textPaint.setColor(themeColor);
         textPaint.setStyle(Paint.Style.FILL);
         textPaint.setTextSize(24);
         textPaint.setFakeBoldText(true);
         textPaint.setTextAlign(Paint.Align.CENTER);
 
         circlePaint = new Paint();
-        circlePaint.setColor(mGrxAccentColor & 0x30ffffff);
+        circlePaint.setColor(themeColor & 0x30ffffff);
         circlePaint.setStyle(Paint.Style.FILL);
 
         circlePaint2 = new Paint();
-        circlePaint2.setColor(mGrxAccentColor);
+        circlePaint2.setColor(themeColor);
         circlePaint2.setStyle(Paint.Style.FILL);
 
         linePaint = new Paint();
-        linePaint.setColor(mGrxAccentColor);
+        linePaint.setColor(themeColor);
         linePaint.setStrokeWidth(7);
 
         angle = "0.0";
@@ -98,7 +96,7 @@ public class GrxVolumeControlView extends View {
 
 
         mArcPaint = new Paint();
-        mArcPaint.setColor(mGrxAccentColor);
+        mArcPaint.setColor(themeColor);
         mArcPaint.setAntiAlias(true);
         mArcPaint.setStyle(Paint.Style.STROKE);
         mArcPaint.setStrokeWidth(3);
