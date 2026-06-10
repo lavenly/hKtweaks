@@ -12,7 +12,16 @@
         android:layout_height="match_parent"
         android:contentDescription="@null"
         android:scaleType="fitXY"
-        android:src="@drawable/widget_profile_surface_dark" />
+        android:src="@drawable/widget_profile_surface" />
+
+    <ImageView
+        android:id="@+id/widget_surface_outline"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:contentDescription="@null"
+        android:scaleType="fitXY"
+        android:src="@drawable/widget_profile_surface_outline"
+        android:visibility="gone" />
 
     <LinearLayout
         android:id="@+id/widget_container"
@@ -64,8 +73,9 @@
                     android:gravity="center_vertical"
                     android:maxLines="1"
                     android:text="@string/profile"
-                    android:textColor="@color/widget_on_primary"
-                    android:textSize="18sp" />
+                    android:textAppearance="@style/TextAppearance.hKtweaks.ItemTitle.Emphasized"
+                    android:textColor="@color/widget_on_primary_container"
+                    />
             </LinearLayout>
         </FrameLayout>
 

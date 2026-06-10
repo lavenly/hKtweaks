@@ -13,14 +13,13 @@
     <color name="colorBattery">#03a9f4</color>
     <color name="colorGaming">#ef5350</color>
 
-    <color name="widget_primary">#6B8BD3</color>
-    <color name="widget_primary_state_layer">#336B8BD3</color>
-    <color name="widget_on_primary">#FFFFFFFF</color>
-    <color name="widget_surface_light">#FFF9F9FF</color>
-    <color name="widget_surface_dark">#FF1D1B20</color>
+    <color name="widget_primary_container">#FFB8EAFF</color>
+    <color name="widget_primary_container_state_layer">#1F004D61</color>
+    <color name="widget_on_primary_container">#FF004D61</color>
+    <color name="widget_surface">#FFF3FBFF</color>
     <color name="widget_surface_amoled">#FF000000</color>
-    <color name="widget_on_surface">#FFF2F0F4</color>
-    <color name="widget_on_surface_variant">#FFCAC4D0</color>
-    <color name="widget_outline_dark">#3DFFFFFF</color>
+    <color name="widget_on_surface">#FF121D21</color>
+    <color name="widget_on_surface_variant">#FF3B494F</color>
+    <color name="widget_outline_variant">#FFBAC9D0</color>
 
 </resources>
