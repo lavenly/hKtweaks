@@ -107,6 +107,19 @@
         <item name="tint">?attr/colorOnSecondaryContainer</item>
     </style>
 
+    <style name="Widget.hKtweaks.Material3Expressive.LoadingIndicator"
+        parent="Widget.Material3.LoadingIndicator" />
+
+    <style name="Widget.hKtweaks.Material3Expressive.LoadingIndicator.Contained"
+        parent="Widget.Material3.LoadingIndicator.Contained" />
+
+    <style name="Widget.hKtweaks.Material3Expressive.LoadingIndicator.Small"
+        parent="Widget.Material3.LoadingIndicator">
+        <item name="containerWidth">32dp</item>
+        <item name="containerHeight">32dp</item>
+        <item name="indicatorSize">24dp</item>
+    </style>
+
     <style name="Divider">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">1dp</item>

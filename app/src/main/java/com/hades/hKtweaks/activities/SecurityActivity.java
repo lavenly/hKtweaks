@@ -30,7 +30,7 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
 
-import com.google.android.material.progressindicator.CircularProgressIndicator;
+import com.google.android.material.loadingindicator.LoadingIndicator;
 import com.google.android.material.textfield.TextInputEditText;
 import com.hades.hKtweaks.R;
 import com.hades.hKtweaks.utils.AppSettings;
@@ -136,7 +136,7 @@ public class SecurityActivity extends BaseActivity {
         }
 
         mCryptoObject = new FingerprintManagerCompat.CryptoObject(mCipher);
-        CircularProgressIndicator indicator = findViewById(R.id.fingerprint_indicator);
+        LoadingIndicator indicator = findViewById(R.id.fingerprint_indicator);
         indicator.setVisibility(View.VISIBLE);
 
         mFingerprintUiHelper = new FingerprintUiHelper.FingerprintUiHelperBuilder(
