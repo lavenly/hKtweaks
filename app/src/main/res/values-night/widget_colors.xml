@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Default seed roles used before the widget provider sends its themed RemoteViews. -->
+    <color name="widget_primary_container">#FF004D61</color>
+    <color name="widget_primary_container_state_layer">#1FB8EAFF</color>
+    <color name="widget_on_primary_container">#FFB8EAFF</color>
+    <color name="widget_surface">#FF0A1519</color>
+    <color name="widget_on_surface">#FFD9E4EA</color>
+    <color name="widget_on_surface_variant">#FFBAC9D0</color>
+    <color name="widget_outline_variant">#FF3B494F</color>
+</resources>
