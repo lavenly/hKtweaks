@@ -228,14 +228,18 @@
         <item>9,4,10,4,7</item>
     </string-array>
 
-    <string-array name="dark_theme_modes">
-        <item>Default dark</item>
-        <item>Amoled black</item>
+    <string-array name="theme_modes">
+        <item>@string/theme_mode_system</item>
+        <item>@string/theme_mode_light</item>
+        <item>@string/theme_mode_dark</item>
+        <item>@string/theme_mode_amoled</item>
     </string-array>
 
-    <string-array name="dark_theme_modes_values">
+    <string-array name="theme_mode_values">
+        <item>system</item>
+        <item>light</item>
         <item>dark</item>
-        <item>black</item>
+        <item>amoled</item>
     </string-array>
 
 </resources>

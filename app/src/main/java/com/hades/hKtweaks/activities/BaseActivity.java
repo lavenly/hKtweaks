@@ -56,14 +56,22 @@ public abstract class BaseActivity extends AppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
 
         AppCompatDelegate.setCompatVectorFromResourcesEnabled(true);
+        String themeMode = Themes.getThemeMode(this);
+        switch (themeMode) {
+            case Themes.THEME_MODE_LIGHT:
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+                break;
+            case Themes.THEME_MODE_DARK:
+            case Themes.THEME_MODE_AMOLED:
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+                break;
+            default:
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
+                break;
+        }
         Utils.DARK_THEME = Themes.isDarkTheme(this);
         Utils.AMOLED_DARK_THEME = Themes.isAmoledBlack(this);
         Themes.Theme theme = Themes.getTheme(this, Utils.DARK_THEME, Utils.AMOLED_DARK_THEME);
-        if (Utils.DARK_THEME) {
-            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
-        } else {
-            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
-        }
         setTheme(theme.getStyle());
         super.onCreate(savedInstanceState);
 
