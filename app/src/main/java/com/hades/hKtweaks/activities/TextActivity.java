@@ -19,10 +19,16 @@
  */
 package com.hades.hKtweaks.activities;
 
+import android.content.Intent;
 import android.os.Bundle;
+
 import androidx.annotation.Nullable;
+
+import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.google.android.material.button.MaterialButton;
 import com.hades.hKtweaks.R;
 import com.hades.hKtweaks.utils.Utils;
 
@@ -33,6 +39,9 @@ public class TextActivity extends BaseActivity {
 
     public static final String MESSAGE_INTENT = "message_intent";
     public static final String SUMMARY_INTENT = "summary_intent";
+    public static final String ISSUE_INTENT = "issue_intent";
+    public static final int ISSUE_NO_ROOT = 0;
+    public static final int ISSUE_NO_BUSYBOX = 1;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -41,12 +50,35 @@ public class TextActivity extends BaseActivity {
 
         String message = getIntent().getStringExtra(MESSAGE_INTENT);
         final String url = getIntent().getStringExtra(SUMMARY_INTENT);
+        int issue = getIntent().getIntExtra(ISSUE_INTENT, ISSUE_NO_ROOT);
 
-        if (message != null)
-            ((TextView) findViewById(R.id.message_text)).setText(message);
-        if (url != null)
-            findViewById(R.id.help_fab).setOnClickListener(
-                    v -> Utils.launchUrl(url, TextActivity.this));
+        TextView messageView = findViewById(R.id.message_text);
+        TextView summaryView = findViewById(R.id.summary_text);
+        ImageView statusIcon = findViewById(R.id.status_icon);
+        MaterialButton helpButton = findViewById(R.id.help_button);
+
+        if (message != null) {
+            messageView.setText(message);
+        }
+
+        boolean noRoot = issue == ISSUE_NO_ROOT;
+        summaryView.setText(noRoot ? R.string.no_root_summary : R.string.no_busybox_summary);
+        statusIcon.setImageResource(noRoot ? R.drawable.ic_unlock : R.drawable.ic_shell);
+        helpButton.setText(noRoot ? R.string.root_help : R.string.install_busybox);
+
+        if (url == null) {
+            helpButton.setVisibility(View.GONE);
+        } else {
+            helpButton.setOnClickListener(v -> Utils.launchUrl(url, TextActivity.this));
+        }
+
+        findViewById(R.id.retry_button).setOnClickListener(v -> {
+            Intent intent = new Intent(TextActivity.this, MainActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            startActivity(intent);
+            overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
+            finish();
+        });
     }
 
 }

@@ -481,6 +481,8 @@ public class MainActivity extends BaseActivity {
                 Intent intent = new Intent(activity, TextActivity.class);
                 intent.putExtra(TextActivity.MESSAGE_INTENT, activity.getString(hasRoot ?
                         R.string.no_busybox : R.string.no_root));
+                intent.putExtra(TextActivity.ISSUE_INTENT, hasRoot ?
+                        TextActivity.ISSUE_NO_BUSYBOX : TextActivity.ISSUE_NO_ROOT);
                 intent.putExtra(TextActivity.SUMMARY_INTENT,
                         hasRoot ? "https://play.google.com/store/apps/details?id=stericson.busybox" :
                                 "https://www.google.com/search?site=&source=hp&q=root+"

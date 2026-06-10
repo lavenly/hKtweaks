@@ -7,7 +7,12 @@
     <string name="searching_busybox">Searching for busybox</string>
     <string name="collecting_info">Collecting info</string>
     <string name="no_root">No root</string>
+    <string name="no_root_summary">Root access is required to read and change kernel settings. Grant root access, then try again.</string>
     <string name="no_busybox">No busybox</string>
+    <string name="no_busybox_summary">BusyBox or Toybox commands are required to manage your device settings. Install BusyBox, then try again.</string>
+    <string name="root_help">Learn about root access</string>
+    <string name="install_busybox">Install BusyBox</string>
+    <string name="retry_startup">Try again</string>
     <string name="open">Open %s</string>
     <string name="disable">Disable</string>
     <string name="changelog">hKtweaks v%s</string>
