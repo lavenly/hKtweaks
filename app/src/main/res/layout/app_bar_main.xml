@@ -5,8 +5,8 @@
     android:id="@+id/appbarlayout"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="?attr/colorSurfaceContainer"
-    app:elevation="@dimen/app_bar_elevation"
+    android:background="?attr/colorSurface"
+    app:elevation="0dp"
     tools:ignore="Overdraw">
 
     <com.google.android.material.appbar.MaterialToolbar
@@ -14,7 +14,6 @@
         style="@style/Widget.hKtweaks.Material3Expressive.Toolbar"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
-        app:contentInsetLeft="72dp"
-        app:contentInsetStart="72dp"
+        android:theme="@style/ThemeOverlay.Material3.Toolbar.CircleNavigationButton"
         app:popupTheme="@style/AppTheme.PopupOverlay" />
 </com.google.android.material.appbar.AppBarLayout>

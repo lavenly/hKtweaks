@@ -52,8 +52,7 @@
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.Material3Expressive.Light" />
 
     <style name="Widget.hKtweaks.Material3Expressive.Toolbar"
-        parent="Widget.Material3Expressive.Toolbar">
-        <item name="android:background">@android:color/transparent</item>
+        parent="Widget.Material3Expressive.Toolbar.OnSurface">
         <item name="actionMenuTextColor">?attr/colorOnSurface</item>
         <item name="colorControlNormal">?attr/colorOnSurface</item>
         <item name="navigationIconTint">?attr/colorOnSurface</item>
