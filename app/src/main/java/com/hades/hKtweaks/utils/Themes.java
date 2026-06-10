@@ -20,6 +20,8 @@
 package com.hades.hKtweaks.utils;
 
 import android.content.Context;
+import android.content.res.Configuration;
+import android.content.res.Resources;
 
 import androidx.annotation.ColorRes;
 import androidx.annotation.StyleRes;
@@ -72,9 +74,15 @@ public final class Themes {
     }
 
     private static final String THEME_PREF_KEY = "application_theme";
+    private static final String THEME_MODE_PREF_KEY = "theme_mode";
     private static final String DARK_THEME_PREF_KEY = "darktheme";
     private static final String DARK_THEME_MODE_PREF_KEY = "darkthememode";
     private static final String DEFAULT_THEME_COLOR = "themeSeedDefault";
+
+    public static final String THEME_MODE_SYSTEM = "system";
+    public static final String THEME_MODE_LIGHT = "light";
+    public static final String THEME_MODE_DARK = "dark";
+    public static final String THEME_MODE_AMOLED = "amoled";
 
     public static final List<String> THEME_COLORS = Collections.unmodifiableList(Arrays.asList(
             "themeSeedDefault",
@@ -158,18 +166,69 @@ public final class Themes {
     }
 
     public static boolean isDarkTheme(Context context) {
-        if (context != null && !Prefs.contains(DARK_THEME_PREF_KEY, context)) {
-            int currentNightMode = context.getResources().getConfiguration().uiMode
-                    & android.content.res.Configuration.UI_MODE_NIGHT_MASK;
-            Prefs.saveBoolean(DARK_THEME_PREF_KEY,
-                    currentNightMode == android.content.res.Configuration.UI_MODE_NIGHT_YES,
-                    context);
+        String themeMode = getThemeMode(context);
+        if (THEME_MODE_DARK.equals(themeMode) || THEME_MODE_AMOLED.equals(themeMode)) {
+            return true;
         }
-        return Prefs.getBoolean(DARK_THEME_PREF_KEY, false, context);
+        if (THEME_MODE_LIGHT.equals(themeMode)) {
+            return false;
+        }
+        int currentNightMode = Resources.getSystem().getConfiguration().uiMode
+                & Configuration.UI_MODE_NIGHT_MASK;
+        return currentNightMode == Configuration.UI_MODE_NIGHT_YES;
     }
 
     public static boolean isAmoledBlack(Context context) {
-        return "black".equals(Prefs.getString(DARK_THEME_MODE_PREF_KEY, "dark", context));
+        return THEME_MODE_AMOLED.equals(getThemeMode(context));
+    }
+
+    public static String getThemeMode(Context context) {
+        if (!Prefs.contains(THEME_MODE_PREF_KEY, context)) {
+            String migratedMode = migrateLegacyThemeMode(
+                    Prefs.contains(DARK_THEME_PREF_KEY, context),
+                    Prefs.getBoolean(DARK_THEME_PREF_KEY, false, context),
+                    Prefs.getString(DARK_THEME_MODE_PREF_KEY, "dark", context));
+            Prefs.saveString(THEME_MODE_PREF_KEY, migratedMode, context);
+            return migratedMode;
+        }
+
+        String savedMode = Prefs.getString(THEME_MODE_PREF_KEY, THEME_MODE_SYSTEM, context);
+        String normalizedMode = normalizeThemeMode(savedMode);
+        if (!normalizedMode.equals(savedMode)) {
+            Prefs.saveString(THEME_MODE_PREF_KEY, normalizedMode, context);
+        }
+        return normalizedMode;
+    }
+
+    public static void saveThemeMode(String themeMode, Context context) {
+        Prefs.saveString(THEME_MODE_PREF_KEY, normalizeThemeMode(themeMode), context);
+    }
+
+    static String normalizeThemeMode(String themeMode) {
+        if (THEME_MODE_SYSTEM.equals(themeMode)
+                || THEME_MODE_LIGHT.equals(themeMode)
+                || THEME_MODE_DARK.equals(themeMode)
+                || THEME_MODE_AMOLED.equals(themeMode)) {
+            return themeMode;
+        }
+        if ("black".equalsIgnoreCase(themeMode)
+                || "Amoled black".equalsIgnoreCase(themeMode)) {
+            return THEME_MODE_AMOLED;
+        }
+        return THEME_MODE_SYSTEM;
+    }
+
+    static String migrateLegacyThemeMode(boolean hasLegacyDarkPreference, boolean darkTheme,
+                                         String darkThemeMode) {
+        if (!hasLegacyDarkPreference) {
+            return THEME_MODE_SYSTEM;
+        }
+        if (!darkTheme) {
+            return THEME_MODE_LIGHT;
+        }
+        return "black".equalsIgnoreCase(darkThemeMode)
+                || "Amoled black".equalsIgnoreCase(darkThemeMode)
+                ? THEME_MODE_AMOLED : THEME_MODE_DARK;
     }
 
     public static Theme getTheme(Context context, boolean darkTheme, boolean amoledDarkTheme) {

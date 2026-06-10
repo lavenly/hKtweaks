@@ -32,16 +32,13 @@
     <PreferenceCategory
         android:key="user_interface"
         android:title="@string/user_interface">
-        <com.hades.hKtweaks.views.preference.MaterialSwitchPreference
-            android:key="darktheme"
-            android:title="@string/dark_theme" />
         <com.hades.hKtweaks.views.preference.MaterialListPreference
-            android:key="darkthememode"
-            android:title="@string/dark_theme_mode"
+            android:key="theme_mode"
+            android:title="@string/theme_mode"
             android:summary="%s"
-            android:defaultValue="dark"
-            android:entries="@array/dark_theme_modes"
-            android:entryValues="@array/dark_theme_modes_values"
+            android:defaultValue="system"
+            android:entries="@array/theme_modes"
+            android:entryValues="@array/theme_mode_values"
             />
         <com.hades.hKtweaks.views.preference.MaterialSwitchPreference
             android:key="forceenglish"
