@@ -99,16 +99,23 @@ public class BorderCircleView extends FrameLayout {
     public void draw(Canvas canvas) {
         super.draw(canvas);
 
-        int width = getMeasuredWidth();
-        int height = getMeasuredHeight();
+        float left = getPaddingLeft();
+        float top = getPaddingTop();
+        float right = getWidth() - getPaddingRight();
+        float bottom = getHeight() - getPaddingBottom();
+        float centerX = (left + right) / 2f;
+        float centerY = (top + bottom) / 2f;
+        float contentInset = getResources().getDimension(R.dimen.circleview_inset);
+        float borderInset = mPaintBorder.getStrokeWidth() / 2f;
+        float radius = Math.max(0f,
+                Math.min(right - left, bottom - top) / 2f - contentInset - borderInset);
 
-        float radius = Math.min(width, height) / 2f - 4f;
-
-        canvas.drawCircle(width / 2, height / 2, radius, mPaint);
-        canvas.drawCircle(width / 2, height / 2, radius, mPaintBorder);
+        canvas.drawCircle(centerX, centerY, radius, mPaint);
+        canvas.drawCircle(centerX, centerY, radius, mPaintBorder);
 
         if (mChecked) {
-            mCheck.setBounds(Math.round(width / 2 - radius), 0, Math.round(width / 2 + radius), height);
+            mCheck.setBounds(Math.round(centerX - radius), Math.round(centerY - radius),
+                    Math.round(centerX + radius), Math.round(centerY + radius));
             mCheck.draw(canvas);
         }
     }
