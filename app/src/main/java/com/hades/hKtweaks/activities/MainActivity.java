@@ -484,7 +484,7 @@ public class MainActivity extends BaseActivity {
                 intent.putExtra(TextActivity.ISSUE_INTENT, hasRoot ?
                         TextActivity.ISSUE_NO_BUSYBOX : TextActivity.ISSUE_NO_ROOT);
                 intent.putExtra(TextActivity.SUMMARY_INTENT,
-                        hasRoot ? "https://play.google.com/store/apps/details?id=stericson.busybox" :
+                        hasRoot ? "https://github.com/Magisk-Modules-Repo/busybox-ndk" :
                                 "https://www.google.com/search?site=&source=hp&q=root+"
                                         + Device.getVendor() + "+" + Device.getModel());
                 activity.startActivity(intent);
