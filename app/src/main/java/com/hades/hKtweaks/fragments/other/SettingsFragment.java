@@ -230,16 +230,23 @@ public class SettingsFragment extends PreferenceFragmentCompat implements
             case KEY_HIDE_BANNER:
                 return true;
             case KEY_SECTIONS_ICON:
-                ((NavigationActivity) getActivity()).appendFragments();
-                return true;
+                return updateNavigationPreference(key, o);
             default:
                 if (key.endsWith("_enabled")) {
-                    ((NavigationActivity) getActivity()).appendFragments();
-                    return true;
+                    return updateNavigationPreference(key, o);
                 }
                 break;
         }
         return false;
+    }
+
+    private boolean updateNavigationPreference(String key, Object value) {
+        if (!(value instanceof Boolean)) {
+            return false;
+        }
+        AppSettings.saveBoolean(key, (Boolean) value, requireContext());
+        ((NavigationActivity) requireActivity()).appendFragments();
+        return true;
     }
 
     private void updateWidgetsAfterPreferenceChange() {
