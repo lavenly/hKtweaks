@@ -39,6 +39,7 @@ public class RootUtils {
     private static final long ROOT_ACCESS_TIMEOUT_MS = 15_000;
 
     private static SU sInstance;
+    private static final ThreadLocal<Long> sCommandTimeoutMillis = new ThreadLocal<>();
 
     public static boolean rootAccess() {
         SU su = getSU();
@@ -107,6 +108,23 @@ public class RootUtils {
         return getSU().runCommand(command);
     }
 
+    public static void setCommandTimeoutForCurrentThread(long timeoutMillis) {
+        if (timeoutMillis > 0) {
+            sCommandTimeoutMillis.set(timeoutMillis);
+        } else {
+            sCommandTimeoutMillis.remove();
+        }
+    }
+
+    public static void clearCommandTimeoutForCurrentThread() {
+        sCommandTimeoutMillis.remove();
+    }
+
+    private static long getCommandTimeoutForCurrentThread() {
+        Long timeoutMillis = sCommandTimeoutMillis.get();
+        return timeoutMillis != null ? timeoutMillis : 0;
+    }
+
     public static SU getSU() {
         if (sInstance == null || sInstance.mClosed || sInstance.mDenied) {
             if (sInstance != null && !sInstance.mClosed) {
@@ -159,7 +177,7 @@ public class RootUtils {
         }
 
         public String runCommand(final String command) {
-            return runCommand(command, 0);
+            return runCommand(command, getCommandTimeoutForCurrentThread());
         }
 
         public String runCommand(final String command, long timeoutMillis) {
@@ -176,13 +194,14 @@ public class RootUtils {
                 char[] buffer = new char[256];
                 long startTime = SystemClock.elapsedRealtime();
                 while (!mClosed) {
-                    if (timeoutMillis > 0 && !mReader.ready()) {
-                        if (SystemClock.elapsedRealtime() - startTime >= timeoutMillis) {
-                            mDenied = true;
-                            abort();
-                            Log.e("Timed out waiting for root command: " + command);
-                            return "";
-                        }
+                    if (timeoutMillis > 0
+                            && SystemClock.elapsedRealtime() - startTime >= timeoutMillis) {
+                        mDenied = true;
+                        abort();
+                        Log.e("Timed out waiting for root command: " + command);
+                        return "";
+                    }
+                    if (!mReader.ready()) {
                         SystemClock.sleep(10);
                         continue;
                     }

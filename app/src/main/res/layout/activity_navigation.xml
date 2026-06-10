@@ -11,18 +11,33 @@
 
     <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="match_parent"
+        android:background="?attr/colorSurface">
 
         <FrameLayout
-            android:id="@+id/content_frame"
+            android:id="@+id/navigation_content"
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            android:layout_height="match_parent"
+            android:visibility="invisible">
 
-        <include
-            android:id="@+id/appbarlayout"
-            layout="@layout/app_bar_main"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            <FrameLayout
+                android:id="@+id/content_frame"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+
+            <include
+                android:id="@+id/appbarlayout"
+                layout="@layout/app_bar_main"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+        </FrameLayout>
+
+        <com.google.android.material.loadingindicator.LoadingIndicator
+            android:id="@+id/navigation_loading"
+            style="@style/Widget.Material3.LoadingIndicator.Contained"
+            android:layout_width="64dp"
+            android:layout_height="64dp"
+            android:layout_gravity="center" />
     </FrameLayout>
 
     <com.google.android.material.navigation.NavigationView
