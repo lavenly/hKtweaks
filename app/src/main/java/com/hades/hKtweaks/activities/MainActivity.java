@@ -40,6 +40,7 @@ import com.hades.hKtweaks.fragments.kernel.GPUFragment;
 import com.hades.hKtweaks.services.profile.Tile;
 import com.hades.hKtweaks.utils.AppSettings;
 import com.hades.hKtweaks.utils.Device;
+import com.hades.hKtweaks.utils.Log;
 import com.hades.hKtweaks.utils.Utils;
 import com.hades.hKtweaks.utils.kernel.battery.Battery;
 import com.hades.hKtweaks.utils.kernel.bus.VoltageCam;
@@ -327,11 +328,19 @@ public class MainActivity extends BaseActivity {
                 publishProgress(1);
 
                 if (mHasBusybox) {
-                    collectData();
+                    try {
+                        collectData();
+                    } catch (RuntimeException exception) {
+                        Log.e("Startup data collection failed: " + exception);
+                    }
                     publishProgress(2);
-                }
 
-                checkInitVariables();
+                    try {
+                        checkInitVariables();
+                    } catch (RuntimeException exception) {
+                        Log.e("Startup initialization failed: " + exception);
+                    }
+                }
             }
             return null;
         }

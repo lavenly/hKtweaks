@@ -24,6 +24,10 @@ import android.animation.AnimatorListenerAdapter;
 import android.animation.ValueAnimator;
 import android.app.Activity;
 import android.content.res.ColorStateList;
+
+import androidx.dynamicanimation.animation.DynamicAnimation;
+import androidx.dynamicanimation.animation.SpringAnimation;
+
 import com.google.android.material.imageview.ShapeableImageView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -33,6 +37,7 @@ import android.widget.PopupMenu;
 import android.widget.TextView;
 
 import com.hades.hKtweaks.R;
+import com.hades.hKtweaks.utils.ExpressiveMotion;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -69,6 +74,7 @@ public class CardView extends RecyclerViewItem {
 
     private int mLayoutHeight;
     private ValueAnimator mLayoutAnimator;
+    private SpringAnimation mArrowAnimator;
     private boolean mShowLayout = true;
     private boolean mExpandable = true;
 
@@ -146,7 +152,22 @@ public class CardView extends RecyclerViewItem {
     }
 
     private void animateLayout(final boolean collapse) {
-        mArrow.animate().rotationX(collapse ? 180 : 0).setDuration(500).start();
+        if (mArrowAnimator != null) {
+            mArrowAnimator.cancel();
+        }
+        mArrowAnimator = ExpressiveMotion.spring(
+                mArrow,
+                DynamicAnimation.ROTATION_X,
+                collapse ? 180 : 0,
+                com.google.android.material.R.attr.motionSpringDefaultSpatial,
+                R.style.Motion_hKtweaks_Material3Expressive_Default_Spatial);
+        mArrowAnimator.addEndListener((animation, canceled, value, velocity) -> {
+            if (mArrowAnimator == animation) {
+                mArrowAnimator = null;
+            }
+        });
+        mArrowAnimator.start();
+
         mLayoutAnimator = ValueAnimator.ofInt(collapse ? mLayoutHeight : 0, collapse ? 0 : mLayoutHeight);
         mLayoutAnimator.addUpdateListener(animation
                 -> setLayoutParentHeight((int) animation.getAnimatedValue()));
@@ -165,7 +186,11 @@ public class CardView extends RecyclerViewItem {
                 mLayoutAnimator = null;
             }
         });
-        mLayoutAnimator.setDuration(500);
+        ExpressiveMotion.applyEmphasized(
+                mLayoutAnimator,
+                mActivity,
+                com.google.android.material.R.attr.motionDurationMedium4,
+                400);
         mLayoutAnimator.start();
     }
 

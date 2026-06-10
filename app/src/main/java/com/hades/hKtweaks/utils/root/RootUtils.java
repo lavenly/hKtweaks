@@ -19,6 +19,8 @@
  */
 package com.hades.hKtweaks.utils.root;
 
+import android.os.SystemClock;
+
 import com.hades.hKtweaks.utils.Log;
 import com.hades.hKtweaks.utils.Utils;
 
@@ -34,12 +36,14 @@ import java.util.concurrent.locks.ReentrantLock;
  */
 public class RootUtils {
 
+    private static final long ROOT_ACCESS_TIMEOUT_MS = 15_000;
+
     private static SU sInstance;
 
     public static boolean rootAccess() {
         SU su = getSU();
-        su.runCommand("echo /testRoot/");
-        return !su.mDenied;
+        String result = su.runCommand("echo /testRoot/", ROOT_ACCESS_TIMEOUT_MS);
+        return !su.mDenied && result.contains("/testRoot/");
     }
 
     public static boolean busyboxInstalled() {
@@ -155,6 +159,10 @@ public class RootUtils {
         }
 
         public String runCommand(final String command) {
+            return runCommand(command, 0);
+        }
+
+        public String runCommand(final String command, long timeoutMillis) {
             if (mClosed) return "";
             try {
                 mLock.lock();
@@ -166,8 +174,24 @@ public class RootUtils {
 
                 int i;
                 char[] buffer = new char[256];
-                while (true) {
-                    sb.append(buffer, 0, mReader.read(buffer));
+                long startTime = SystemClock.elapsedRealtime();
+                while (!mClosed) {
+                    if (timeoutMillis > 0 && !mReader.ready()) {
+                        if (SystemClock.elapsedRealtime() - startTime >= timeoutMillis) {
+                            mDenied = true;
+                            abort();
+                            Log.e("Timed out waiting for root command: " + command);
+                            return "";
+                        }
+                        SystemClock.sleep(10);
+                        continue;
+                    }
+
+                    int count = mReader.read(buffer);
+                    if (count < 0) {
+                        throw new IOException("Shell closed before returning command output");
+                    }
+                    sb.append(buffer, 0, count);
                     if ((i = sb.indexOf(callback)) > -1) {
                         sb.delete(i, i + callback.length());
                         break;
@@ -191,7 +215,14 @@ public class RootUtils {
             } finally {
                 mLock.unlock();
             }
-            return null;
+            return "";
+        }
+
+        private void abort() {
+            mClosed = true;
+            if (mProcess != null) {
+                mProcess.destroy();
+            }
         }
 
         public void close() {

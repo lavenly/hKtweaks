@@ -103,6 +103,16 @@
 
     <style name="AppThemeParentDark" parent="AppThemeDark" />
 
+    <style name="Motion.hKtweaks.Material3Expressive.Default.Spatial" parent="">
+        <item name="stiffness">380</item>
+        <item name="damping">0.8</item>
+    </style>
+
+    <style name="Motion.hKtweaks.Material3Expressive.Fast.Spatial" parent="">
+        <item name="stiffness">800</item>
+        <item name="damping">0.6</item>
+    </style>
+
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.Material3Expressive.Light" />
 
     <style name="Widget.hKtweaks.Material3Expressive.Toolbar"

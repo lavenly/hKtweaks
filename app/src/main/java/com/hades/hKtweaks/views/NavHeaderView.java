@@ -37,6 +37,7 @@ import android.widget.LinearLayout;
 
 import com.hades.hKtweaks.R;
 import com.hades.hKtweaks.utils.AppSettings;
+import com.hades.hKtweaks.utils.ExpressiveMotion;
 import com.hades.hKtweaks.utils.Utils;
 import com.hades.hKtweaks.utils.ViewUtils;
 import com.hades.hKtweaks.views.dialog.Dialog;
@@ -164,7 +165,15 @@ public class NavHeaderView extends LinearLayout {
                 mImage.setVisibility(VISIBLE);
             }
         });
-        animator.setStartDelay(500);
+        ExpressiveMotion.applyEmphasizedDecelerate(
+                animator,
+                getContext(),
+                com.google.android.material.R.attr.motionDurationMedium4,
+                400);
+        animator.setStartDelay(ExpressiveMotion.resolveDuration(
+                getContext(),
+                com.google.android.material.R.attr.motionDurationMedium2,
+                300));
         animator.start();
     }
 
