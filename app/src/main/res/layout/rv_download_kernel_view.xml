@@ -17,8 +17,9 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center_horizontal"
+            android:textAppearance="@style/TextAppearance.hKtweaks.ItemTitle"
             android:textIsSelectable="true"
-            android:textSize="16sp" />
+            />
 
         <View
             style="@style/Divider"
@@ -30,6 +31,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
             android:gravity="center_horizontal"
+            android:textAppearance="@style/TextAppearance.hKtweaks.Body"
             android:textIsSelectable="true" />
 
         <TextView
@@ -39,6 +41,7 @@
             android:layout_marginTop="10dp"
             android:paddingLeft="10dp"
             android:paddingRight="10dp"
+            android:textAppearance="@style/TextAppearance.hKtweaks.Body"
             android:textIsSelectable="true" />
 
         <LinearLayout
@@ -64,7 +67,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:gravity="end"
-                    android:textSize="12sp" />
+                    android:textAppearance="@style/TextAppearance.hKtweaks.Label" />
 
                 <com.google.android.material.progressindicator.LinearProgressIndicator
                     style="@style/Widget.Material3Expressive.LinearProgressIndicator"
@@ -107,7 +110,8 @@
                 android:layout_height="wrap_content"
                 android:paddingLeft="10dp"
                 android:paddingStart="10dp"
-                android:text="@string/check_md5" />
+                android:text="@string/check_md5"
+                android:textAppearance="@style/TextAppearance.hKtweaks.Body" />
 
         </LinearLayout>
 
@@ -117,6 +121,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
             android:text="@string/md5_mismatch"
+            android:textAppearance="@style/TextAppearance.hKtweaks.Body.Emphasized"
             android:visibility="gone" />
 
         <com.google.android.material.button.MaterialButton

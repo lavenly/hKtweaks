@@ -22,7 +22,7 @@
             android:layout_marginEnd="10dp"
             android:layout_marginRight="10dp"
             android:gravity="center_horizontal"
-            android:textStyle="bold" />
+            android:textAppearance="@style/TextAppearance.hKtweaks.ItemTitle.Emphasized" />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -40,6 +40,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:focusable="false"
+                    android:textAppearance="@style/TextAppearance.hKtweaks.ItemTitleSmall"
                     android:textColor="?android:attr/textColorPrimary" />
 
                 <TextView
@@ -51,13 +52,14 @@
                     android:gravity="end"
                     android:paddingEnd="2dp"
                     android:paddingRight="2dp"
-                    android:textStyle="italic" />
+                    android:textAppearance="@style/TextAppearance.hKtweaks.Supporting" />
             </LinearLayout>
 
             <TextView
                 android:id="@+id/fingerprint"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                android:textAppearance="@style/TextAppearance.hKtweaks.Supporting" />
         </LinearLayout>
     </LinearLayout>
 </FrameLayout>

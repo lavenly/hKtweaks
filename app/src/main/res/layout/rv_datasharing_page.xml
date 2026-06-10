@@ -18,8 +18,7 @@
         android:layout_height="wrap_content"
         android:layout_weight="20"
         android:gravity="center_horizontal"
-        android:textSize="15sp"
-        android:textStyle="bold" />
+        android:textAppearance="@style/TextAppearance.hKtweaks.ItemTitle.Emphasized" />
 
     <com.google.android.material.button.MaterialButton
         style="@style/Widget.Material3Expressive.Button.TextButton"

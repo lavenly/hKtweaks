@@ -16,7 +16,7 @@
             android:id="@+id/title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:fontFamily="sans-serif-medium"
+            android:textAppearance="@style/TextAppearance.hKtweaks.ItemTitle"
             android:textColor="?android:attr/textColorPrimary" />
 
             <LinearLayout
@@ -32,6 +32,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:gravity="center_vertical"
+                    android:textAppearance="@style/TextAppearance.hKtweaks.Body"
                     android:visibility="gone" />
 
                 <com.google.android.material.progressindicator.CircularProgressIndicator

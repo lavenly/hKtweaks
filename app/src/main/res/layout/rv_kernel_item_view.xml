@@ -34,14 +34,15 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="3dp"
+                android:textAppearance="@style/TextAppearance.hKtweaks.ItemTitle.Emphasized"
                 android:textColor="?android:attr/textColorPrimary"
-                android:textSize="16sp"
-                android:textStyle="bold" />
+                />
 
             <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/summary"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                android:textAppearance="@style/TextAppearance.hKtweaks.Body" />
         </LinearLayout>
     </LinearLayout>
 </com.google.android.material.card.MaterialCardView>

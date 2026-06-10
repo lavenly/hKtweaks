@@ -44,7 +44,8 @@
             android:id="@+id/seekbar_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal" />
+            android:layout_gravity="center_horizontal"
+            android:textAppearance="@style/TextAppearance.hKtweaks.Label.Emphasized" />
 
         <com.google.android.material.slider.Slider
             android:id="@+id/seekbar"

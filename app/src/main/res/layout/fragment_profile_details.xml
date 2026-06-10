@@ -18,6 +18,6 @@
             android:paddingTop="16dp"
             android:textColor="@color/green"
             android:textIsSelectable="true"
-            android:textSize="13sp" />
+            android:textAppearance="@style/TextAppearance.hKtweaks.Code" />
     </ScrollView>
 </HorizontalScrollView>

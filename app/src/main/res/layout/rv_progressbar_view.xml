@@ -19,8 +19,8 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:gravity="start"
+            android:textAppearance="@style/TextAppearance.hKtweaks.ItemTitle.Emphasized"
             android:textColor="?android:attr/textColorPrimary"
-            android:textStyle="bold"
             android:text="@string/title" />
 
         <com.google.android.material.textview.MaterialTextView
@@ -29,6 +29,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:gravity="end"
+            android:textAppearance="@style/TextAppearance.hKtweaks.Body"
             android:textColor="?android:attr/textColorPrimary"
             android:text="@string/total" />
     </LinearLayout>
@@ -49,12 +50,14 @@
             <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/used"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                android:textAppearance="@style/TextAppearance.hKtweaks.Label" />
 
             <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/used_label"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:textAppearance="@style/TextAppearance.hKtweaks.Label"
                 android:text="@string/used" />
 
         </LinearLayout>
@@ -63,7 +66,8 @@
             android:id="@+id/percent"
             android:layout_width="50dp"
             android:layout_height="wrap_content"
-            android:gravity="center" />
+            android:gravity="center"
+            android:textAppearance="@style/TextAppearance.hKtweaks.Label.Emphasized" />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -75,12 +79,14 @@
             <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/free"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                android:textAppearance="@style/TextAppearance.hKtweaks.Label" />
 
             <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/free_label"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:textAppearance="@style/TextAppearance.hKtweaks.Label"
                 android:text="@string/free" />
 
         </LinearLayout>

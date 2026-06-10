@@ -24,7 +24,7 @@ import com.hades.hKtweaks.R;
 public class GrxVolumeControlView extends View {
 
     float midx, midy;
-    Paint textPaint, circlePaint, circlePaint2, linePaint;
+    Paint circlePaint, circlePaint2, linePaint;
     String angle;
     float currdeg, deg = 3, downdeg;
 
@@ -71,13 +71,6 @@ public class GrxVolumeControlView extends View {
         TypedArray b = getContext().obtainStyledAttributes(new int[]{R.attr.colorSecondary});
         int themeColor = b.getColor(0, 0);
         b.recycle();
-
-        textPaint = new Paint();
-        textPaint.setColor(themeColor);
-        textPaint.setStyle(Paint.Style.FILL);
-        textPaint.setTextSize(24);
-        textPaint.setFakeBoldText(true);
-        textPaint.setTextAlign(Paint.Align.CENTER);
 
         circlePaint = new Paint();
         circlePaint.setColor(themeColor & 0x30ffffff);
@@ -150,7 +143,6 @@ public class GrxVolumeControlView extends View {
 
         canvas.drawCircle(midx, midy, radius /4, circlePaint);
         canvas.drawCircle(midx, midy, radius /8, circlePaint2);
-        //   canvas.drawText(label, midx, midy + (float) (radius * 1.2), textPaint);
         canvas.drawLine(x1, y1, x2, y2, linePaint);
 
 

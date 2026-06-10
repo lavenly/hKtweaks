@@ -29,11 +29,11 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:fontFamily="sans-serif-medium"
         android:gravity="center"
         android:paddingBottom="16dp"
         android:paddingTop="16dp"
+        android:textAppearance="@style/TextAppearance.hKtweaks.ScreenTitle"
         android:textColor="?attr/colorOnPrimaryContainer"
-        android:textSize="20sp" />
+        />
 
 </FrameLayout>

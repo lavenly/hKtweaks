@@ -30,7 +30,8 @@
             android:paddingBottom="16dp"
             android:paddingTop="16dp"
             android:text="@string/about_me"
+            android:textAppearance="@style/TextAppearance.hKtweaks.Supporting"
             android:textColor="?attr/colorOnPrimaryContainer"
-            android:textSize="12sp" />
+            />
     </ScrollView>
 </LinearLayout>

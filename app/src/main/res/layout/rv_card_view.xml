@@ -32,8 +32,9 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:focusable="false"
+                    android:textAppearance="@style/TextAppearance.hKtweaks.SectionTitle"
                     android:textColor="?android:attr/textColorSecondary"
-                    android:textSize="18sp" />
+                    />
 
                 <com.google.android.material.imageview.ShapeableImageView
                     android:id="@+id/arrow_image"
