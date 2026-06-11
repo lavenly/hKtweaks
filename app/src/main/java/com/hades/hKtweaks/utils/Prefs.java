@@ -31,6 +31,10 @@ class Prefs {
         PreferenceManager.getDefaultSharedPreferences(context).edit().remove(name).apply();
     }
 
+    static boolean contains(String name, Context context) {
+        return PreferenceManager.getDefaultSharedPreferences(context).contains(name);
+    }
+
     static int getInt(String name, int defaults, Context context) {
         return PreferenceManager.getDefaultSharedPreferences(context).getInt(name, defaults);
     }
