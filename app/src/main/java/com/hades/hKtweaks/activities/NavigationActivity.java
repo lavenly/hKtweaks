@@ -29,12 +29,16 @@ import android.os.Bundle;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.os.SystemClock;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.SubMenu;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.FrameLayout;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.core.content.ContextCompat;
 import androidx.core.view.GravityCompat;
@@ -141,7 +145,7 @@ public class NavigationActivity extends BaseActivity
     private ArrayList<NavigationFragment> mFragments = new ArrayList<>();
     private final Map<Integer, Class<? extends Fragment>> mActualFragments = new LinkedHashMap<>();
     private final ArrayList<Integer> mTabIds = new ArrayList<>();
-    private final Map<Integer, Fragment> mPagerFragments = new LinkedHashMap<>();
+    private final Map<Integer, NavigationPageFragment> mPagerFragments = new LinkedHashMap<>();
 
     private DrawerLayout mDrawer;
     private NavigationView mNavigationView;
@@ -614,7 +618,9 @@ public class NavigationActivity extends BaseActivity
                     AppSettings.getFragmentOpened(fragmentClass, this) + 1,
                     this);
         }
-        setShortcuts();
+        if (!mUseTopTabs || !saveOpened) {
+            setShortcuts();
+        }
 
         if (mUseTopTabs) return;
 
@@ -644,16 +650,16 @@ public class NavigationActivity extends BaseActivity
 
     private Fragment getCurrentFragment() {
         if (mUseTopTabs) {
-            Fragment fragment = mPagerFragments.get(mSelection);
-            if (fragment != null) {
-                return fragment;
+            NavigationPageFragment page = mPagerFragments.get(mSelection);
+            if (page != null) {
+                return page.getLoadedFragment();
             }
             if (mPagerAdapter != null && mNavigationPager != null
                     && mNavigationPager.getCurrentItem() < mPagerAdapter.getItemCount()) {
                 long itemId = mPagerAdapter.getItemId(mNavigationPager.getCurrentItem());
-                fragment = getSupportFragmentManager().findFragmentByTag("f" + itemId);
-                if (fragment != null) {
-                    return fragment;
+                Fragment fragment = getSupportFragmentManager().findFragmentByTag("f" + itemId);
+                if (fragment instanceof NavigationPageFragment) {
+                    return ((NavigationPageFragment) fragment).getLoadedFragment();
                 }
             }
             return null;
@@ -671,8 +677,8 @@ public class NavigationActivity extends BaseActivity
         @Override
         public Fragment createFragment(int position) {
             int section = mTabIds.get(position);
-            Fragment fragment = Fragment.instantiate(NavigationActivity.this,
-                    mActualFragments.get(section).getCanonicalName());
+            NavigationPageFragment fragment = NavigationPageFragment.newInstance(
+                    section, mActualFragments.get(section).getCanonicalName());
             mPagerFragments.put(section, fragment);
             return fragment;
         }
@@ -690,6 +696,74 @@ public class NavigationActivity extends BaseActivity
         @Override
         public boolean containsItem(long itemId) {
             return mTabIds.contains((int) itemId);
+        }
+    }
+
+    public static class NavigationPageFragment extends Fragment {
+
+        private static final String ARG_SECTION = "section";
+        private static final String ARG_FRAGMENT_CLASS = "fragment_class";
+        private static final String TAG_CONTENT = "content";
+
+        private Fragment mLoadedFragment;
+        private boolean mLoadPosted;
+
+        static NavigationPageFragment newInstance(int section, String fragmentClass) {
+            NavigationPageFragment fragment = new NavigationPageFragment();
+            Bundle args = new Bundle();
+            args.putInt(ARG_SECTION, section);
+            args.putString(ARG_FRAGMENT_CLASS, fragmentClass);
+            fragment.setArguments(args);
+            return fragment;
+        }
+
+        @NonNull
+        @Override
+        public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
+                                 @Nullable Bundle savedInstanceState) {
+            FrameLayout view = new FrameLayout(requireContext());
+            view.setId(R.id.navigation_page_container);
+            view.setLayoutParams(new FrameLayout.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT,
+                    ViewGroup.LayoutParams.MATCH_PARENT));
+            return view;
+        }
+
+        @Override
+        public void onResume() {
+            super.onResume();
+            loadContent();
+        }
+
+        @Nullable
+        Fragment getLoadedFragment() {
+            if (mLoadedFragment == null) {
+                mLoadedFragment = getChildFragmentManager().findFragmentByTag(TAG_CONTENT);
+            }
+            return mLoadedFragment;
+        }
+
+        private void loadContent() {
+            View view = getView();
+            if (view == null || getLoadedFragment() != null || mLoadPosted) {
+                return;
+            }
+            mLoadPosted = true;
+            view.post(() -> {
+                mLoadPosted = false;
+                if (!isAdded() || getView() == null || getLoadedFragment() != null) {
+                    return;
+                }
+                String fragmentClass = requireArguments().getString(ARG_FRAGMENT_CLASS);
+                if (fragmentClass == null) {
+                    return;
+                }
+                mLoadedFragment = Fragment.instantiate(requireContext(), fragmentClass);
+                getChildFragmentManager().beginTransaction()
+                        .setReorderingAllowed(true)
+                        .replace(R.id.navigation_page_container, mLoadedFragment, TAG_CONTENT)
+                        .commitAllowingStateLoss();
+            });
         }
     }
 
