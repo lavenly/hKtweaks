@@ -22,6 +22,7 @@ package com.hades.hKtweaks.activities;
 import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.content.pm.ShortcutInfo;
 import android.content.pm.ShortcutManager;
 import android.graphics.drawable.Drawable;
@@ -151,8 +152,13 @@ public class NavigationActivity extends BaseActivity
     private static final long TOP_TAB_REVEAL_TIMEOUT_MS = 2_500;
     private static final String STATE_FRAGMENTS_COMPLETE = "fragments_complete";
     private static final String FRAGMENT_CACHE = "navigation_fragment_cache";
+    private static final String FRAGMENT_CACHE_FORMAT =
+            "navigation_fragment_cache_format";
+    private static final String FRAGMENT_CACHE_FORMAT_CURRENT = "2";
     private static final String FRAGMENT_CACHE_APP_VERSION =
             "navigation_fragment_cache_app_version";
+    private static final String FRAGMENT_CACHE_INSTALL_TIME =
+            "navigation_fragment_cache_install_time";
     private static final String FRAGMENT_CACHE_KERNEL_VERSION =
             "navigation_fragment_cache_kernel_version";
     public static final String INTENT_SECTION = PACKAGE + ".INTENT.SECTION";
@@ -235,11 +241,17 @@ public class NavigationActivity extends BaseActivity
 
     @Nullable
     private ArrayList<NavigationFragment> readFragmentCache() {
+        String cacheFormat = AppSettings.getString(
+                FRAGMENT_CACHE_FORMAT, "", this);
         String appVersion = AppSettings.getString(
                 FRAGMENT_CACHE_APP_VERSION, "", this);
+        String installTime = AppSettings.getString(
+                FRAGMENT_CACHE_INSTALL_TIME, "", this);
         String kernelVersion = AppSettings.getString(
                 FRAGMENT_CACHE_KERNEL_VERSION, "", this);
-        if (!Utils.appVersion().equals(appVersion)
+        if (!FRAGMENT_CACHE_FORMAT_CURRENT.equals(cacheFormat)
+                || !Utils.appVersion().equals(appVersion)
+                || !getPackageInstallTime().equals(installTime)
                 || !getCachedKernelVersion().equals(kernelVersion)) {
             return null;
         }
@@ -287,9 +299,22 @@ public class NavigationActivity extends BaseActivity
         }
         AppSettings.saveString(FRAGMENT_CACHE, cache.toString(), this);
         AppSettings.saveString(
+                FRAGMENT_CACHE_FORMAT, FRAGMENT_CACHE_FORMAT_CURRENT, this);
+        AppSettings.saveString(
                 FRAGMENT_CACHE_APP_VERSION, Utils.appVersion(), this);
         AppSettings.saveString(
+                FRAGMENT_CACHE_INSTALL_TIME, getPackageInstallTime(), this);
+        AppSettings.saveString(
                 FRAGMENT_CACHE_KERNEL_VERSION, getCachedKernelVersion(), this);
+    }
+
+    private String getPackageInstallTime() {
+        try {
+            return Long.toString(getPackageManager()
+                    .getPackageInfo(getPackageName(), 0).lastUpdateTime);
+        } catch (PackageManager.NameNotFoundException exception) {
+            return "";
+        }
     }
 
     private String getCachedKernelVersion() {
@@ -519,6 +544,7 @@ public class NavigationActivity extends BaseActivity
                 && mNavigationTabs.getVisibility() != View.VISIBLE;
         if (mUseTopTabs && !tabsAreHidden
                 && !hasPendingRequestedSection(fragments)) {
+            mFragments = fragments;
             mFragmentsComplete = true;
             appendFragments(true);
             return;
