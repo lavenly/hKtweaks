@@ -77,6 +77,13 @@ public class BatteryFragment extends RecyclerViewFragment {
         super.init();
 
         mBattery = Battery.getInstance(Objects.requireNonNull(getActivity()));
+        if (mBattery.hasCharge()
+                || mBattery.hasForceFastCharge()
+                || mBattery.hasBlx()
+                || mBattery.hasChargeRateEnable()
+                || mBattery.hasChargingCurrent()) {
+            addViewPagerFragment(ApplyOnBootFragment.newInstance(this));
+        }
     }
 
     @Override
@@ -103,15 +110,6 @@ public class BatteryFragment extends RecyclerViewFragment {
             blxInit(items);
         }
         chargeRateInit(items);
-    }
-
-    @Override
-    protected void postInit() {
-        super.postInit();
-
-        if (itemsSize() > 2) {
-            addViewPagerFragment(ApplyOnBootFragment.newInstance(this));
-        }
     }
 
     private void chargeInit(List<RecyclerViewItem> items) {
