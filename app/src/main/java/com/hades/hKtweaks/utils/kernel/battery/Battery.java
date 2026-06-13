@@ -20,6 +20,10 @@
 package com.hades.hKtweaks.utils.kernel.battery;
 
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.os.BatteryManager;
+
 import androidx.annotation.NonNull;
 
 import com.hades.hKtweaks.R;
@@ -30,6 +34,7 @@ import com.hades.hKtweaks.utils.root.Control;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
+import java.util.Locale;
 
 /**
  * Created by willi on 26.06.16.
@@ -64,7 +69,10 @@ public class Battery {
     private static String CHARGE_SOURCE;
     private static String HEALTH;
     private static String FG_FULLCAPNOM;
-	
+
+    private static final String STANDARD_BATTERY_HEALTH =
+            "/sys/class/power_supply/battery/health";
+
     public static void setValues() {
         for (String file : new String[] {
                 // Add on this list needed values for battery sysfs nodes
@@ -131,24 +139,57 @@ public class Battery {
     }
 
     public static String getHealthValue() {
-        if (HEALTH == null) {
+        String state = HEALTH == null ? null : Utils.readFile(HEALTH);
+        if (state == null || state.isEmpty()) {
+            state = Utils.readFile(STANDARD_BATTERY_HEALTH);
+        }
+        if (state == null || state.isEmpty()) {
             return null;
         }
-        String state = Utils.readFile(HEALTH);
-        if (state == null){
-            return null;
-        } else if (FG_FULLCAPNOM != null) {
+        if (FG_FULLCAPNOM != null && getCapacity() > 0) {
             float cap = Utils.strToInt(Utils.readFile(FG_FULLCAPNOM));
             if (cap != 0) {
                 float value = ((cap * 2) / getCapacity()) * 100;
                 value = (value > 100) ? (value / 2) : value;
                 value = (value > 100) ? 100 : value;
-                return state + " / " +String.format("%.2f", value)+"%";
-            } else {
-                return state;
+                return state + " / "
+                        + String.format(Locale.getDefault(), "%.2f", value) + "%";
             }
         }
         return state;
+    }
+
+    public static String getHealthValue(@NonNull Context context) {
+        getInstance(context);
+
+        String health = getHealthValue();
+        if (health != null) {
+            return health;
+        }
+
+        Intent status = context.registerReceiver(
+                null, new IntentFilter(Intent.ACTION_BATTERY_CHANGED));
+        if (status == null) {
+            return context.getString(R.string.unknown);
+        }
+
+        switch (status.getIntExtra(
+                BatteryManager.EXTRA_HEALTH, BatteryManager.BATTERY_HEALTH_UNKNOWN)) {
+            case BatteryManager.BATTERY_HEALTH_GOOD:
+                return "Good";
+            case BatteryManager.BATTERY_HEALTH_OVERHEAT:
+                return "Overheat";
+            case BatteryManager.BATTERY_HEALTH_DEAD:
+                return "Dead";
+            case BatteryManager.BATTERY_HEALTH_OVER_VOLTAGE:
+                return "Over voltage";
+            case BatteryManager.BATTERY_HEALTH_UNSPECIFIED_FAILURE:
+                return "Unspecified failure";
+            case BatteryManager.BATTERY_HEALTH_COLD:
+                return "Cold";
+            default:
+                return context.getString(R.string.unknown);
+        }
     }
 
     public void saveStockValues(Context context) {
