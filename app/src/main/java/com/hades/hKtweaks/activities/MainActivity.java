@@ -32,7 +32,6 @@ import android.widget.TextView;
 
 import com.google.android.material.color.MaterialColors;
 import com.hades.hKtweaks.R;
-import com.hades.hKtweaks.database.tools.profiles.Profiles;
 import com.hades.hKtweaks.fragments.kernel.BusCamFragment;
 import com.hades.hKtweaks.fragments.kernel.BusDispFragment;
 import com.hades.hKtweaks.fragments.kernel.BusIntFragment;
@@ -40,7 +39,6 @@ import com.hades.hKtweaks.fragments.kernel.BusMifFragment;
 import com.hades.hKtweaks.fragments.kernel.CPUVoltageCl0Fragment;
 import com.hades.hKtweaks.fragments.kernel.CPUVoltageCl1Fragment;
 import com.hades.hKtweaks.fragments.kernel.GPUFragment;
-import com.hades.hKtweaks.services.profile.Tile;
 import com.hades.hKtweaks.utils.AppSettings;
 import com.hades.hKtweaks.utils.Device;
 import com.hades.hKtweaks.utils.ExpressiveMotion;
@@ -51,25 +49,12 @@ import com.hades.hKtweaks.utils.kernel.bus.VoltageCam;
 import com.hades.hKtweaks.utils.kernel.bus.VoltageDisp;
 import com.hades.hKtweaks.utils.kernel.bus.VoltageInt;
 import com.hades.hKtweaks.utils.kernel.bus.VoltageMif;
-import com.hades.hKtweaks.utils.kernel.cpu.CPUBoost;
 import com.hades.hKtweaks.utils.kernel.cpu.CPUFreq;
-import com.hades.hKtweaks.utils.kernel.cpu.MSMPerformance;
-import com.hades.hKtweaks.utils.kernel.cpu.Temperature;
-import com.hades.hKtweaks.utils.kernel.cpuhotplug.Hotplug;
-import com.hades.hKtweaks.utils.kernel.cpuhotplug.QcomBcl;
 import com.hades.hKtweaks.utils.kernel.cpuvoltage.VoltageCl0;
 import com.hades.hKtweaks.utils.kernel.cpuvoltage.VoltageCl1;
-import com.hades.hKtweaks.utils.kernel.gpu.GPU;
 import com.hades.hKtweaks.utils.kernel.gpu.GPUFreqExynos;
-import com.hades.hKtweaks.utils.kernel.io.IO;
-import com.hades.hKtweaks.utils.kernel.ksm.KSM;
-import com.hades.hKtweaks.utils.kernel.misc.Vibration;
-import com.hades.hKtweaks.utils.kernel.screen.Screen;
-import com.hades.hKtweaks.utils.kernel.sound.Sound;
 import com.hades.hKtweaks.utils.kernel.spectrum.Spectrum;
-import com.hades.hKtweaks.utils.kernel.thermal.Thermal;
 import com.hades.hKtweaks.utils.kernel.vm.ZSwap;
-import com.hades.hKtweaks.utils.kernel.wake.Wake;
 import com.hades.hKtweaks.utils.kernel.boefflawakelock.BoefflaWakelock;
 import com.hades.hKtweaks.utils.root.RootUtils;
 
@@ -291,7 +276,8 @@ public class MainActivity extends BaseActivity {
             }
 
             // Save backup of Cluster0 stock voltages
-            if (!Utils.existFile(VoltageCl0.BACKUP) || !AppSettings.getBoolean("cl0_voltage_saved", false, mRefActivity.get()) ){
+            if (!AppSettings.getBoolean("cl0_voltage_saved", false, mRefActivity.get())
+                    || (mIsBooted && !Utils.existFile(VoltageCl0.BACKUP))) {
                 if (VoltageCl0.supported()){
                     RootUtils.runCommand("cp " + VoltageCl0.CL0_VOLTAGE + " " + VoltageCl0.BACKUP);
                     AppSettings.saveBoolean("cl0_voltage_saved", true, mRefActivity.get());
@@ -299,7 +285,8 @@ public class MainActivity extends BaseActivity {
             }
 
             // Save backup of Cluster1 stock voltages
-            if (!Utils.existFile(VoltageCl1.BACKUP) || !AppSettings.getBoolean("cl1_voltage_saved", false, mRefActivity.get())){
+            if (!AppSettings.getBoolean("cl1_voltage_saved", false, mRefActivity.get())
+                    || (mIsBooted && !Utils.existFile(VoltageCl1.BACKUP))) {
                 if (VoltageCl1.supported()){
                     RootUtils.runCommand("cp " + VoltageCl1.CL1_VOLTAGE + " " + VoltageCl1.BACKUP);
                     AppSettings.saveBoolean("cl1_voltage_saved", true, mRefActivity.get());
@@ -307,7 +294,8 @@ public class MainActivity extends BaseActivity {
             }
 
             // Save backup of Bus Mif stock voltages
-            if (!Utils.existFile(VoltageMif.BACKUP) || !AppSettings.getBoolean("busMif_voltage_saved", false, mRefActivity.get())){
+            if (!AppSettings.getBoolean("busMif_voltage_saved", false, mRefActivity.get())
+                    || (mIsBooted && !Utils.existFile(VoltageMif.BACKUP))) {
                 if (VoltageMif.supported()){
                     RootUtils.runCommand("cp " + VoltageMif.VOLTAGE + " " + VoltageMif.BACKUP);
                     AppSettings.saveBoolean("busMif_voltage_saved", true, mRefActivity.get());
@@ -315,7 +303,8 @@ public class MainActivity extends BaseActivity {
             }
 
             // Save backup of Bus Int stock voltages
-            if (!Utils.existFile(VoltageInt.BACKUP) || !AppSettings.getBoolean("busInt_voltage_saved", false, mRefActivity.get())){
+            if (!AppSettings.getBoolean("busInt_voltage_saved", false, mRefActivity.get())
+                    || (mIsBooted && !Utils.existFile(VoltageInt.BACKUP))) {
                 if (VoltageInt.supported()){
                     RootUtils.runCommand("cp " + VoltageInt.VOLTAGE + " " + VoltageInt.BACKUP);
                     AppSettings.saveBoolean("busInt_voltage_saved", true, mRefActivity.get());
@@ -323,7 +312,8 @@ public class MainActivity extends BaseActivity {
             }
 
             // Save backup of Bus Disp stock voltages
-            if (!Utils.existFile(VoltageDisp.BACKUP) || !AppSettings.getBoolean("busDisp_voltage_saved", false, mRefActivity.get())){
+            if (!AppSettings.getBoolean("busDisp_voltage_saved", false, mRefActivity.get())
+                    || (mIsBooted && !Utils.existFile(VoltageDisp.BACKUP))) {
                 if (VoltageDisp.supported()){
                     RootUtils.runCommand("cp " + VoltageDisp.VOLTAGE + " " + VoltageDisp.BACKUP);
                     AppSettings.saveBoolean("busDisp_voltage_saved", true, mRefActivity.get());
@@ -331,7 +321,8 @@ public class MainActivity extends BaseActivity {
             }
 
             // Save backup of Bus Cam stock voltages
-            if (!Utils.existFile(VoltageCam.BACKUP) || !AppSettings.getBoolean("busCam_voltage_saved", false, mRefActivity.get())){
+            if (!AppSettings.getBoolean("busCam_voltage_saved", false, mRefActivity.get())
+                    || (mIsBooted && !Utils.existFile(VoltageCam.BACKUP))) {
                 if (VoltageCam.supported()){
                     RootUtils.runCommand("cp " + VoltageCam.VOLTAGE + " " + VoltageCam.BACKUP);
                     AppSettings.saveBoolean("busCam_voltage_saved", true,mRefActivity.get() );
@@ -339,7 +330,8 @@ public class MainActivity extends BaseActivity {
             }
 
             // Save backup of GPU stock voltages
-            if (!Utils.existFile(GPUFreqExynos.BACKUP) || !AppSettings.getBoolean("gpu_voltage_saved", false, mRefActivity.get())){
+            if (!AppSettings.getBoolean("gpu_voltage_saved", false, mRefActivity.get())
+                    || (mIsBooted && !Utils.existFile(GPUFreqExynos.BACKUP))) {
                 if (GPUFreqExynos.getInstance().supported() && GPUFreqExynos.getInstance().hasVoltage()){
                     RootUtils.runCommand("cp " + GPUFreqExynos.getInstance().AVAILABLE_VOLTS + " " + GPUFreqExynos.BACKUP);
                     AppSettings.saveBoolean("gpu_voltage_saved", true, mRefActivity.get());
@@ -362,9 +354,13 @@ public class MainActivity extends BaseActivity {
                 AppSettings.saveBoolean("memory_pool_percent_saved", true, mRefActivity.get());
             }
 
-            // Save GPU libs version
-            AppSettings.saveString("gpu_lib_version",
-                    RootUtils.runCommand("dumpsys SurfaceFlinger | grep GLES | head -n 1 | cut -f 3,4,5 -d ','"), mRefActivity.get());
+            // SurfaceFlinger data changes after a reboot, not while reopening the app.
+            if (mIsBooted || AppSettings.getString(
+                    "gpu_lib_version", "", mRefActivity.get()).isEmpty()) {
+                AppSettings.saveString("gpu_lib_version",
+                        RootUtils.runCommand("dumpsys SurfaceFlinger | grep GLES | head -n 1"
+                                + " | cut -f 3,4,5 -d ','"), mRefActivity.get());
+            }
         }
 
         @Override
@@ -384,7 +380,7 @@ public class MainActivity extends BaseActivity {
                 }
 
                 try {
-                    collectData();
+                    prepareStartupData();
                 } catch (RuntimeException exception) {
                     Log.e("Startup data collection failed: " + exception);
                 }
@@ -401,40 +397,12 @@ public class MainActivity extends BaseActivity {
             }
         }
 
-        /**
-         * Determinate what sections are supported
-         */
-        private void collectData() {
+        private void prepareStartupData() {
             MainActivity activity = mRefActivity.get();
             if (activity == null) return;
 
-            Battery.getInstance(activity);
-            CPUBoost.getInstance();
-
-            // Assign core ctl min cpu
+            // Preserve the stored core-ctl value before fragments call getInstance() without context.
             CPUFreq.getInstance(activity);
-
-            Device.CPUInfo.getInstance();
-            Device.Input.getInstance();
-            Device.MemInfo.getInstance();
-            Device.ROMInfo.getInstance();
-            Device.TrustZone.getInstance();
-            GPU.supported();
-            Hotplug.supported();
-            IO.getInstance();
-            KSM.getInstance();
-            MSMPerformance.getInstance();
-            QcomBcl.supported();
-            Screen.supported();
-            Sound.getInstance();
-            Temperature.getInstance(activity);
-            Thermal.supported();
-            Tile.publishProfileTile(new Profiles(activity).getAllProfiles(), activity);
-            Vibration.getInstance();
-            VoltageCl0.supported();
-            VoltageCl1.supported();
-            Wake.supported();
-
         }
 
         /**
