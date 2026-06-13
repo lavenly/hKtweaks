@@ -21,6 +21,7 @@ package com.hades.hKtweaks.fragments.recyclerview;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
+import android.animation.ObjectAnimator;
 import android.app.Activity;
 import android.content.res.Configuration;
 import android.graphics.Color;
@@ -76,8 +77,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
-
-import android.view.ViewAnimationUtils;
 
 /**
  * Created by willi on 16.04.16.
@@ -291,42 +290,57 @@ public abstract class RecyclerViewFragment extends BaseFragment {
             super.onPostExecute(recyclerViewItems);
             RecyclerViewFragment fragment = mRefFragment.get();
 
-            if (isCancelled() || recyclerViewItems == null || fragment == null) return;
+            if (isCancelled() || recyclerViewItems == null || fragment == null
+                    || fragment.getView() != fragment.mRootView) {
+                return;
+            }
 
             fragment.appendItems(recyclerViewItems);
             fragment.hideProgress();
             fragment.postInit();
-            if (mSavedInstanceState == null) {
+            if (!fragment.showViewPager() || fragment.hideBanner()) {
+                fragment.mViewPager.setVisibility(View.INVISIBLE);
+                fragment.mViewPagerShadow.setVisibility(View.INVISIBLE);
+            } else if (mSavedInstanceState == null) {
                 fragment.mRecyclerView.post(new Runnable() {
                     @Override
                     public void run() {
                         Activity activity = fragment.getActivity();
-                        if (fragment.isAdded() && activity != null) {
+                        if (!fragment.isAdded() || activity == null
+                                || fragment.getView() != fragment.mRootView) {
+                            return;
+                        }
+                        if (!fragment.isResumed()
+                                || !ViewCompat.isAttachedToWindow(fragment.mViewPager)) {
+                            fragment.mViewPager.setAlpha(1f);
+                            fragment.mViewPager.setVisibility(View.VISIBLE);
+                            fragment.mViewPagerShadow.setVisibility(View.VISIBLE);
+                            return;
+                        }
+
+                        if (ViewCompat.isAttachedToWindow(fragment.mRecyclerView)) {
                             fragment.mRecyclerView.startAnimation(AnimationUtils.loadAnimation(
                                     activity, R.anim.slide_in_bottom));
+                        }
 
-                            int cx = fragment.mViewPager.getWidth();
-
-                            Animator animator = ViewAnimationUtils.createCircularReveal(
-                                    fragment.mViewPager, cx / 2, 0, 0, cx);
-                            animator.addListener(new AnimatorListenerAdapter() {
-                                @Override
-                                public void onAnimationStart(Animator animation) {
-                                    fragment.mViewPager.setVisibility(View.VISIBLE);
-                                }
-
-                                @Override
-                                public void onAnimationEnd(Animator animation) {
+                        fragment.mViewPager.setAlpha(0f);
+                        fragment.mViewPager.setVisibility(View.VISIBLE);
+                        Animator animator = ObjectAnimator.ofFloat(
+                                fragment.mViewPager, View.ALPHA, 0f, 1f);
+                        animator.addListener(new AnimatorListenerAdapter() {
+                            @Override
+                            public void onAnimationEnd(Animator animation) {
+                                if (fragment.getView() == fragment.mRootView) {
                                     fragment.mViewPagerShadow.setVisibility(View.VISIBLE);
                                 }
-                            });
-                            ExpressiveMotion.applyEmphasizedDecelerate(
-                                    animator,
-                                    activity,
-                                    com.google.android.material.R.attr.motionDurationMedium4,
-                                    400);
-                            animator.start();
-                        }
+                            }
+                        });
+                        ExpressiveMotion.applyEmphasizedDecelerate(
+                                animator,
+                                activity,
+                                com.google.android.material.R.attr.motionDurationMedium2,
+                                300);
+                        animator.start();
                     }
                 });
             } else {

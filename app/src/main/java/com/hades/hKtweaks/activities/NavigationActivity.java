@@ -19,6 +19,7 @@
  */
 package com.hades.hKtweaks.activities;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ShortcutInfo;
 import android.content.pm.ShortcutManager;
@@ -46,10 +47,12 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.recyclerview.widget.DiffUtil;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.google.android.material.appbar.MaterialToolbar;
+import com.google.android.material.color.MaterialColors;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
@@ -145,8 +148,8 @@ public class NavigationActivity extends BaseActivity
     public static final String INTENT_SECTION = PACKAGE + ".INTENT.SECTION";
 
     private ArrayList<NavigationFragment> mFragments = new ArrayList<>();
-    private final Map<Integer, Class<? extends Fragment>> mActualFragments = new LinkedHashMap<>();
-    private final ArrayList<Integer> mTabIds = new ArrayList<>();
+    private Map<Integer, Class<? extends Fragment>> mActualFragments = new LinkedHashMap<>();
+    private List<Integer> mTabIds = new ArrayList<>();
     private final Map<Integer, NavigationPageFragment> mPagerFragments = new LinkedHashMap<>();
 
     private DrawerLayout mDrawer;
@@ -154,10 +157,13 @@ public class NavigationActivity extends BaseActivity
     private TabLayout mNavigationTabs;
     private ViewPager2 mNavigationPager;
     private NavigationPagerAdapter mPagerAdapter;
+    private TabLayoutMediator mNavigationTabMediator;
+    private ViewPager2.OnPageChangeCallback mNavigationPageChangeCallback;
     private View mNavigationContent;
     private View mNavigationLoading;
     private long mLastTimeBackbuttonPressed;
     private boolean mUseTopTabs;
+    private boolean mUpdatingNavigation;
     private final ExecutorService mShortcutExecutor = Executors.newSingleThreadExecutor();
     private volatile int mShortcutGeneration;
 
@@ -327,15 +333,17 @@ public class NavigationActivity extends BaseActivity
     private void init(Bundle savedInstanceState) {
         MaterialToolbar toolbar = getToolBar();
         setSupportActionBar(toolbar);
-        if (mUseTopTabs) {
-            toolbar.setTitle(R.string.app_name);
-            initTopTabs();
-        } else {
-            initDrawer(toolbar);
-        }
 
         if (savedInstanceState != null) {
             mSelection = savedInstanceState.getInt(INTENT_SECTION);
+        }
+
+        if (mUseTopTabs) {
+            toolbar.setTitle(R.string.app_name);
+            mNavigationTabs = findViewById(R.id.navigation_tabs);
+            mNavigationPager = findViewById(R.id.navigation_pager);
+        } else {
+            initDrawer(toolbar);
         }
 
         appendFragments(false);
@@ -353,6 +361,9 @@ public class NavigationActivity extends BaseActivity
 
         if (mSelection == 0 || mActualFragments.get(mSelection) == null) {
             mSelection = firstTab();
+        }
+        if (mUseTopTabs) {
+            initTopTabs();
         }
         onItemSelected(mSelection, false);
 
@@ -378,8 +389,8 @@ public class NavigationActivity extends BaseActivity
     }
 
     private void appendFragments(boolean setShortcuts) {
-        mActualFragments.clear();
-        mTabIds.clear();
+        Map<Integer, Class<? extends Fragment>> actualFragments = new LinkedHashMap<>();
+        List<Integer> tabIds = new ArrayList<>();
 
         SubMenu lastSubMenu = null;
         Menu menu = null;
@@ -395,10 +406,10 @@ public class NavigationActivity extends BaseActivity
                 if (!mUseTopTabs) {
                     lastSubMenu = menu.addSubMenu(id);
                 }
-                mActualFragments.put(id, null);
+                actualFragments.put(id, null);
             } else if (AppSettings.isFragmentEnabled(fragmentClass, this)) {
                 if (mUseTopTabs) {
-                    mTabIds.add(id);
+                    tabIds.add(id);
                 } else {
                     Drawable drawable = ContextCompat.getDrawable(this,
                             AppSettings.isSectionIcons(this) && navigationFragment.mDrawable != 0
@@ -410,42 +421,76 @@ public class NavigationActivity extends BaseActivity
                     menuItem.setIcon(drawable);
                     menuItem.setCheckable(true);
                 }
-                mActualFragments.put(id, fragmentClass);
+                actualFragments.put(id, fragmentClass);
             }
         }
-        if (mUseTopTabs && mPagerAdapter != null) {
-            mPagerFragments.keySet().removeIf(section -> !mTabIds.contains(section));
-            mPagerAdapter.notifyDataSetChanged();
-        }
 
-        if (mActualFragments.get(mSelection) == null) {
-            mSelection = firstTab();
+        List<Integer> previousTabIds = mTabIds;
+        mUpdatingNavigation = mUseTopTabs && mPagerAdapter != null;
+        try {
+            mActualFragments = actualFragments;
+            mTabIds = tabIds;
+
+            if (mUseTopTabs && mPagerAdapter != null) {
+                mPagerFragments.keySet().removeIf(section -> !mTabIds.contains(section));
+                dispatchTabUpdates(previousTabIds, mTabIds);
+            }
+
+            if (mActualFragments.get(mSelection) == null) {
+                mSelection = firstTab();
+            }
+            selectNavigationSurface(mSelection);
+        } finally {
+            mUpdatingNavigation = false;
         }
-        selectNavigationSurface(mSelection);
 
         if (setShortcuts) {
             setShortcuts();
         }
     }
 
+    private void dispatchTabUpdates(List<Integer> oldTabs, List<Integer> newTabs) {
+        DiffUtil.calculateDiff(new DiffUtil.Callback() {
+            @Override
+            public int getOldListSize() {
+                return oldTabs.size();
+            }
+
+            @Override
+            public int getNewListSize() {
+                return newTabs.size();
+            }
+
+            @Override
+            public boolean areItemsTheSame(int oldItemPosition, int newItemPosition) {
+                return oldTabs.get(oldItemPosition).equals(newTabs.get(newItemPosition));
+            }
+
+            @Override
+            public boolean areContentsTheSame(int oldItemPosition, int newItemPosition) {
+                return true;
+            }
+        }).dispatchUpdatesTo(mPagerAdapter);
+    }
+
     private void initTopTabs() {
-        mNavigationTabs = findViewById(R.id.navigation_tabs);
-        mNavigationPager = findViewById(R.id.navigation_pager);
         mPagerAdapter = new NavigationPagerAdapter();
         mNavigationPager.setAdapter(mPagerAdapter);
-        new TabLayoutMediator(mNavigationTabs, mNavigationPager,
-                (tab, position) -> bindTab(tab, position)).attach();
-        mNavigationPager.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
+        mNavigationTabMediator = new TabLayoutMediator(mNavigationTabs, mNavigationPager,
+                this::bindTab);
+        mNavigationTabMediator.attach();
+        mNavigationPageChangeCallback = new ViewPager2.OnPageChangeCallback() {
             @Override
             public void onPageSelected(int position) {
-                if (position >= 0 && position < mTabIds.size()) {
-                    int section = mTabIds.get(position);
-                    if (section != mSelection) {
-                        onItemSelected(section, true);
-                    }
+                if (mUpdatingNavigation) return;
+
+                Integer section = mPagerAdapter.getSection(position);
+                if (section != null && section != mSelection) {
+                    onItemSelected(section, true);
                 }
             }
-        });
+        };
+        mNavigationPager.registerOnPageChangeCallback(mNavigationPageChangeCallback);
     }
 
     private void initDrawer(MaterialToolbar toolbar) {
@@ -479,6 +524,7 @@ public class NavigationActivity extends BaseActivity
 
     private void selectNavigationSurface(int section) {
         if (mUseTopTabs) {
+            if (mNavigationPager == null || mPagerAdapter == null) return;
             int position = mTabIds.indexOf(section);
             if (position >= 0 && mNavigationPager.getCurrentItem() != position) {
                 mNavigationPager.setCurrentItem(position, false);
@@ -505,6 +551,16 @@ public class NavigationActivity extends BaseActivity
             }
         }
         return null;
+    }
+
+    private void registerPagerFragment(int section, NavigationPageFragment fragment) {
+        mPagerFragments.put(section, fragment);
+    }
+
+    private void unregisterPagerFragment(int section, NavigationPageFragment fragment) {
+        if (mPagerFragments.get(section) == fragment) {
+            mPagerFragments.remove(section);
+        }
     }
 
     private void setShortcuts() {
@@ -601,6 +657,14 @@ public class NavigationActivity extends BaseActivity
 
     @Override
     protected void onDestroy() {
+        if (mNavigationPager != null && mNavigationPageChangeCallback != null) {
+            mNavigationPager.unregisterOnPageChangeCallback(mNavigationPageChangeCallback);
+            mNavigationPageChangeCallback = null;
+        }
+        if (mNavigationTabMediator != null) {
+            mNavigationTabMediator.detach();
+            mNavigationTabMediator = null;
+        }
         mShortcutExecutor.shutdownNow();
         super.onDestroy();
     }
@@ -690,9 +754,16 @@ public class NavigationActivity extends BaseActivity
         @NonNull
         @Override
         public Fragment createFragment(int position) {
-            int section = mTabIds.get(position);
+            Integer section = getSection(position);
+            if (section == null) {
+                throw new IllegalStateException("Invalid navigation page position " + position);
+            }
+            Class<? extends Fragment> fragmentClass = mActualFragments.get(section);
+            if (fragmentClass == null) {
+                throw new IllegalStateException("Missing fragment for section " + section);
+            }
             NavigationPageFragment fragment = NavigationPageFragment.newInstance(
-                    section, mActualFragments.get(section).getCanonicalName());
+                    section, fragmentClass.getCanonicalName());
             mPagerFragments.put(section, fragment);
             return fragment;
         }
@@ -704,12 +775,23 @@ public class NavigationActivity extends BaseActivity
 
         @Override
         public long getItemId(int position) {
-            return mTabIds.get(position);
+            Integer section = getSection(position);
+            if (section == null) {
+                return -1L;
+            }
+            return section;
         }
 
         @Override
         public boolean containsItem(long itemId) {
             return mTabIds.contains((int) itemId);
+        }
+
+        @Nullable
+        Integer getSection(int position) {
+            return position >= 0 && position < mTabIds.size()
+                    ? mTabIds.get(position)
+                    : null;
         }
     }
 
@@ -720,7 +802,6 @@ public class NavigationActivity extends BaseActivity
         private static final String TAG_CONTENT = "content";
 
         private Fragment mLoadedFragment;
-        private boolean mLoadPosted;
 
         static NavigationPageFragment newInstance(int section, String fragmentClass) {
             NavigationPageFragment fragment = new NavigationPageFragment();
@@ -731,12 +812,22 @@ public class NavigationActivity extends BaseActivity
             return fragment;
         }
 
+        @Override
+        public void onAttach(@NonNull Context context) {
+            super.onAttach(context);
+            if (context instanceof NavigationActivity) {
+                ((NavigationActivity) context).registerPagerFragment(getSection(), this);
+            }
+        }
+
         @NonNull
         @Override
         public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                                  @Nullable Bundle savedInstanceState) {
             FrameLayout view = new FrameLayout(requireContext());
             view.setId(R.id.navigation_page_container);
+            view.setBackgroundColor(MaterialColors.getColor(
+                    requireContext(), R.attr.colorSurface, 0));
             view.setLayoutParams(new FrameLayout.LayoutParams(
                     ViewGroup.LayoutParams.MATCH_PARENT,
                     ViewGroup.LayoutParams.MATCH_PARENT));
@@ -758,26 +849,34 @@ public class NavigationActivity extends BaseActivity
         }
 
         private void loadContent() {
-            View view = getView();
-            if (view == null || getLoadedFragment() != null || mLoadPosted) {
+            if (!isResumed() || getView() == null || getLoadedFragment() != null) {
                 return;
             }
-            mLoadPosted = true;
-            view.post(() -> {
-                mLoadPosted = false;
-                if (!isAdded() || getView() == null || getLoadedFragment() != null) {
-                    return;
-                }
-                String fragmentClass = requireArguments().getString(ARG_FRAGMENT_CLASS);
-                if (fragmentClass == null) {
-                    return;
-                }
-                mLoadedFragment = Fragment.instantiate(requireContext(), fragmentClass);
-                getChildFragmentManager().beginTransaction()
-                        .setReorderingAllowed(true)
-                        .replace(R.id.navigation_page_container, mLoadedFragment, TAG_CONTENT)
-                        .commitAllowingStateLoss();
-            });
+
+            FragmentManager fragmentManager = getChildFragmentManager();
+            if (fragmentManager.isStateSaved()) return;
+
+            String fragmentClass = requireArguments().getString(ARG_FRAGMENT_CLASS);
+            if (fragmentClass == null) return;
+
+            mLoadedFragment = fragmentManager.getFragmentFactory().instantiate(
+                    requireContext().getClassLoader(), fragmentClass);
+            fragmentManager.beginTransaction()
+                    .setReorderingAllowed(true)
+                    .replace(R.id.navigation_page_container, mLoadedFragment, TAG_CONTENT)
+                    .commitNow();
+        }
+
+        private int getSection() {
+            return requireArguments().getInt(ARG_SECTION);
+        }
+
+        @Override
+        public void onDetach() {
+            if (getActivity() instanceof NavigationActivity) {
+                ((NavigationActivity) getActivity()).unregisterPagerFragment(getSection(), this);
+            }
+            super.onDetach();
         }
     }
 
