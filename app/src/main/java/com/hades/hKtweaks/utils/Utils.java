@@ -486,7 +486,8 @@ public class Utils {
     }
 
     public static String readFile(String file) {
-        return readFile(file, true);
+        String value = readFile(file, false);
+        return value != null ? value : readFile(file, true);
     }
 
     public static String readFile(String file, boolean root) {

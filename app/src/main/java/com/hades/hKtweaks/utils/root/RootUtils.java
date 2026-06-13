@@ -48,23 +48,7 @@ public class RootUtils {
     }
 
     public static boolean busyboxInstalled() {
-        return existBinary("busybox") || existBinary("toybox");
-    }
-
-    private static boolean existBinary(String binary) {
-        String paths;
-        if (System.getenv("PATH") != null) {
-            paths = System.getenv("PATH");
-        } else {
-            paths = "/sbin:/vendor/bin:/system/sbin:/system/bin:/system/xbin";
-        }
-        for (String path : paths.split(":")) {
-            if (!path.endsWith("/")) path += "/";
-            if (Utils.existFile(path + binary, false) || Utils.existFile(path + binary)) {
-                return true;
-            }
-        }
-        return false;
+        return !runCommand("command -v busybox || command -v toybox").isEmpty();
     }
 
     public static void chmod(String file, String permission) {
