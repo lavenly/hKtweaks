@@ -69,8 +69,10 @@ public class SwitcherFragment extends BaseFragment {
         ((TextView) view.findViewById(R.id.title)).setText(title);
         ((TextView) view.findViewById(R.id.summary)).setText(summary);
         MaterialSwitch mSwitch = view.findViewById(R.id.switcher);
+        View switcherCard = view.findViewById(R.id.switcher_card);
         mSwitch.setChecked(checked);
         mSwitch.setOnCheckedChangeListener(mOnCheckedChangeListener);
+        switcherCard.setOnClickListener(v -> mSwitch.toggle());
         return view;
     }
 

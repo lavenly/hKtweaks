@@ -61,8 +61,10 @@ import android.widget.TextView;
 import com.hades.hKtweaks.R;
 import com.hades.hKtweaks.activities.BaseActivity;
 import com.hades.hKtweaks.activities.NavigationActivity;
+import com.hades.hKtweaks.fragments.ApplyOnBootFragment;
 import com.hades.hKtweaks.fragments.BaseFragment;
 import com.hades.hKtweaks.fragments.LoadingFragment;
+import com.hades.hKtweaks.fragments.SwitcherFragment;
 import com.hades.hKtweaks.utils.AppSettings;
 import com.hades.hKtweaks.utils.ExpressiveMotion;
 import com.hades.hKtweaks.utils.Utils;
@@ -376,6 +378,7 @@ public abstract class RecyclerViewFragment extends BaseFragment {
     public void onViewFinished() {
         super.onViewFinished();
         if (showViewPager() && !hideBanner()) {
+            resizeBanner();
             mViewPager.setAdapter(mViewPagerAdapter = new ViewPagerAdapter(this,
                     mViewPagerFragments));
             mPageIndicatorMediator = new TabLayoutMediator(
@@ -463,11 +466,22 @@ public abstract class RecyclerViewFragment extends BaseFragment {
     public void resizeBanner() {
         if (showViewPager() && !hideBanner()) {
             ViewGroup.LayoutParams layoutParams = mViewPagerParent.getLayoutParams();
-            layoutParams.height = AppSettings.getBannerSize(getActivity());
+            layoutParams.height = useCompactBanner()
+                    ? Math.round(getResources().getDimension(R.dimen.banner_compact_height))
+                    : AppSettings.getBannerSize(getActivity());
             mRecyclerView.setPadding(mRecyclerView.getPaddingLeft(), layoutParams.height,
                     mRecyclerView.getPaddingRight(), mRecyclerView.getPaddingBottom());
             mViewPagerParent.requestLayout();
         }
+    }
+
+    private boolean useCompactBanner() {
+        if (mViewPagerFragments == null || mViewPagerFragments.isEmpty()) {
+            return false;
+        }
+        Fragment firstFragment = mViewPagerFragments.get(0);
+        return firstFragment instanceof ApplyOnBootFragment
+                || firstFragment instanceof SwitcherFragment;
     }
 
     protected void removeItem(RecyclerViewItem recyclerViewItem) {

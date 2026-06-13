@@ -25,6 +25,7 @@
     <dimen name="adbanner_width">320dp</dimen>
 
     <dimen name="banner_min_height">140dp</dimen>
+    <dimen name="banner_compact_height">112dp</dimen>
     <dimen name="banner_default_height">180dp</dimen>
     <dimen name="banner_max_height">280dp</dimen>
 
