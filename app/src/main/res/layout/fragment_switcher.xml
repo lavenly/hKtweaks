@@ -5,9 +5,9 @@
     android:layout_height="match_parent"
     android:background="?attr/colorSurface"
     android:paddingLeft="16dp"
-    android:paddingTop="16dp"
+    android:paddingTop="8dp"
     android:paddingRight="16dp"
-    android:paddingBottom="32dp">
+    android:paddingBottom="8dp">
 
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/switcher_card"
@@ -49,6 +49,8 @@
                     android:id="@+id/title"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:ellipsize="end"
+                    android:maxLines="1"
                     android:textAppearance="@style/TextAppearance.hKtweaks.BodyLarge"
                     android:textColor="?attr/colorOnSurface" />
 
@@ -57,10 +59,12 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="2dp"
+                    android:ellipsize="end"
                     android:linksClickable="true"
+                    android:maxLines="1"
                     android:textAppearance="@style/TextAppearance.hKtweaks.Body"
                     android:textColor="?attr/colorOnSurfaceVariant"
-                    android:textIsSelectable="true" />
+                    android:textIsSelectable="false" />
             </LinearLayout>
 
             <com.google.android.material.materialswitch.MaterialSwitch
