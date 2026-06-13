@@ -19,6 +19,7 @@
  */
 package com.hades.hKtweaks.activities;
 
+import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ShortcutInfo;
@@ -103,6 +104,7 @@ import com.hades.hKtweaks.fragments.tools.downloads.DownloadsFragment;
 import com.hades.hKtweaks.services.monitor.Monitor;
 import com.hades.hKtweaks.utils.AppSettings;
 import com.hades.hKtweaks.utils.Device;
+import com.hades.hKtweaks.utils.ExpressiveMotion;
 import com.hades.hKtweaks.utils.Utils;
 import com.hades.hKtweaks.utils.kernel.battery.Battery;
 import com.hades.hKtweaks.utils.kernel.bus.VoltageCam;
@@ -146,7 +148,13 @@ public class NavigationActivity extends BaseActivity
     private static final String PACKAGE = NavigationActivity.class.getCanonicalName();
     private static final long STARTUP_ROOT_COMMAND_TIMEOUT_MS = 10_000;
     private static final long OPTIONAL_FRAGMENT_SCAN_DELAY_MS = 500;
+    private static final long TOP_TAB_REVEAL_TIMEOUT_MS = 2_500;
     private static final String STATE_FRAGMENTS_COMPLETE = "fragments_complete";
+    private static final String FRAGMENT_CACHE = "navigation_fragment_cache";
+    private static final String FRAGMENT_CACHE_APP_VERSION =
+            "navigation_fragment_cache_app_version";
+    private static final String FRAGMENT_CACHE_KERNEL_VERSION =
+            "navigation_fragment_cache_kernel_version";
     public static final String INTENT_SECTION = PACKAGE + ".INTENT.SECTION";
 
     private static ArrayList<NavigationFragment> sDetectedFragments;
@@ -187,7 +195,13 @@ public class NavigationActivity extends BaseActivity
 
         if (savedInstanceState == null) {
             if (sDetectedFragments == null) {
-                mFragments = createInitialFragments();
+                ArrayList<NavigationFragment> cachedFragments = readFragmentCache();
+                if (cachedFragments == null) {
+                    mFragments = createInitialFragments();
+                } else {
+                    mFragments = cachedFragments;
+                    mFragmentsComplete = true;
+                }
             } else {
                 mFragments = new ArrayList<>(sDetectedFragments);
                 mFragmentsComplete = true;
@@ -203,11 +217,83 @@ public class NavigationActivity extends BaseActivity
             }
             mFragmentsComplete = savedInstanceState.getBoolean(
                     STATE_FRAGMENTS_COMPLETE, true);
+            if (mFragmentsComplete) {
+                ArrayList<NavigationFragment> completedFragments =
+                        sDetectedFragments == null
+                                ? readFragmentCache()
+                                : new ArrayList<>(sDetectedFragments);
+                if (completedFragments != null) {
+                    mFragments = completedFragments;
+                }
+            }
             init(savedInstanceState);
             if (!mFragmentsComplete) {
                 scheduleOptionalFragmentScan();
             }
         }
+    }
+
+    @Nullable
+    private ArrayList<NavigationFragment> readFragmentCache() {
+        String appVersion = AppSettings.getString(
+                FRAGMENT_CACHE_APP_VERSION, "", this);
+        String kernelVersion = AppSettings.getString(
+                FRAGMENT_CACHE_KERNEL_VERSION, "", this);
+        if (!Utils.appVersion().equals(appVersion)
+                || !getCachedKernelVersion().equals(kernelVersion)) {
+            return null;
+        }
+
+        String cache = AppSettings.getString(FRAGMENT_CACHE, "", this);
+        if (cache.isEmpty()) return null;
+
+        ArrayList<NavigationFragment> fragments = new ArrayList<>();
+        try {
+            for (String line : cache.split("\n")) {
+                String[] values = line.split(",", 3);
+                if (values.length != 3) return null;
+
+                int id = Integer.parseInt(values[0]);
+                int drawable = Integer.parseInt(values[1]);
+                Class<? extends Fragment> fragmentClass = null;
+                if (!values[2].isEmpty()) {
+                    Class<?> cachedClass = Class.forName(values[2]);
+                    if (!Fragment.class.isAssignableFrom(cachedClass)) {
+                        return null;
+                    }
+                    fragmentClass = cachedClass.asSubclass(Fragment.class);
+                }
+                fragments.add(new NavigationFragment(id, fragmentClass, drawable));
+            }
+        } catch (ClassNotFoundException | NumberFormatException exception) {
+            return null;
+        }
+        return fragments.isEmpty() ? null : fragments;
+    }
+
+    private void saveFragmentCache(ArrayList<NavigationFragment> fragments) {
+        StringBuilder cache = new StringBuilder();
+        for (NavigationFragment fragment : fragments) {
+            if (cache.length() > 0) {
+                cache.append('\n');
+            }
+            cache.append(fragment.mId)
+                    .append(',')
+                    .append(fragment.mDrawable)
+                    .append(',');
+            if (fragment.mFragmentClass != null) {
+                cache.append(fragment.mFragmentClass.getCanonicalName());
+            }
+        }
+        AppSettings.saveString(FRAGMENT_CACHE, cache.toString(), this);
+        AppSettings.saveString(
+                FRAGMENT_CACHE_APP_VERSION, Utils.appVersion(), this);
+        AppSettings.saveString(
+                FRAGMENT_CACHE_KERNEL_VERSION, getCachedKernelVersion(), this);
+    }
+
+    private String getCachedKernelVersion() {
+        return AppSettings.getString("kernel_version_old", "", this);
     }
 
     private void scheduleOptionalFragmentScan() {
@@ -216,6 +302,21 @@ public class NavigationActivity extends BaseActivity
                 new FragmentLoader(this).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
             }
         }, OPTIONAL_FRAGMENT_SCAN_DELAY_MS);
+        if (mUseTopTabs) {
+            mNavigationContent.postDelayed(
+                    this::revealProvisionalTopTabs, TOP_TAB_REVEAL_TIMEOUT_MS);
+        }
+    }
+
+    private void revealProvisionalTopTabs() {
+        if (mFragmentsComplete || mNavigationTabs == null
+                || mNavigationTabs.getVisibility() == View.VISIBLE
+                || isFinishing() || isDestroyed()) {
+            return;
+        }
+        mNavigationPager.setUserInputEnabled(true);
+        mNavigationTabs.setVisibility(View.VISIBLE);
+        fadeInNavigationTabs();
     }
 
     private static class FragmentLoader
@@ -411,13 +512,71 @@ public class NavigationActivity extends BaseActivity
     }
 
     private void applyDetectedFragments(ArrayList<NavigationFragment> fragments) {
-        mFragments = fragments;
+        saveFragmentCache(fragments);
         sDetectedFragments = new ArrayList<>(fragments);
+        boolean tabsAreHidden = mUseTopTabs
+                && mNavigationTabs != null
+                && mNavigationTabs.getVisibility() != View.VISIBLE;
+        if (mUseTopTabs && !tabsAreHidden
+                && !hasPendingRequestedSection(fragments)) {
+            mFragmentsComplete = true;
+            appendFragments(true);
+            return;
+        }
+
+        boolean revealTopTabs = mUseTopTabs && mNavigationTabs != null;
+        if (revealTopTabs) {
+            mNavigationTabs.animate().cancel();
+            mNavigationTabs.setAlpha(0f);
+            mNavigationTabs.setVisibility(View.INVISIBLE);
+        }
+
+        int selectedSection = mSelection;
+        mFragments = fragments;
         mFragmentsComplete = true;
         appendFragments(true);
+        if (mActualFragments.get(selectedSection) != null) {
+            mSelection = selectedSection;
+            selectNavigationSurface(selectedSection);
+        }
         if (selectRequestedSection()) {
             onItemSelected(mSelection, false);
         }
+        if (revealTopTabs) {
+            int targetSection = mSelection;
+            mNavigationPager.setUserInputEnabled(true);
+            mNavigationTabs.setVisibility(View.VISIBLE);
+            mNavigationTabs.postOnAnimation(() -> {
+                if (mActualFragments.get(targetSection) != null) {
+                    mSelection = targetSection;
+                    selectNavigationSurface(targetSection);
+                }
+                fadeInNavigationTabs();
+            });
+        }
+    }
+
+    private void fadeInNavigationTabs() {
+        if (mNavigationTabs == null || isFinishing() || isDestroyed()) return;
+
+        ObjectAnimator fade = ObjectAnimator.ofFloat(
+                mNavigationTabs, View.ALPHA, 0f, 1f);
+        ExpressiveMotion.applyEmphasizedDecelerate(fade, this,
+                com.google.android.material.R.attr.motionDurationShort4, 200);
+        fade.start();
+    }
+
+    private boolean hasPendingRequestedSection(ArrayList<NavigationFragment> fragments) {
+        String section = getIntent().getStringExtra(INTENT_SECTION);
+        if (section == null) return false;
+
+        for (NavigationFragment fragment : fragments) {
+            if (fragment.mFragmentClass != null
+                    && section.equals(fragment.mFragmentClass.getCanonicalName())) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private void init(Bundle savedInstanceState) {
@@ -432,6 +591,11 @@ public class NavigationActivity extends BaseActivity
             toolbar.setTitle(R.string.app_name);
             mNavigationTabs = findViewById(R.id.navigation_tabs);
             mNavigationPager = findViewById(R.id.navigation_pager);
+            if (!mFragmentsComplete) {
+                mNavigationTabs.setAlpha(0f);
+                mNavigationTabs.setVisibility(View.INVISIBLE);
+                mNavigationPager.setUserInputEnabled(false);
+            }
         } else {
             initDrawer(toolbar);
         }
