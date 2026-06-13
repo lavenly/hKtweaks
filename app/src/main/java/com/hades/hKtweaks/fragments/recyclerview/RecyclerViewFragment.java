@@ -21,7 +21,6 @@ package com.hades.hKtweaks.fragments.recyclerview;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
-import android.animation.ValueAnimator;
 import android.app.Activity;
 import android.content.res.Configuration;
 import android.graphics.Color;
@@ -166,7 +165,7 @@ public abstract class RecyclerViewFragment extends BaseFragment {
 
         mAppBarLayout = ((BaseActivity) getActivity()).getAppBarLayout();
         mToolBar = ((BaseActivity) getActivity()).getToolBar();
-        if (usesFixedNavigationAppBar() && mAppBarLayout != null) {
+        if (mAppBarLayout != null) {
             mAppBarLayout.setTranslationY(0f);
         }
 
@@ -386,7 +385,7 @@ public abstract class RecyclerViewFragment extends BaseFragment {
             mPageIndicator.setVisibility(
                     mViewPagerFragments.size() > 1 ? View.VISIBLE : View.GONE);
 
-            setAppBarLayoutAlpha(usesFixedNavigationAppBar() ? 255 : 0);
+            setAppBarLayoutAlpha(255);
             adjustScrollPosition();
         } else {
             mRecyclerView.setPadding(mRecyclerView.getPaddingLeft(),
@@ -463,8 +462,16 @@ public abstract class RecyclerViewFragment extends BaseFragment {
 
     public void resizeBanner() {
         if (showViewPager() && !hideBanner()) {
+            int toolbarInset = !usesFixedNavigationAppBar() && mAppBarLayout != null
+                    ? mAppBarLayout.getHeight()
+                    : 0;
             ViewGroup.LayoutParams layoutParams = mViewPagerParent.getLayoutParams();
-            layoutParams.height = AppSettings.getBannerSize(getActivity());
+            layoutParams.height = AppSettings.getBannerSize(getActivity()) + toolbarInset;
+            mViewPagerParent.setPadding(
+                    mViewPagerParent.getPaddingLeft(),
+                    toolbarInset,
+                    mViewPagerParent.getPaddingRight(),
+                    mViewPagerParent.getPaddingBottom());
             mRecyclerView.setPadding(mRecyclerView.getPaddingLeft(), layoutParams.height,
                     mRecyclerView.getPaddingRight(), mRecyclerView.getPaddingBottom());
             mViewPagerParent.requestLayout();
@@ -542,9 +549,6 @@ public abstract class RecyclerViewFragment extends BaseFragment {
     private class Scroller extends RecyclerView.OnScrollListener {
 
         private int mScrollDistance;
-        private int mAppBarLayoutDistance;
-        private boolean mFade = true;
-        private ValueAnimator mAlphaAnimator;
 
         @Override
         public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
@@ -567,25 +571,17 @@ public abstract class RecyclerViewFragment extends BaseFragment {
             }
 
             if (mScrollDistance > mViewPagerParent.getHeight() - appBarHeight) {
-                mAppBarLayoutDistance += dy;
-                fadeAppBarLayout(false);
                 if (mTopFab != null && showTopFab()) {
                     mTopFab.hide();
                 }
             } else {
-                fadeAppBarLayout(true);
                 if (mTopFab != null && showTopFab()) {
                     mTopFab.show();
                 }
             }
 
             if (mAppBarLayout != null) {
-                if (mAppBarLayoutDistance > mAppBarLayout.getHeight()) {
-                    mAppBarLayoutDistance = mAppBarLayout.getHeight();
-                } else if (mAppBarLayoutDistance < 0) {
-                    mAppBarLayoutDistance = 0;
-                }
-                mAppBarLayout.setTranslationY(-mAppBarLayoutDistance);
+                mAppBarLayout.setTranslationY(0f);
             }
 
             mViewPagerParent.setTranslationY(-mScrollDistance);
@@ -602,57 +598,6 @@ public abstract class RecyclerViewFragment extends BaseFragment {
                     mBottomFab.hide();
                 }
             }
-        }
-
-        private void fadeAppBarLayout(boolean fade) {
-            if (mFade != fade) {
-                mFade = fade;
-
-                if (mAlphaAnimator != null) {
-                    mAlphaAnimator.cancel();
-                }
-
-                mAlphaAnimator = ValueAnimator.ofFloat(fade ? 1f : 0f, fade ? 0f : 1f);
-                mAlphaAnimator.addUpdateListener(animation
-                        -> setAppBarLayoutAlpha(Math.round(255 * (float) animation.getAnimatedValue())));
-                mAlphaAnimator.addListener(new AnimatorListenerAdapter() {
-                    @Override
-                    public void onAnimationEnd(Animator animation) {
-                        super.onAnimationEnd(animation);
-                        mAlphaAnimator = null;
-                    }
-                });
-                ExpressiveMotion.applyEmphasized(
-                        mAlphaAnimator,
-                        requireContext(),
-                        com.google.android.material.R.attr.motionDurationShort4,
-                        200);
-                mAlphaAnimator.start();
-            }
-        }
-
-        @Override
-        public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
-            super.onScrollStateChanged(recyclerView, newState);
-
-            if (mAppBarLayout == null || newState != 0 || mAppBarLayoutDistance == 0
-                    || (mAppBarLayoutDistance == mAppBarLayout.getHeight() && mScrollDistance != 0)) {
-                return;
-            }
-
-            boolean show = mAppBarLayoutDistance < mAppBarLayout.getHeight() * 0.5f
-                    || mScrollDistance <= mViewPagerParent.getHeight();
-            ValueAnimator animator = ValueAnimator.ofInt(mAppBarLayoutDistance, show ? 0 : mAppBarLayout.getHeight());
-            animator.addUpdateListener(animation -> {
-                mAppBarLayoutDistance = (int) animation.getAnimatedValue();
-                mAppBarLayout.setTranslationY(-mAppBarLayoutDistance);
-            });
-            ExpressiveMotion.applyEmphasized(
-                    animator,
-                    requireContext(),
-                    com.google.android.material.R.attr.motionDurationMedium2,
-                    300);
-            animator.start();
         }
     }
 
