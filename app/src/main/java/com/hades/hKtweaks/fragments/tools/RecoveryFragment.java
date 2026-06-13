@@ -20,7 +20,6 @@
 package com.hades.hKtweaks.fragments.tools;
 
 import android.content.Intent;
-import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Environment;
@@ -246,7 +245,6 @@ public class RecoveryFragment extends RecyclerViewFragment {
                         new ContextThemeWrapper(getActivity(),
                                 R.style.ThemeOverlay_hKtweaks_RecoveryCheckBox), null, 0);
                 checkBox.setText(options[i]);
-                checkBox.setTextColor(Color.WHITE);
                 checkBox.setChecked(i == mRecoveryOption);
                 checkBox.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
                         ViewGroup.LayoutParams.WRAP_CONTENT));

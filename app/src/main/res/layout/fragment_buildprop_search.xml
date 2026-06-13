@@ -5,10 +5,12 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_gravity="center"
-    android:background="?attr/colorPrimaryContainer"
-    android:gravity="center"
+    android:gravity="center_vertical"
     android:orientation="vertical"
-    android:padding="16dp"
+    android:paddingLeft="12dp"
+    android:paddingTop="4dp"
+    android:paddingRight="12dp"
+    android:paddingBottom="12dp"
     tools:ignore="Overdraw">
 
     <com.google.android.material.textview.MaterialTextView
@@ -17,46 +19,54 @@
         android:layout_height="wrap_content"
         android:gravity="end"
         android:textAppearance="@style/TextAppearance.hKtweaks.Supporting.Emphasized"
-        android:textColor="?attr/colorOnPrimaryContainer"
-        />
+        android:textColor="?attr/colorOnSurfaceVariant" />
 
-    <com.google.android.material.textfield.TextInputLayout
-        style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="@string/key"
-        app:boxStrokeColor="?attr/colorOnPrimaryContainer"
-        app:hintTextColor="?attr/colorOnPrimaryContainer">
+        android:baselineAligned="false"
+        android:orientation="horizontal">
 
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/key_edittext"
-            android:layout_width="match_parent"
+        <com.google.android.material.textfield.TextInputLayout
+            style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:inputType="text"
-            android:maxLines="1"
-            android:textAppearance="@style/TextAppearance.hKtweaks.BodyLarge"
-            android:textColor="?attr/colorOnPrimaryContainer"
-            />
+            android:layout_marginEnd="4dp"
+            android:layout_weight="1"
+            android:hint="@string/key"
+            app:boxStrokeColor="?attr/colorOutline"
+            app:hintTextColor="?attr/colorOnSurfaceVariant">
 
-    </com.google.android.material.textfield.TextInputLayout>
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/key_edittext"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="text"
+                android:maxLines="1"
+                android:textAppearance="@style/TextAppearance.hKtweaks.BodyLarge"
+                android:textColor="?attr/colorOnSurface" />
 
-    <com.google.android.material.textfield.TextInputLayout
-        style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="@string/value"
-        app:boxStrokeColor="?attr/colorOnPrimaryContainer"
-        app:hintTextColor="?attr/colorOnPrimaryContainer">
+        </com.google.android.material.textfield.TextInputLayout>
 
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/value_edittext"
-            android:layout_width="match_parent"
+        <com.google.android.material.textfield.TextInputLayout
+            style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:inputType="text"
-            android:maxLines="1"
-            android:textAppearance="@style/TextAppearance.hKtweaks.BodyLarge"
-            android:textColor="?attr/colorOnPrimaryContainer"
-            />
+            android:layout_marginStart="4dp"
+            android:layout_weight="1"
+            android:hint="@string/value"
+            app:boxStrokeColor="?attr/colorOutline"
+            app:hintTextColor="?attr/colorOnSurfaceVariant">
 
-    </com.google.android.material.textfield.TextInputLayout>
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/value_edittext"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="text"
+                android:maxLines="1"
+                android:textAppearance="@style/TextAppearance.hKtweaks.BodyLarge"
+                android:textColor="?attr/colorOnSurface" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+    </LinearLayout>
 </LinearLayout>

@@ -18,12 +18,15 @@
             android:orientation="vertical"
             android:padding="1dp">
 
-            <View
+            <com.google.android.material.card.MaterialCardView
                 android:id="@+id/banner_view"
+                style="@style/Widget.hKtweaks.Material3Expressive.Banner"
                 android:layout_width="match_parent"
                 android:layout_height="55dp"
-                android:background="?attr/colorPrimaryContainer"
-                android:elevation="3dp" />
+                android:layout_marginStart="4dp"
+                android:layout_marginTop="3dp"
+                android:layout_marginEnd="4dp"
+                android:layout_marginBottom="3dp" />
 
             <com.google.android.material.card.MaterialCardView
                 style="@style/Widget.Material3.CardView.Filled"

@@ -20,7 +20,7 @@
         android:text="@string/offline"
         android:textAllCaps="true"
         android:textAppearance="@style/TextAppearance.hKtweaks.ItemTitle.Emphasized"
-        android:textColor="?attr/colorOnPrimaryContainer"
+        android:textColor="?attr/colorOnSurface"
         android:visibility="gone"
         android:singleLine="true" />
 
@@ -31,7 +31,7 @@
         android:focusable="false"
         android:padding="3dp"
         android:textAppearance="@style/TextAppearance.hKtweaks.Label"
-        android:textColor="?attr/colorOnPrimaryContainer"
+        android:textColor="?attr/colorOnSurfaceVariant"
         />
 
     <TextView
@@ -42,7 +42,7 @@
         android:focusable="false"
         android:padding="3dp"
         android:textAppearance="@style/TextAppearance.hKtweaks.Label"
-        android:textColor="?attr/colorOnPrimaryContainer"
+        android:textColor="?attr/colorOnSurfaceVariant"
         />
 
     <TextView
@@ -53,6 +53,6 @@
         android:focusable="false"
         android:padding="3dp"
         android:textAppearance="@style/TextAppearance.hKtweaks.Label"
-        android:textColor="?attr/colorOnPrimaryContainer"
+        android:textColor="?attr/colorOnSurfaceVariant"
         />
 </FrameLayout>
