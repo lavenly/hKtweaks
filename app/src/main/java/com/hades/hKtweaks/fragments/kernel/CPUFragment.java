@@ -846,6 +846,11 @@ public class CPUFragment extends RecyclerViewFragment {
         }
     }
 
+    @Override
+    protected boolean hasPeriodicRefresh() {
+        return true;
+    }
+
     private void refreshUsages(float[] usages, XYGraphView graph, List<Integer> cores,
                                boolean[] coreStates) {
         if (graph != null) {

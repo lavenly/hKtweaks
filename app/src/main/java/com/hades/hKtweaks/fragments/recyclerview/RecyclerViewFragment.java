@@ -66,6 +66,7 @@ import com.hades.hKtweaks.utils.AppSettings;
 import com.hades.hKtweaks.utils.ExpressiveMotion;
 import com.hades.hKtweaks.utils.Utils;
 import com.hades.hKtweaks.utils.ViewUtils;
+import com.hades.hKtweaks.utils.root.RootUtils;
 import com.hades.hKtweaks.views.dialog.ViewPagerDialog;
 import com.hades.hKtweaks.views.recyclerview.RecyclerViewAdapter;
 import com.hades.hKtweaks.views.recyclerview.RecyclerViewItem;
@@ -82,6 +83,8 @@ import android.view.ViewAnimationUtils;
  * Created by willi on 16.04.16.
  */
 public abstract class RecyclerViewFragment extends BaseFragment {
+
+    private static final long PAGE_ROOT_COMMAND_TIMEOUT_MS = 10_000;
 
     private Handler mHandler;
     private ScheduledThreadPoolExecutor mPoolExecutor;
@@ -229,7 +232,7 @@ public abstract class RecyclerViewFragment extends BaseFragment {
 
         if (itemsSize() == 0) {
             mLoader = new LoaderTask(this, savedInstanceState);
-            mLoader.execute();
+            mLoader.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
         } else {
             showProgress();
             init();
@@ -267,15 +270,20 @@ public abstract class RecyclerViewFragment extends BaseFragment {
 
         @Override
         protected List<RecyclerViewItem> doInBackground(Void... params) {
-            RecyclerViewFragment fragment = mRefFragment.get();
+            RootUtils.setCommandTimeoutForCurrentThread(PAGE_ROOT_COMMAND_TIMEOUT_MS);
+            try {
+                RecyclerViewFragment fragment = mRefFragment.get();
 
-            if (fragment != null && fragment.isAdded()
-                    && fragment.getActivity() != null) {
-                List<RecyclerViewItem> items = new ArrayList<>();
-                fragment.addItems(items);
-                return items;
+                if (fragment != null && fragment.isAdded()
+                        && fragment.getActivity() != null) {
+                    List<RecyclerViewItem> items = new ArrayList<>();
+                    fragment.addItems(items);
+                    return items;
+                }
+                return null;
+            } finally {
+                RootUtils.clearCommandTimeoutForCurrentThread();
             }
-            return null;
         }
 
         @Override
@@ -285,9 +293,7 @@ public abstract class RecyclerViewFragment extends BaseFragment {
 
             if (isCancelled() || recyclerViewItems == null || fragment == null) return;
 
-            for (RecyclerViewItem item : recyclerViewItems) {
-                fragment.addItem(item);
-            }
+            fragment.appendItems(recyclerViewItems);
             fragment.hideProgress();
             fragment.postInit();
             if (mSavedInstanceState == null) {
@@ -334,7 +340,7 @@ public abstract class RecyclerViewFragment extends BaseFragment {
     protected <T extends RecyclerViewFragment> void reload(ReloadHandler<T> listener) {
         if (mReloader == null) {
             mReloader = new LoadAsyncTask<>((T) this, listener);
-            mReloader.execute();
+            mReloader.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
         }
     }
 
@@ -360,9 +366,7 @@ public abstract class RecyclerViewFragment extends BaseFragment {
                                   List<RecyclerViewItem> items) {
             super.onPostExecute(fragment, items);
 
-            for (RecyclerViewItem item : items) {
-                fragment.addItem(item);
-            }
+            fragment.appendItems(items);
             fragment.hideProgress();
             fragment.mReloader = null;
         }
@@ -450,6 +454,19 @@ public abstract class RecyclerViewFragment extends BaseFragment {
         mItems.add(recyclerViewItem);
         if (mRecyclerViewAdapter != null) {
             mRecyclerViewAdapter.notifyItemInserted(mItems.size() - 1);
+        }
+        if (mLayoutManager instanceof StaggeredGridLayoutManager) {
+            ((StaggeredGridLayoutManager) mLayoutManager).setSpanCount(getSpanCount());
+        }
+    }
+
+    void appendItems(List<RecyclerViewItem> items) {
+        if (items == null || items.isEmpty()) return;
+
+        int start = mItems.size();
+        mItems.addAll(items);
+        if (mRecyclerViewAdapter != null) {
+            mRecyclerViewAdapter.notifyItemRangeInserted(start, items.size());
         }
         if (mLayoutManager instanceof StaggeredGridLayoutManager) {
             ((StaggeredGridLayoutManager) mLayoutManager).setSpanCount(getSpanCount());
@@ -826,7 +843,7 @@ public abstract class RecyclerViewFragment extends BaseFragment {
             DialogLoadHandler<T> dialogLoadHandler) {
         if (mDialogLoader == null) {
             mDialogLoader = new LoadAsyncTask<>((T) this, dialogLoadHandler);
-            mDialogLoader.execute();
+            mDialogLoader.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
         }
     }
 
@@ -862,6 +879,7 @@ public abstract class RecyclerViewFragment extends BaseFragment {
 
     @Override
     public void onDestroyView() {
+        cancelPageLoaders();
         if (mPageIndicatorMediator != null) {
             mPageIndicatorMediator.detach();
             mPageIndicatorMediator = null;
@@ -886,7 +904,7 @@ public abstract class RecyclerViewFragment extends BaseFragment {
     @Override
     public void onResume() {
         super.onResume();
-        if (mPoolExecutor == null) {
+        if (hasPeriodicRefresh() && mPoolExecutor == null) {
             mPoolExecutor = new ScheduledThreadPoolExecutor(1);
             mPoolExecutor.scheduleWithFixedDelay(mScheduler, 1,
                     1, TimeUnit.SECONDS);
@@ -932,9 +950,21 @@ public abstract class RecyclerViewFragment extends BaseFragment {
     protected void refresh() {
     }
 
+    protected boolean hasPeriodicRefresh() {
+        return false;
+    }
+
     @Override
     public void onDestroy() {
         super.onDestroy();
+        cancelPageLoaders();
+        if (mDialogLoader != null) {
+            mDialogLoader.cancel(true);
+            mDialogLoader = null;
+        }
+        for (RecyclerViewItem item : mItems) {
+            item.onDestroy();
+        }
         mItems.clear();
         mRecyclerViewAdapter = null;
         setAppBarLayoutAlpha(255);
@@ -942,6 +972,9 @@ public abstract class RecyclerViewFragment extends BaseFragment {
             mAppBarLayout.setTranslationY(0);
             ViewCompat.setElevation(mAppBarLayout, 0);
         }
+    }
+
+    private void cancelPageLoaders() {
         if (mLoader != null) {
             mLoader.cancel(true);
             mLoader = null;
@@ -949,13 +982,6 @@ public abstract class RecyclerViewFragment extends BaseFragment {
         if (mReloader != null) {
             mReloader.cancel(true);
             mReloader = null;
-        }
-        if (mDialogLoader != null) {
-            mDialogLoader.cancel(true);
-            mDialogLoader = null;
-        }
-        for (RecyclerViewItem item : mItems) {
-            item.onDestroy();
         }
     }
 

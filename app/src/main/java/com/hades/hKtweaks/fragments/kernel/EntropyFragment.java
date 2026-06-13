@@ -125,4 +125,9 @@ public class EntropyFragment extends RecyclerViewFragment {
             mPoolSizeView.setSummary(String.valueOf(mPoolSize));
         }
     }
+
+    @Override
+    protected boolean hasPeriodicRefresh() {
+        return true;
+    }
 }

@@ -740,6 +740,11 @@ public class BatteryFragment extends RecyclerViewFragment {
     }
 
     @Override
+    protected boolean hasPeriodicRefresh() {
+        return true;
+    }
+
+    @Override
     public void onResume() {
         super.onResume();
         getActivity().registerReceiver(mBatteryReceiver, new IntentFilter(Intent.ACTION_BATTERY_CHANGED));

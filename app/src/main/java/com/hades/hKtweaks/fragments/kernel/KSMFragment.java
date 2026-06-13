@@ -204,4 +204,9 @@ public class KSMFragment extends RecyclerViewFragment {
             }
         }
     }
+
+    @Override
+    protected boolean hasPeriodicRefresh() {
+        return true;
+    }
 }
