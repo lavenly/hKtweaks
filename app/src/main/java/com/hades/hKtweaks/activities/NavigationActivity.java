@@ -145,7 +145,11 @@ public class NavigationActivity extends BaseActivity
 
     private static final String PACKAGE = NavigationActivity.class.getCanonicalName();
     private static final long STARTUP_ROOT_COMMAND_TIMEOUT_MS = 10_000;
+    private static final long OPTIONAL_FRAGMENT_SCAN_DELAY_MS = 500;
+    private static final String STATE_FRAGMENTS_COMPLETE = "fragments_complete";
     public static final String INTENT_SECTION = PACKAGE + ".INTENT.SECTION";
+
+    private static ArrayList<NavigationFragment> sDetectedFragments;
 
     private ArrayList<NavigationFragment> mFragments = new ArrayList<>();
     private Map<Integer, Class<? extends Fragment>> mActualFragments = new LinkedHashMap<>();
@@ -164,6 +168,8 @@ public class NavigationActivity extends BaseActivity
     private long mLastTimeBackbuttonPressed;
     private boolean mUseTopTabs;
     private boolean mUpdatingNavigation;
+    private boolean mFragmentsComplete;
+    private ArrayList<NavigationFragment> mPendingFragments;
     private final ExecutorService mShortcutExecutor = Executors.newSingleThreadExecutor();
     private volatile int mShortcutGeneration;
 
@@ -180,14 +186,40 @@ public class NavigationActivity extends BaseActivity
         mNavigationLoading = findViewById(R.id.navigation_loading);
 
         if (savedInstanceState == null) {
-            new FragmentLoader(this).execute();
+            if (sDetectedFragments == null) {
+                mFragments = createInitialFragments();
+            } else {
+                mFragments = new ArrayList<>(sDetectedFragments);
+                mFragmentsComplete = true;
+            }
+            init(null);
+            if (!mFragmentsComplete) {
+                scheduleOptionalFragmentScan();
+            }
         } else {
             mFragments = savedInstanceState.getParcelableArrayList("fragments");
+            if (mFragments == null || mFragments.isEmpty()) {
+                mFragments = createInitialFragments();
+            }
+            mFragmentsComplete = savedInstanceState.getBoolean(
+                    STATE_FRAGMENTS_COMPLETE, true);
             init(savedInstanceState);
+            if (!mFragmentsComplete) {
+                scheduleOptionalFragmentScan();
+            }
         }
     }
 
-    private static class FragmentLoader extends AsyncTask<Void, Void, Void> {
+    private void scheduleOptionalFragmentScan() {
+        mNavigationContent.postDelayed(() -> {
+            if (!isFinishing() && !isDestroyed() && !mFragmentsComplete) {
+                new FragmentLoader(this).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+            }
+        }, OPTIONAL_FRAGMENT_SCAN_DELAY_MS);
+    }
+
+    private static class FragmentLoader
+            extends AsyncTask<Void, Void, ArrayList<NavigationFragment>> {
 
         private final WeakReference<NavigationActivity> mRefActivity;
 
@@ -196,138 +228,196 @@ public class NavigationActivity extends BaseActivity
         }
 
         @Override
-        protected Void doInBackground(Void... voids) {
+        protected ArrayList<NavigationFragment> doInBackground(Void... voids) {
             NavigationActivity activity = mRefActivity.get();
             if (activity == null) return null;
             RootUtils.setCommandTimeoutForCurrentThread(STARTUP_ROOT_COMMAND_TIMEOUT_MS);
             try {
-                activity.initFragments();
+                return activity.createDetectedFragments();
             } finally {
                 RootUtils.clearCommandTimeoutForCurrentThread();
             }
-            return null;
         }
 
         @Override
-        protected void onPostExecute(Void aVoid) {
-            super.onPostExecute(aVoid);
+        protected void onPostExecute(ArrayList<NavigationFragment> fragments) {
+            super.onPostExecute(fragments);
             NavigationActivity activity = mRefActivity.get();
-            if (activity == null) return;
-            activity.init(null);
+            if (activity == null || fragments == null
+                    || activity.isFinishing() || activity.isDestroyed()) {
+                return;
+            }
+            activity.onDetectedFragmentsLoaded(fragments);
         }
     }
 
-    private void initFragments() {
-        mFragments.clear();
-        mFragments.add(new NavigationActivity.NavigationFragment(R.string.statistics));
-        mFragments.add(new NavigationActivity.NavigationFragment(R.string.overall, OverallFragment.class, R.drawable.ic_chart));
-        mFragments.add(new NavigationActivity.NavigationFragment(R.string.device, DeviceFragment.class, R.drawable.ic_device));
+    private ArrayList<NavigationFragment> createInitialFragments() {
+        ArrayList<NavigationFragment> fragments = new ArrayList<>();
+        fragments.add(new NavigationFragment(R.string.statistics));
+        fragments.add(new NavigationFragment(
+                R.string.overall, OverallFragment.class, R.drawable.ic_chart));
+        fragments.add(new NavigationFragment(
+                R.string.device, DeviceFragment.class, R.drawable.ic_device));
+        fragments.add(new NavigationFragment(R.string.kernel));
+        fragments.add(new NavigationFragment(
+                R.string.cpu, CPUFragment.class, R.drawable.ic_cpu));
+        fragments.add(new NavigationFragment(
+                R.string.virtual_memory, VMFragment.class, R.drawable.ic_server));
+        fragments.add(new NavigationFragment(
+                R.string.misc, MiscFragment.class, R.drawable.ic_clear));
+        fragments.add(new NavigationFragment(R.string.tools));
+        fragments.add(new NavigationFragment(
+                R.string.custom_controls, CustomControlsFragment.class, R.drawable.ic_console));
+        fragments.add(new NavigationFragment(
+                R.string.build_prop_editor, BuildpropFragment.class, R.drawable.ic_edit));
+        fragments.add(new NavigationFragment(
+                R.string.profile, ProfileFragment.class, R.drawable.ic_layers));
+        fragments.add(new NavigationFragment(
+                R.string.recovery, RecoveryFragment.class, R.drawable.ic_security));
+        fragments.add(new NavigationFragment(
+                R.string.initd, InitdFragment.class, R.drawable.ic_shell));
+        fragments.add(new NavigationFragment(
+                R.string.on_boot, OnBootFragment.class, R.drawable.ic_start));
+        fragments.add(new NavigationFragment(R.string.other));
+        fragments.add(new NavigationFragment(
+                R.string.settings, SettingsFragment.class, R.drawable.ic_settings));
+        fragments.add(new NavigationFragment(
+                R.string.donation_title, DonationFragment.class, R.drawable.ic_donation));
+        fragments.add(new NavigationFragment(
+                R.string.about, AboutFragment.class, R.drawable.ic_about));
+        return fragments;
+    }
+
+    private ArrayList<NavigationFragment> createDetectedFragments() {
+        ArrayList<NavigationFragment> fragments = new ArrayList<>();
+        fragments.add(new NavigationFragment(R.string.statistics));
+        fragments.add(new NavigationFragment(R.string.overall, OverallFragment.class, R.drawable.ic_chart));
+        fragments.add(new NavigationFragment(R.string.device, DeviceFragment.class, R.drawable.ic_device));
         if (Device.MemInfo.getInstance().getItems().size() > 0) {
-            mFragments.add(new NavigationActivity.NavigationFragment(R.string.memory, MemoryFragment.class, R.drawable.ic_save));
+            fragments.add(new NavigationFragment(R.string.memory, MemoryFragment.class, R.drawable.ic_save));
         }
         if (Device.Input.getInstance().supported()) {
-            mFragments.add(new NavigationActivity.NavigationFragment(R.string.inputs, InputsFragment.class, R.drawable.ic_keyboard));
+            fragments.add(new NavigationFragment(R.string.inputs, InputsFragment.class, R.drawable.ic_keyboard));
         }
-        mFragments.add(new NavigationActivity.NavigationFragment(R.string.kernel));
-        mFragments.add(new NavigationActivity.NavigationFragment(R.string.cpu, CPUFragment.class, R.drawable.ic_cpu));
+        fragments.add(new NavigationFragment(R.string.kernel));
+        fragments.add(new NavigationFragment(R.string.cpu, CPUFragment.class, R.drawable.ic_cpu));
         if (Hotplug.supported()) {
-            mFragments.add(new NavigationActivity.NavigationFragment(R.string.cpu_hotplug, CPUHotplugFragment.class, R.drawable.ic_switch));
+            fragments.add(new NavigationFragment(R.string.cpu_hotplug, CPUHotplugFragment.class, R.drawable.ic_switch));
         }
         if (Hmp.getInstance().supported()) {
-            mFragments.add(new NavigationActivity.NavigationFragment(R.string.hmp, HmpFragment.class, R.drawable.ic_cpu));
+            fragments.add(new NavigationFragment(R.string.hmp, HmpFragment.class, R.drawable.ic_cpu));
         }
         if (Thermal.supported()) {
-            mFragments.add(new NavigationActivity.NavigationFragment(R.string.thermal, ThermalFragment.class, R.drawable.ic_temperature));
+            fragments.add(new NavigationFragment(R.string.thermal, ThermalFragment.class, R.drawable.ic_temperature));
         }
         if (GPU.supported()) {
-            mFragments.add(new NavigationActivity.NavigationFragment(R.string.gpu, GPUFragment.class, R.drawable.ic_gpu));
+            fragments.add(new NavigationFragment(R.string.gpu, GPUFragment.class, R.drawable.ic_gpu));
         }
         if (Dvfs.supported()) {
-            mFragments.add(new NavigationActivity.NavigationFragment(R.string.dvfs_nav, DvfsFragment.class, R.drawable.ic_dvfs));
+            fragments.add(new NavigationFragment(R.string.dvfs_nav, DvfsFragment.class, R.drawable.ic_dvfs));
         }
         if (Screen.supported()) {
-            mFragments.add(new NavigationActivity.NavigationFragment(R.string.screen, ScreenFragment.class, R.drawable.ic_display));
+            fragments.add(new NavigationFragment(R.string.screen, ScreenFragment.class, R.drawable.ic_display));
         }
         if (Wake.supported()) {
-            mFragments.add(new NavigationActivity.NavigationFragment(R.string.gestures, WakeFragment.class, R.drawable.ic_touch));
+            fragments.add(new NavigationFragment(R.string.gestures, WakeFragment.class, R.drawable.ic_touch));
         }
         if (Sound.getInstance().supported()) {
-            mFragments.add(new NavigationActivity.NavigationFragment(R.string.sound, SoundFragment.class, R.drawable.ic_music));
+            fragments.add(new NavigationFragment(R.string.sound, SoundFragment.class, R.drawable.ic_music));
         }
         if (Spectrum.supported(this)) {
-            mFragments.add(new NavigationActivity.NavigationFragment(R.string.spectrum, SpectrumFragment.class, R.drawable.ic_spectrum_logo));
+            fragments.add(new NavigationFragment(R.string.spectrum, SpectrumFragment.class, R.drawable.ic_spectrum_logo));
         }
         if (Battery.getInstance(this).supported()) {
-            mFragments.add(new NavigationActivity.NavigationFragment(R.string.battery, BatteryFragment.class, R.drawable.ic_battery));
+            fragments.add(new NavigationFragment(R.string.battery, BatteryFragment.class, R.drawable.ic_battery));
         }
         if (LED.getInstance().supported()) {
-            mFragments.add(new NavigationActivity.NavigationFragment(R.string.led, LEDFragment.class, R.drawable.ic_led));
+            fragments.add(new NavigationFragment(R.string.led, LEDFragment.class, R.drawable.ic_led));
         }
         if (IO.getInstance().supported()) {
-            mFragments.add(new NavigationActivity.NavigationFragment(R.string.io_scheduler, IOFragment.class, R.drawable.ic_sdcard));
+            fragments.add(new NavigationFragment(R.string.io_scheduler, IOFragment.class, R.drawable.ic_sdcard));
         }
         if (KSM.getInstance().supported()) {
             if (KSM.getInstance().isUKSM()) {
-                mFragments.add(new NavigationActivity.NavigationFragment(R.string.uksm_name, KSMFragment.class, R.drawable.ic_merge));
+                fragments.add(new NavigationFragment(R.string.uksm_name, KSMFragment.class, R.drawable.ic_merge));
             } else {
-                mFragments.add(new NavigationActivity.NavigationFragment(R.string.ksm_name, KSMFragment.class, R.drawable.ic_merge));
+                fragments.add(new NavigationFragment(R.string.ksm_name, KSMFragment.class, R.drawable.ic_merge));
             }
         }
         if (LMK.supported()) {
-            mFragments.add(new NavigationActivity.NavigationFragment(R.string.lmk, LMKFragment.class, R.drawable.ic_stackoverflow));
+            fragments.add(new NavigationFragment(R.string.lmk, LMKFragment.class, R.drawable.ic_stackoverflow));
         }
         if (Wakelock.supported()) {
-            mFragments.add(new NavigationActivity.NavigationFragment(R.string.wakelock_nav, WakelockFragment.class, R.drawable.ic_unlock));
+            fragments.add(new NavigationFragment(R.string.wakelock_nav, WakelockFragment.class, R.drawable.ic_unlock));
         }
         if (BoefflaWakelock.supported()) {
-            mFragments.add(new NavigationActivity.NavigationFragment(R.string.boeffla_wakelock, BoefflaWakelockFragment.class, R.drawable.ic_unlock));
+            fragments.add(new NavigationFragment(R.string.boeffla_wakelock, BoefflaWakelockFragment.class, R.drawable.ic_unlock));
         }
-        mFragments.add(new NavigationActivity.NavigationFragment(R.string.virtual_memory, VMFragment.class, R.drawable.ic_server));
+        fragments.add(new NavigationFragment(R.string.virtual_memory, VMFragment.class, R.drawable.ic_server));
         if (Entropy.supported()) {
-            mFragments.add(new NavigationActivity.NavigationFragment(R.string.entropy, EntropyFragment.class, R.drawable.ic_numbers));
+            fragments.add(new NavigationFragment(R.string.entropy, EntropyFragment.class, R.drawable.ic_numbers));
         }
-        mFragments.add(new NavigationActivity.NavigationFragment(R.string.misc, MiscFragment.class, R.drawable.ic_clear));
-        mFragments.add(new NavigationActivity.NavigationFragment(R.string.voltage_control));
+        fragments.add(new NavigationFragment(R.string.misc, MiscFragment.class, R.drawable.ic_clear));
+        fragments.add(new NavigationFragment(R.string.voltage_control));
         if (VoltageCl1.supported()) {
-            mFragments.add(new NavigationActivity.NavigationFragment(R.string.cpucl1_voltage, CPUVoltageCl1Fragment.class, R.drawable.ic_bolt));
+            fragments.add(new NavigationFragment(R.string.cpucl1_voltage, CPUVoltageCl1Fragment.class, R.drawable.ic_bolt));
         }
         if (VoltageCl0.supported()) {
-            mFragments.add(new NavigationActivity.NavigationFragment(R.string.cpucl0_voltage, CPUVoltageCl0Fragment.class, R.drawable.ic_bolt));
+            fragments.add(new NavigationFragment(R.string.cpucl0_voltage, CPUVoltageCl0Fragment.class, R.drawable.ic_bolt));
         }
         if (VoltageMif.supported()) {
-            mFragments.add(new NavigationActivity.NavigationFragment(R.string.busMif_voltage, BusMifFragment.class, R.drawable.ic_bolt));
+            fragments.add(new NavigationFragment(R.string.busMif_voltage, BusMifFragment.class, R.drawable.ic_bolt));
         }
         if (VoltageInt.supported()) {
-            mFragments.add(new NavigationActivity.NavigationFragment(R.string.busInt_voltage, BusIntFragment.class, R.drawable.ic_bolt));
+            fragments.add(new NavigationFragment(R.string.busInt_voltage, BusIntFragment.class, R.drawable.ic_bolt));
         }
         if (VoltageDisp.supported()) {
-            mFragments.add(new NavigationActivity.NavigationFragment(R.string.busDisp_voltage, BusDispFragment.class, R.drawable.ic_bolt));
+            fragments.add(new NavigationFragment(R.string.busDisp_voltage, BusDispFragment.class, R.drawable.ic_bolt));
         }
         if (VoltageCam.supported()) {
-            mFragments.add(new NavigationActivity.NavigationFragment(R.string.busCam_voltage, BusCamFragment.class, R.drawable.ic_bolt));
+            fragments.add(new NavigationFragment(R.string.busCam_voltage, BusCamFragment.class, R.drawable.ic_bolt));
         }
-        mFragments.add(new NavigationActivity.NavigationFragment(R.string.tools));
-        //mFragments.add(new NavigationActivity.NavigationFragment(R.string.data_sharing, DataSharingFragment.class, R.drawable.ic_database));
-        mFragments.add(new NavigationActivity.NavigationFragment(R.string.custom_controls, CustomControlsFragment.class, R.drawable.ic_console));
+        fragments.add(new NavigationFragment(R.string.tools));
+        //fragments.add(new NavigationFragment(R.string.data_sharing, DataSharingFragment.class, R.drawable.ic_database));
+        fragments.add(new NavigationFragment(R.string.custom_controls, CustomControlsFragment.class, R.drawable.ic_console));
 
         SupportedDownloads supportedDownloads = new SupportedDownloads(this);
         if (supportedDownloads.getLink() != null) {
-            mFragments.add(new NavigationActivity.NavigationFragment(R.string.downloads, DownloadsFragment.class, R.drawable.ic_download));
+            fragments.add(new NavigationFragment(R.string.downloads, DownloadsFragment.class, R.drawable.ic_download));
         }
         if (Backup.hasBackup()) {
-            mFragments.add(new NavigationActivity.NavigationFragment(R.string.backup, BackupFragment.class, R.drawable.ic_restore));
+            fragments.add(new NavigationFragment(R.string.backup, BackupFragment.class, R.drawable.ic_restore));
         }
-        mFragments.add(new NavigationActivity.NavigationFragment(R.string.build_prop_editor, BuildpropFragment.class, R.drawable.ic_edit));
-        mFragments.add(new NavigationActivity.NavigationFragment(R.string.profile, ProfileFragment.class, R.drawable.ic_layers));
-        mFragments.add(new NavigationActivity.NavigationFragment(R.string.recovery, RecoveryFragment.class, R.drawable.ic_security));
-        mFragments.add(new NavigationActivity.NavigationFragment(R.string.initd, InitdFragment.class, R.drawable.ic_shell));
-        mFragments.add(new NavigationActivity.NavigationFragment(R.string.on_boot, OnBootFragment.class, R.drawable.ic_start));
-        mFragments.add(new NavigationActivity.NavigationFragment(R.string.other));
-        mFragments.add(new NavigationActivity.NavigationFragment(R.string.settings, SettingsFragment.class, R.drawable.ic_settings));
-        mFragments.add(new NavigationActivity.NavigationFragment(R.string.donation_title, DonationFragment.class, R.drawable.ic_donation));
-        mFragments.add(new NavigationActivity.NavigationFragment(R.string.about, AboutFragment.class, R.drawable.ic_about));
-        //mFragments.add(new NavigationActivity.NavigationFragment(R.string.contributors, ContributorsFragment.class, R.drawable.ic_people));
-        //mFragments.add(new NavigationActivity.NavigationFragment(R.string.help, HelpFragment.class, R.drawable.ic_help));
+        fragments.add(new NavigationFragment(R.string.build_prop_editor, BuildpropFragment.class, R.drawable.ic_edit));
+        fragments.add(new NavigationFragment(R.string.profile, ProfileFragment.class, R.drawable.ic_layers));
+        fragments.add(new NavigationFragment(R.string.recovery, RecoveryFragment.class, R.drawable.ic_security));
+        fragments.add(new NavigationFragment(R.string.initd, InitdFragment.class, R.drawable.ic_shell));
+        fragments.add(new NavigationFragment(R.string.on_boot, OnBootFragment.class, R.drawable.ic_start));
+        fragments.add(new NavigationFragment(R.string.other));
+        fragments.add(new NavigationFragment(R.string.settings, SettingsFragment.class, R.drawable.ic_settings));
+        fragments.add(new NavigationFragment(R.string.donation_title, DonationFragment.class, R.drawable.ic_donation));
+        fragments.add(new NavigationFragment(R.string.about, AboutFragment.class, R.drawable.ic_about));
+        //fragments.add(new NavigationFragment(R.string.contributors, ContributorsFragment.class, R.drawable.ic_people));
+        //fragments.add(new NavigationFragment(R.string.help, HelpFragment.class, R.drawable.ic_help));
+        return fragments;
+    }
+
+    private void onDetectedFragmentsLoaded(ArrayList<NavigationFragment> fragments) {
+        if (getSupportFragmentManager().isStateSaved()) {
+            mPendingFragments = fragments;
+            return;
+        }
+        applyDetectedFragments(fragments);
+    }
+
+    private void applyDetectedFragments(ArrayList<NavigationFragment> fragments) {
+        mFragments = fragments;
+        sDetectedFragments = new ArrayList<>(fragments);
+        mFragmentsComplete = true;
+        appendFragments(true);
+        if (selectRequestedSection()) {
+            onItemSelected(mSelection, false);
+        }
     }
 
     private void init(Bundle savedInstanceState) {
@@ -347,17 +437,7 @@ public class NavigationActivity extends BaseActivity
         }
 
         appendFragments(false);
-        String section = getIntent().getStringExtra(INTENT_SECTION);
-        if (section != null) {
-            for (Map.Entry<Integer, Class<? extends Fragment>> entry : mActualFragments.entrySet()) {
-                Class<? extends Fragment> fragmentClass = entry.getValue();
-                if (fragmentClass != null && fragmentClass.getCanonicalName().equals(section)) {
-                    mSelection = entry.getKey();
-                    break;
-                }
-            }
-            getIntent().removeExtra(INTENT_SECTION);
-        }
+        selectRequestedSection();
 
         if (mSelection == 0 || mActualFragments.get(mSelection) == null) {
             mSelection = firstTab();
@@ -373,6 +453,24 @@ public class NavigationActivity extends BaseActivity
 
         mNavigationContent.setVisibility(View.VISIBLE);
         mNavigationLoading.setVisibility(View.GONE);
+    }
+
+    private boolean selectRequestedSection() {
+        String section = getIntent().getStringExtra(INTENT_SECTION);
+        if (section == null) return false;
+
+        for (Map.Entry<Integer, Class<? extends Fragment>> entry : mActualFragments.entrySet()) {
+            Class<? extends Fragment> fragmentClass = entry.getValue();
+            if (fragmentClass != null && fragmentClass.getCanonicalName().equals(section)) {
+                mSelection = entry.getKey();
+                getIntent().removeExtra(INTENT_SECTION);
+                return true;
+            }
+        }
+        if (mFragmentsComplete) {
+            getIntent().removeExtra(INTENT_SECTION);
+        }
+        return false;
     }
 
     private int firstTab() {
@@ -444,7 +542,7 @@ public class NavigationActivity extends BaseActivity
             mUpdatingNavigation = false;
         }
 
-        if (setShortcuts) {
+        if (setShortcuts && mFragmentsComplete) {
             setShortcuts();
         }
     }
@@ -670,11 +768,22 @@ public class NavigationActivity extends BaseActivity
     }
 
     @Override
+    protected void onPostResume() {
+        super.onPostResume();
+        if (mPendingFragments != null) {
+            ArrayList<NavigationFragment> fragments = mPendingFragments;
+            mPendingFragments = null;
+            applyDetectedFragments(fragments);
+        }
+    }
+
+    @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
 
         outState.putParcelableArrayList("fragments", mFragments);
         outState.putInt(INTENT_SECTION, mSelection);
+        outState.putBoolean(STATE_FRAGMENTS_COMPLETE, mFragmentsComplete);
     }
 
     @Override
@@ -696,7 +805,7 @@ public class NavigationActivity extends BaseActivity
                     AppSettings.getFragmentOpened(fragmentClass, this) + 1,
                     this);
         }
-        if (!mUseTopTabs || !saveOpened) {
+        if (mFragmentsComplete && (!mUseTopTabs || !saveOpened)) {
             setShortcuts();
         }
 
