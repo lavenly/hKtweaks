@@ -149,7 +149,6 @@ public class NavigationActivity extends BaseActivity
     private static final String PACKAGE = NavigationActivity.class.getCanonicalName();
     private static final long STARTUP_ROOT_COMMAND_TIMEOUT_MS = 10_000;
     private static final long OPTIONAL_FRAGMENT_SCAN_DELAY_MS = 500;
-    private static final long TOP_TAB_REVEAL_TIMEOUT_MS = 2_500;
     private static final String STATE_FRAGMENTS_COMPLETE = "fragments_complete";
     private static final String FRAGMENT_CACHE = "navigation_fragment_cache";
     private static final String FRAGMENT_CACHE_FORMAT =
@@ -327,21 +326,6 @@ public class NavigationActivity extends BaseActivity
                 new FragmentLoader(this).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
             }
         }, OPTIONAL_FRAGMENT_SCAN_DELAY_MS);
-        if (mUseTopTabs) {
-            mNavigationContent.postDelayed(
-                    this::revealProvisionalTopTabs, TOP_TAB_REVEAL_TIMEOUT_MS);
-        }
-    }
-
-    private void revealProvisionalTopTabs() {
-        if (mFragmentsComplete || mNavigationTabs == null
-                || mNavigationTabs.getVisibility() == View.VISIBLE
-                || isFinishing() || isDestroyed()) {
-            return;
-        }
-        mNavigationPager.setUserInputEnabled(true);
-        mNavigationTabs.setVisibility(View.VISIBLE);
-        fadeInNavigationTabs();
     }
 
     private static class FragmentLoader
@@ -547,6 +531,7 @@ public class NavigationActivity extends BaseActivity
             mFragments = fragments;
             mFragmentsComplete = true;
             appendFragments(true);
+            showNavigationContent();
             return;
         }
 
@@ -568,6 +553,7 @@ public class NavigationActivity extends BaseActivity
         if (selectRequestedSection()) {
             onItemSelected(mSelection, false);
         }
+        showNavigationContent();
         if (revealTopTabs) {
             int targetSection = mSelection;
             mNavigationPager.setUserInputEnabled(true);
@@ -641,6 +627,12 @@ public class NavigationActivity extends BaseActivity
             startService(new Intent(this, Monitor.class));
         }
 
+        if (!mUseTopTabs || mFragmentsComplete) {
+            showNavigationContent();
+        }
+    }
+
+    private void showNavigationContent() {
         mNavigationContent.setVisibility(View.VISIBLE);
         mNavigationLoading.setVisibility(View.GONE);
     }
