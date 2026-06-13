@@ -2,6 +2,7 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:fillViewport="true"
     android:scrollbarSize="0dp">
 
     <LinearLayout
@@ -10,25 +11,27 @@
         android:layout_gravity="center"
         android:gravity="center"
         android:orientation="vertical"
-        android:padding="15dp">
+        android:paddingStart="16dp"
+        android:paddingTop="8dp"
+        android:paddingEnd="16dp"
+        android:paddingBottom="16dp">
 
-        <TextView
+        <com.google.android.material.textview.MaterialTextView
             android:id="@+id/title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:focusable="false"
             android:gravity="center"
             android:textAppearance="@style/TextAppearance.hKtweaks.SectionTitle"
-            android:textColor="?attr/colorOnPrimaryContainer"
-            />
+            android:textColor="?attr/colorOnSurface" />
 
-        <TextView
+        <com.google.android.material.textview.MaterialTextView
             android:id="@+id/summary"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:gravity="center"
             android:linksClickable="true"
             android:textAppearance="@style/TextAppearance.hKtweaks.Body"
-            android:textColor="?attr/colorOnPrimaryContainer" />
+            android:textColor="?attr/colorOnSurfaceVariant" />
     </LinearLayout>
 </ScrollView>

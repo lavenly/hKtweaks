@@ -107,6 +107,15 @@
         <item name="tint">?attr/colorOnSecondaryContainer</item>
     </style>
 
+    <style name="Widget.hKtweaks.Material3Expressive.Banner"
+        parent="Widget.Material3.CardView.Filled">
+        <item name="cardBackgroundColor">?attr/colorSurfaceContainerHigh</item>
+        <item name="cardElevation">0dp</item>
+        <item name="shapeAppearance">@style/ShapeAppearance.Material3.Corner.ExtraLarge</item>
+        <item name="strokeColor">?attr/colorOutlineVariant</item>
+        <item name="strokeWidth">1dp</item>
+    </style>
+
     <style name="Widget.hKtweaks.Material3Expressive.MaterialSwitch"
         parent="Widget.Material3.CompoundButton.MaterialSwitch">
         <item name="materialThemeOverlay">@style/ThemeOverlay.Material3Expressive</item>
@@ -132,9 +141,9 @@
     </style>
 
     <style name="ThemeOverlay.hKtweaks.RecoveryCheckBox" parent="">
-        <item name="colorControlNormal">@color/white</item>
+        <item name="colorControlNormal">?attr/colorOnSurfaceVariant</item>
         <item name="colorControlActivated">?attr/colorPrimary</item>
-        <item name="android:textColor">@color/white</item>
+        <item name="android:textColor">?attr/colorOnSurface</item>
         <item name="android:textAppearance">@style/TextAppearance.hKtweaks.Body</item>
     </style>
 
