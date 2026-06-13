@@ -96,6 +96,12 @@ public class OverallFragment extends RecyclerViewFragment {
     }
 
     @Override
+    protected int getMinimumBannerHeight() {
+        return getResources().getDimensionPixelSize(
+                R.dimen.overall_cpu_graph_banner_height);
+    }
+
+    @Override
     protected void addItems(List<RecyclerViewItem> items) {
 
         if (Build.VERSION.SDK_INT >= 23) {

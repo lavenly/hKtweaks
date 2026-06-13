@@ -27,6 +27,7 @@
     <dimen name="banner_min_height">112dp</dimen>
     <dimen name="banner_default_height">112dp</dimen>
     <dimen name="banner_max_height">280dp</dimen>
+    <dimen name="overall_cpu_graph_banner_height">184dp</dimen>
 
     <dimen name="circleview_height">50dp</dimen>
     <dimen name="circleview_width">50dp</dimen>
