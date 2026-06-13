@@ -131,10 +131,13 @@ public class Battery {
     }
 
     public static String getHealthValue() {
+        if (HEALTH == null) {
+            return null;
+        }
         String state = Utils.readFile(HEALTH);
         if (state == null){
             return null;
-        } else {
+        } else if (FG_FULLCAPNOM != null) {
             float cap = Utils.strToInt(Utils.readFile(FG_FULLCAPNOM));
             if (cap != 0) {
                 float value = ((cap * 2) / getCapacity()) * 100;
@@ -145,6 +148,7 @@ public class Battery {
                 return state;
             }
         }
+        return state;
     }
 
     public void saveStockValues(Context context) {
@@ -334,7 +338,7 @@ public class Battery {
     /* Init Battery */
 
     public boolean hasHvInput() {
-        return Utils.existFile(HV_INPUT);
+        return exists(HV_INPUT);
     }
 
     public void setHvInput(int value, Context context) {
@@ -346,7 +350,7 @@ public class Battery {
     }
 
     public boolean hasHvCharge() {
-        return Utils.existFile(HV_CHARGE);
+        return exists(HV_CHARGE);
     }
 
     public void setHvCharge(int value, Context context) {
@@ -358,7 +362,7 @@ public class Battery {
     }
 
     public boolean hasAcInput() {
-        return Utils.existFile(AC_INPUT);
+        return exists(AC_INPUT);
     }
 
     public void setAcInput(int value, Context context) {
@@ -370,7 +374,7 @@ public class Battery {
     }
 
     public boolean hasAcCharge() {
-        return Utils.existFile(AC_CHARGE);
+        return exists(AC_CHARGE);
     }
 
     public void setAcCharge(int value, Context context) {
@@ -382,7 +386,7 @@ public class Battery {
     }
 
     public boolean hasAcInputScreen() {
-        return Utils.existFile(AC_INPUT_SCREEN);
+        return exists(AC_INPUT_SCREEN);
     }
 
     public void setAcInputScreen(int value, Context context) {
@@ -394,7 +398,7 @@ public class Battery {
     }
 
     public boolean hasAcChargeScreen() {
-        return Utils.existFile(AC_CHARGE_SCREEN);
+        return exists(AC_CHARGE_SCREEN);
     }
 
     public void setAcChargeScreen(int value, Context context) {
@@ -406,7 +410,7 @@ public class Battery {
     }
 
     public boolean hasUsbInput() {
-        return Utils.existFile(USB_INPUT);
+        return exists(USB_INPUT);
     }
 
     public void setUsbInput(int value, Context context) {
@@ -418,7 +422,7 @@ public class Battery {
     }
 
     public boolean hasUsbCharge() {
-        return Utils.existFile(USB_CHARGE);
+        return exists(USB_CHARGE);
     }
 
     public void setUsbCharge(int value, Context context) {
@@ -430,7 +434,7 @@ public class Battery {
     }
 
     public boolean hasWcInput() {
-        return Utils.existFile(WC_INPUT);
+        return exists(WC_INPUT);
     }
 
     public void setWcInput(int value, Context context) {
@@ -442,7 +446,7 @@ public class Battery {
     }
 
     public boolean hasWcCharge() {
-        return Utils.existFile(WC_CHARGE);
+        return exists(WC_CHARGE);
     }
 
     public void setWcCharge(int value, Context context) {
@@ -454,7 +458,7 @@ public class Battery {
     }
 
     public boolean hasCarCharge() {
-        return Utils.existFile(CAR_CHARGE);
+        return exists(CAR_CHARGE);
     }
 
     public void setCarCharge(int value, Context context) {
@@ -466,7 +470,7 @@ public class Battery {
     }
 
     public boolean hasCarInput() {
-        return Utils.existFile(CAR_INPUT);
+        return exists(CAR_INPUT);
     }
 
     public void setCarInput(int value, Context context) {
@@ -478,7 +482,13 @@ public class Battery {
     }
 
     public static String getChargeSource(Context context) {
+        if (CHARGE_SOURCE == null) {
+            return context.getString(R.string.cs_unknown);
+        }
         String value = Utils.readFile(CHARGE_SOURCE);
+        if (value == null) {
+            return context.getString(R.string.cs_unknown);
+        }
         switch (value){
             case "0" :
                 return context.getResources().getString(R.string.cs_unknown);
@@ -569,11 +579,15 @@ public class Battery {
     }
 
     public boolean hasCharge() {
-        return Utils.existFile(BATTERY_NODE);
+        return exists(BATTERY_NODE);
     }
 
     public boolean hasUnstableCharge() {
-        return Utils.existFile(UNSTABLE_CHARGE);
+        return exists(UNSTABLE_CHARGE);
+    }
+
+    private static boolean exists(String path) {
+        return path != null && Utils.existFile(path);
     }
 
     public boolean isUnstableChargeEnabled() {
