@@ -72,7 +72,14 @@ public class SelectView extends ValueView {
     }
 
     public void setItems(List<String> items) {
-        mItems = items;
+        mItems = new ArrayList<>();
+        if (items != null) {
+            for (String item : items) {
+                if (item != null && !item.trim().isEmpty()) {
+                    mItems.add(item.trim());
+                }
+            }
+        }
         refresh();
     }
 
@@ -86,6 +93,8 @@ public class SelectView extends ValueView {
     }
 
     private void showDialog(Context context) {
+        if (!mEnabled || mItems.isEmpty()) return;
+
         String[] items = mItems.toArray(new String[mItems.size()]);
 
         mDialog = new Dialog(context).setItems(items,
@@ -106,9 +115,10 @@ public class SelectView extends ValueView {
     protected void refresh() {
         super.refresh();
 
-        if (mView != null && getValue() != null) {
-            mView.setOnClickListener(v -> showDialog(v.getContext()));
-            mView.setEnabled(mEnabled);
+        if (mView != null) {
+            boolean canSelect = mEnabled && !mItems.isEmpty();
+            mView.setOnClickListener(canSelect ? v -> showDialog(v.getContext()) : null);
+            mView.setEnabled(canSelect);
         }
     }
 }
