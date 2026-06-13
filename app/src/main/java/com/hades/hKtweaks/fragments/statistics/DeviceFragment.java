@@ -72,7 +72,7 @@ public class DeviceFragment extends RecyclerViewFragment {
                         R.string.cores : R.string.cores_singular, Device.getCoreCount())},
                 {getString(R.string.ram), (int) Device.MemInfo.getInstance().getTotalMem() + getString(R.string.mb)},
                 {getString(R.string.uptime), Device.getUptime()},
-                {getString(R.string.battery_health), Battery.getHealthValue()},
+                {getString(R.string.battery_health), Battery.getHealthValue(requireContext())},
                 {getString(R.string.asv), Device.getAsv()},
                 {getString(R.string.cpu_features), Device.CPUInfo.getInstance().getFeatures()}
         };
@@ -84,7 +84,7 @@ public class DeviceFragment extends RecyclerViewFragment {
         hwCard.setTitle(getString(R.string.hwInfo));
 
         for (String[] softwareInfo : swInfo) {
-            if (softwareInfo[1] != null && softwareInfo[1].isEmpty()) {
+            if (softwareInfo[1] == null || softwareInfo[1].isEmpty()) {
                 continue;
             }
             DescriptionView info = new DescriptionView();
@@ -94,7 +94,7 @@ public class DeviceFragment extends RecyclerViewFragment {
         }
 
         for (String[] hardwareInfo : hwInfo) {
-            if (hardwareInfo[1] != null && hardwareInfo[1].isEmpty()) {
+            if (hardwareInfo[1] == null || hardwareInfo[1].isEmpty()) {
                 continue;
             }
             DescriptionView info = new DescriptionView();
