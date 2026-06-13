@@ -396,6 +396,11 @@ public class OverallFragment extends RecyclerViewFragment {
         }
     }
 
+    @Override
+    protected boolean hasPeriodicRefresh() {
+        return true;
+    }
+
     private final BroadcastReceiver mBatteryReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {

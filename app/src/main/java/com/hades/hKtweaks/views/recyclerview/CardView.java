@@ -238,7 +238,9 @@ public class CardView extends RecyclerViewItem {
             throw new IllegalStateException("Cardinception!");
         }
         mItems.add(item);
-        addView(item);
+        if (mLayout != null) {
+            addView(item);
+        }
     }
 
     public void setOnMenuListener(OnMenuListener onMenuListener) {
@@ -259,7 +261,9 @@ public class CardView extends RecyclerViewItem {
 
     public void clearItems() {
         mRunnables.clear();
+        mLoading.clear();
         mItems.clear();
+        mViews.clear();
         if (mLayout != null) {
             mLayout.removeAllViews();
         }

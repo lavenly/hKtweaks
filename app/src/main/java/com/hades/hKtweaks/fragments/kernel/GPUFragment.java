@@ -872,4 +872,9 @@ public class GPUFragment extends RecyclerViewFragment {
             mUsage.addPercentage(Math.round(per > 100 ? 100 : per < 0 ? 0 : per));
         }
     }
+
+    @Override
+    protected boolean hasPeriodicRefresh() {
+        return true;
+    }
 }

@@ -329,4 +329,9 @@ public class VMFragment extends RecyclerViewFragment {
         }
     }
 
+    @Override
+    protected boolean hasPeriodicRefresh() {
+        return true;
+    }
+
 }

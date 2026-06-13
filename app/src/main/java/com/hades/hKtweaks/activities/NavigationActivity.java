@@ -134,6 +134,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.PriorityQueue;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class NavigationActivity extends BaseActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -156,6 +158,8 @@ public class NavigationActivity extends BaseActivity
     private View mNavigationLoading;
     private long mLastTimeBackbuttonPressed;
     private boolean mUseTopTabs;
+    private final ExecutorService mShortcutExecutor = Executors.newSingleThreadExecutor();
+    private volatile int mShortcutGeneration;
 
     private int mSelection;
 
@@ -520,7 +524,6 @@ public class NavigationActivity extends BaseActivity
 
         List<ShortcutInfo> shortcutInfos = new ArrayList<>();
         ShortcutManager shortcutManager = getSystemService(ShortcutManager.class);
-        shortcutManager.removeAllDynamicShortcuts();
         for (int i = 0; i < 4; i++) {
             NavigationFragment fragment = findNavigationFragmentByClass(queue.poll());
             if (fragment == null || fragment.mFragmentClass == null) continue;
@@ -539,7 +542,12 @@ public class NavigationActivity extends BaseActivity
                     .build();
             shortcutInfos.add(shortcut);
         }
-        shortcutManager.setDynamicShortcuts(shortcutInfos);
+        int generation = ++mShortcutGeneration;
+        mShortcutExecutor.execute(() -> {
+            if (generation == mShortcutGeneration) {
+                shortcutManager.setDynamicShortcuts(shortcutInfos);
+            }
+        });
     }
 
     public ArrayList<NavigationFragment> getFragments() {
@@ -589,6 +597,12 @@ public class NavigationActivity extends BaseActivity
             fragmentTransaction.commitAllowingStateLoss();
         }
         RootUtils.closeSU();
+    }
+
+    @Override
+    protected void onDestroy() {
+        mShortcutExecutor.shutdownNow();
+        super.onDestroy();
     }
 
     @Override
