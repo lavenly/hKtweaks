@@ -19,16 +19,16 @@
  */
 package com.hades.hKtweaks.fragments.statistics;
 
-import android.content.res.Configuration;
-
 import com.hades.hKtweaks.R;
 import com.hades.hKtweaks.fragments.recyclerview.RecyclerViewFragment;
 import com.hades.hKtweaks.utils.Device;
-import com.hades.hKtweaks.utils.Utils;
+import com.hades.hKtweaks.views.recyclerview.CardView;
 import com.hades.hKtweaks.views.recyclerview.DescriptionView;
 import com.hades.hKtweaks.views.recyclerview.RecyclerViewItem;
 
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by willi on 05.08.16.
@@ -50,26 +50,78 @@ public class MemoryFragment extends RecyclerViewFragment {
     }
 
     @Override
-    public int getSpanCount() {
-        int span = Utils.isTablet(getActivity()) ? Utils.getOrientation(getActivity()) ==
-                Configuration.ORIENTATION_LANDSCAPE ? 5 : 4 : Utils.getOrientation(getActivity()) ==
-                Configuration.ORIENTATION_LANDSCAPE ? 3 : 2;
-        if (itemsSize() != 0 && span > itemsSize()) {
-            span = itemsSize();
-        }
-        return span;
-    }
-
-    @Override
     protected void addItems(List<RecyclerViewItem> items) {
+        Map<MemorySection, CardView> sections = new LinkedHashMap<>();
+        sections.put(MemorySection.OVERVIEW, createCard(R.string.memory_overview));
+        sections.put(MemorySection.ACTIVITY, createCard(R.string.memory_activity));
+        sections.put(MemorySection.SWAP, createCard(R.string.swap));
+        sections.put(MemorySection.KERNEL, createCard(R.string.kernel_memory));
+        sections.put(MemorySection.OTHER, createCard(R.string.other));
+
         List<String> mems = mMemInfo.getItems();
         for (String mem : mems) {
-            DescriptionView memView = new DescriptionView();
+            DescriptionView memView = new MemoryDescriptionView();
             memView.setTitle(mem);
-            memView.setSummary(mMemInfo.getItem(mem).replace(" ", "")
-                    .replace("kB", getString(R.string.kb)));
+            memView.setSummary(formatValue(mMemInfo.getItem(mem)));
+            sections.get(getSection(mem)).addItem(memView);
+        }
 
-            items.add(memView);
+        for (CardView card : sections.values()) {
+            if (card.size() > 0) {
+                items.add(card);
+            }
+        }
+    }
+
+    private CardView createCard(int titleRes) {
+        CardView card = new CardView(getActivity());
+        card.setTitle(getString(titleRes));
+        return card;
+    }
+
+    private String formatValue(String value) {
+        return value.trim().replaceAll("\\s+kB$", " " + getString(R.string.kb));
+    }
+
+    private MemorySection getSection(String name) {
+        if (name.startsWith("Mem") || name.equals("Buffers") || name.equals("Cached")) {
+            return MemorySection.OVERVIEW;
+        }
+        if (name.startsWith("Active") || name.startsWith("Inactive")
+                || name.equals("Unevictable") || name.equals("Mlocked")
+                || name.equals("AnonPages") || name.equals("Mapped")
+                || name.startsWith("Shmem")) {
+            return MemorySection.ACTIVITY;
+        }
+        if (name.startsWith("Swap") || name.startsWith("Zswap")
+                || name.startsWith("Zswapped")) {
+            return MemorySection.SWAP;
+        }
+        if (name.startsWith("Slab") || name.startsWith("SReclaimable")
+                || name.startsWith("SUnreclaim") || name.startsWith("KReclaimable")
+                || name.startsWith("KernelStack") || name.startsWith("PageTables")
+                || name.startsWith("NFS_") || name.startsWith("Bounce")
+                || name.startsWith("WritebackTmp") || name.startsWith("Percpu")
+                || name.startsWith("Vmalloc") || name.startsWith("Cma")
+                || name.startsWith("DirectMap")) {
+            return MemorySection.KERNEL;
+        }
+        return MemorySection.OTHER;
+    }
+
+    private enum MemorySection {
+        OVERVIEW,
+        ACTIVITY,
+        SWAP,
+        KERNEL,
+        OTHER
+    }
+
+    private static class MemoryDescriptionView extends DescriptionView {
+
+        @Override
+        public int getLayoutRes() {
+            return R.layout.rv_memory_description_view;
         }
     }
 }

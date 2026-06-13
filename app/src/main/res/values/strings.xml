@@ -94,6 +94,10 @@
     <!-- Headers -->
     <string name="statistics">Statistics</string>
     <string name="kernel">Kernel</string>
+    <string name="memory_overview">Memory overview</string>
+    <string name="memory_activity">Memory activity</string>
+    <string name="swap">Swap</string>
+    <string name="kernel_memory">Kernel memory</string>
     <string name="voltage_control">Voltage Control</string>
     <string name="tools">Tools</string>
     <string name="other">Other</string>
