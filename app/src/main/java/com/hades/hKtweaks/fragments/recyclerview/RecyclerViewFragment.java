@@ -496,8 +496,11 @@ public abstract class RecyclerViewFragment extends BaseFragment {
             int toolbarInset = !usesFixedNavigationAppBar() && mAppBarLayout != null
                     ? mAppBarLayout.getHeight()
                     : 0;
+            int bannerHeight = Math.max(
+                    AppSettings.getBannerSize(requireContext()),
+                    getMinimumBannerHeight());
             ViewGroup.LayoutParams layoutParams = mViewPagerParent.getLayoutParams();
-            layoutParams.height = AppSettings.getBannerSize(getActivity()) + toolbarInset;
+            layoutParams.height = bannerHeight + toolbarInset;
             mViewPagerParent.setPadding(
                     mViewPagerParent.getPaddingLeft(),
                     toolbarInset,
@@ -507,6 +510,10 @@ public abstract class RecyclerViewFragment extends BaseFragment {
                     mRecyclerView.getPaddingRight(), mRecyclerView.getPaddingBottom());
             mViewPagerParent.requestLayout();
         }
+    }
+
+    protected int getMinimumBannerHeight() {
+        return 0;
     }
 
     protected void removeItem(RecyclerViewItem recyclerViewItem) {
