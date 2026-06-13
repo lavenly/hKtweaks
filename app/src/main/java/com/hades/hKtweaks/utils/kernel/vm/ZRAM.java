@@ -57,7 +57,10 @@ public class ZRAM {
     }
 
     public static String getCompAlgorithm() {
-        String[] algorithms = Utils.readFile(COMPRESSION).split(" ");
+        String value = Utils.readFile(COMPRESSION);
+        if (value == null || value.trim().isEmpty()) return "";
+
+        String[] algorithms = value.trim().split("\\s+");
         for (String algorithm : algorithms) {
             if (algorithm.startsWith("[") && algorithm.endsWith("]")) {
                 return algorithm.replace("[", "").replace("]", "");
@@ -67,10 +70,16 @@ public class ZRAM {
     }
 
     public static List<String> getCompAlgorithms() {
-        String[] algorithms = Utils.readFile(COMPRESSION).split(" ");
         List<String> list = new ArrayList<>();
+        String value = Utils.readFile(COMPRESSION);
+        if (value == null || value.trim().isEmpty()) return list;
+
+        String[] algorithms = value.trim().split("\\s+");
         for (String algorithm : algorithms) {
-            list.add(algorithm.replace("[", "").replace("]", ""));
+            String normalized = algorithm.replace("[", "").replace("]", "").trim();
+            if (!normalized.isEmpty()) {
+                list.add(normalized);
+            }
         }
         return list;
     }
