@@ -158,9 +158,11 @@ public class ApplyOnBootFragment extends BaseFragment {
 
             final String category = getArguments().getString(INTENT_CATEGORY);
             MaterialSwitch switcher = rootView.findViewById(R.id.switcher);
+            View applyOnBootCard = rootView.findViewById(R.id.apply_on_boot_card);
             switcher.setChecked(AppSettings.getBoolean(category, false, getActivity()));
             switcher.setOnCheckedChangeListener((buttonView, isChecked) ->
                     AppSettings.saveBoolean(category, isChecked, getActivity()));
+            applyOnBootCard.setOnClickListener(v -> switcher.toggle());
             return rootView;
         }
     }

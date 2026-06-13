@@ -560,9 +560,11 @@ public class ProfileFragment extends RecyclerViewFragment {
 
             ((TextView) rootView.findViewById(R.id.title)).setText(getString(R.string.profile_tasker_toast));
             MaterialSwitch switchCompat = rootView.findViewById(R.id.switcher);
+            View applyOnBootCard = rootView.findViewById(R.id.apply_on_boot_card);
             switchCompat.setChecked(AppSettings.isShowTaskerToast(getActivity()));
             switchCompat.setOnCheckedChangeListener((compoundButton, b)
                     -> AppSettings.saveShowTaskerToast(b, getActivity()));
+            applyOnBootCard.setOnClickListener(v -> switchCompat.toggle());
 
             return rootView;
         }
