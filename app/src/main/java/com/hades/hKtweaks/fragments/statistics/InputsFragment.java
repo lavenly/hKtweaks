@@ -22,11 +22,10 @@ package com.hades.hKtweaks.fragments.statistics;
 import com.hades.hKtweaks.R;
 import com.hades.hKtweaks.fragments.recyclerview.RecyclerViewFragment;
 import com.hades.hKtweaks.utils.Device;
+import com.hades.hKtweaks.views.recyclerview.CardView;
 import com.hades.hKtweaks.views.recyclerview.DescriptionView;
 import com.hades.hKtweaks.views.recyclerview.RecyclerViewItem;
-import com.hades.hKtweaks.views.recyclerview.TitleView;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -37,11 +36,6 @@ public class InputsFragment extends RecyclerViewFragment {
     @Override
     protected boolean showViewPager() {
         return false;
-    }
-
-    @Override
-    public int getSpanCount() {
-        return super.getSpanCount() + 1;
     }
 
     @Override
@@ -59,24 +53,30 @@ public class InputsFragment extends RecyclerViewFragment {
                         {getString(R.string.handlers), input.getHandlers()}
                 };
 
-                List<RecyclerViewItem> inputItems = new ArrayList<>();
+                CardView inputCard = new CardView(getActivity());
+                inputCard.setTitle(name);
 
                 for (String[] inputsList : list) {
-                    if (inputsList[1] != null) {
-                        DescriptionView inputView = new DescriptionView();
+                    if (inputsList[1] != null && !inputsList[1].isEmpty()) {
+                        DescriptionView inputView = new InputDescriptionView();
                         inputView.setTitle(inputsList[0]);
                         inputView.setSummary(inputsList[1]);
-                        inputItems.add(inputView);
+                        inputCard.addItem(inputView);
                     }
                 }
 
-                if (inputItems.size() > 0) {
-                    TitleView inputTile = new TitleView();
-                    inputTile.setText(name);
-                    items.add(inputTile);
-                    items.addAll(inputItems);
+                if (inputCard.size() > 0) {
+                    items.add(inputCard);
                 }
             }
+        }
+    }
+
+    private static class InputDescriptionView extends DescriptionView {
+
+        @Override
+        public int getLayoutRes() {
+            return R.layout.rv_input_description_view;
         }
     }
 }
