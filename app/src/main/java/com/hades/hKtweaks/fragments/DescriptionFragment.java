@@ -54,7 +54,7 @@ public class DescriptionFragment extends BaseFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.fragment_description, container, false);
+        View rootView = inflater.inflate(R.layout.fragment_banner_description, container, false);
 
         mTitleView = rootView.findViewById(R.id.title);
         mSummaryView = rootView.findViewById(R.id.summary);
