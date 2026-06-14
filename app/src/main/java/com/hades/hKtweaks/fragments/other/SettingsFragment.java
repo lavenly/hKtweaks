@@ -23,7 +23,6 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
-import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
@@ -31,7 +30,6 @@ import android.os.Looper;
 import android.os.Message;
 import android.os.Messenger;
 import androidx.fragment.app.Fragment;
-import androidx.core.content.ContextCompat;
 import androidx.core.hardware.fingerprint.FingerprintManagerCompat;
 import androidx.appcompat.app.AlertDialog;
 import androidx.preference.Preference;
@@ -46,28 +44,23 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
-import com.google.android.material.color.MaterialColors;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 import com.hades.hKtweaks.R;
 import com.hades.hKtweaks.activities.BannerResizerActivity;
 import com.hades.hKtweaks.activities.MainActivity;
 import com.hades.hKtweaks.activities.NavigationActivity;
+import com.hades.hKtweaks.activities.ThemeActivity;
 import com.hades.hKtweaks.services.boot.ApplyOnBootService;
 import com.hades.hKtweaks.services.profile.Widget;
 import com.hades.hKtweaks.utils.AppSettings;
-import com.hades.hKtweaks.utils.Themes;
 import com.hades.hKtweaks.utils.AppUpdaterTask;
 import com.hades.hKtweaks.utils.Utils;
 import com.hades.hKtweaks.utils.ViewUtils;
 import com.hades.hKtweaks.utils.root.RootUtils;
-import com.hades.hKtweaks.views.BorderCircleView;
 import com.hades.hKtweaks.views.dialog.Dialog;
 import com.hades.hKtweaks.views.preference.MaterialListPreference;
 import com.hades.hKtweaks.views.preference.MaterialSwitchPreference;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by willi on 13.08.16.
@@ -81,7 +74,6 @@ public class SettingsFragment extends PreferenceFragmentCompat implements
     private static final String KEY_CHECK_UPDATE = "check_update";
     private static final String KEY_FORCE_ENGLISH = "forceenglish";
     //private static final String KEY_USER_INTERFACE = "user_interface";
-    private static final String KEY_THEME_MODE = "theme_mode";
     private static final String KEY_NAVIGATION_MODE = "navigation_mode";
     //private static final String KEY_MATERIAL_ICON = "materialicon";
     private static final String KEY_BANNER_RESIZER = "banner_resizer";
@@ -98,12 +90,12 @@ public class SettingsFragment extends PreferenceFragmentCompat implements
     private static final String KEY_DELETE_PASSWORD = "delete_password";
     private static final String KEY_FINGERPRINT = "fingerprint";
     private static final String KEY_SECTIONS = "sections";
+    private static final int REQUEST_THEME = 1;
 
     private Preference mFingerprint;
 
     private String mOldPassword;
     private String mDeletePassword;
-    private int mColorSelection;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -141,10 +133,6 @@ public class SettingsFragment extends PreferenceFragmentCompat implements
     public void onCreatePreferences(Bundle bundle, String s) {
         addPreferencesFromResource(R.xml.settings);
 
-        MaterialListPreference themeMode =
-                (MaterialListPreference) findPreference(KEY_THEME_MODE);
-        themeMode.setValue(Themes.getThemeMode(requireContext()));
-
         MaterialListPreference navigationMode =
                 (MaterialListPreference) findPreference(KEY_NAVIGATION_MODE);
         navigationMode.setValue(AppSettings.getNavigationMode(requireContext()));
@@ -167,7 +155,6 @@ public class SettingsFragment extends PreferenceFragmentCompat implements
         findPreference(KEY_RESET_DATA).setOnPreferenceClickListener(this);
         findPreference(KEY_UPDATE_NOTIFICATION).setOnPreferenceChangeListener(this);
         findPreference(KEY_CHECK_UPDATE).setOnPreferenceClickListener(this);
-        themeMode.setOnPreferenceChangeListener(this);
         navigationMode.setOnPreferenceChangeListener(this);
         findPreference(KEY_BANNER_RESIZER).setOnPreferenceClickListener(this);
         findPreference(KEY_HIDE_BANNER).setOnPreferenceChangeListener(this);
@@ -225,11 +212,6 @@ public class SettingsFragment extends PreferenceFragmentCompat implements
                 }
                 return true;
             case KEY_FORCE_ENGLISH:
-                updateWidgetsAfterPreferenceChange();
-                restartSettings();
-                return true;
-            case KEY_THEME_MODE:
-                Themes.saveThemeMode(String.valueOf(o), requireContext());
                 updateWidgetsAfterPreferenceChange();
                 restartSettings();
                 return true;
@@ -311,7 +293,8 @@ public class SettingsFragment extends PreferenceFragmentCompat implements
                 startActivity(intent);
                 return true;
             case KEY_THEME_COLOR:
-                colorDialog();
+                startActivityForResult(new Intent(requireContext(), ThemeActivity.class),
+                        REQUEST_THEME);
                 return true;
             case KEY_APPLY_ON_BOOT_TEST:
                 if (Utils.isServiceRunning(ApplyOnBootService.class, getActivity())) {
@@ -343,6 +326,14 @@ public class SettingsFragment extends PreferenceFragmentCompat implements
                 return true;
         }
         return false;
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == REQUEST_THEME && resultCode == ThemeActivity.RESULT_THEME_CHANGED) {
+            restartSettings();
+        }
     }
 
     private static class Execute extends AsyncTask<String, Void, Void> {
@@ -498,78 +489,6 @@ public class SettingsFragment extends PreferenceFragmentCompat implements
         inputLayout.addView(editText);
         parent.addView(inputLayout);
         return editText;
-    }
-
-    private void colorDialog() {
-        mColorSelection = -1;
-        List<String> colors = new ArrayList<>(Themes.THEME_COLORS);
-        int selection = colors.indexOf(Themes.getThemeColor(getActivity()));
-        int outlineColor = MaterialColors.getColor(requireContext(),
-                R.attr.colorOutline, ContextCompat.getColor(requireContext(), R.color.textcolor_light));
-        LinearLayout linearLayout = new LinearLayout(getActivity());
-        linearLayout.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
-                ViewGroup.LayoutParams.WRAP_CONTENT));
-        linearLayout.setOrientation(LinearLayout.VERTICAL);
-        int padding = (int) getResources().getDimension(R.dimen.dialog_padding);
-        linearLayout.setPadding(padding, padding, padding, padding);
-
-        final List<BorderCircleView> circles = new ArrayList<>();
-
-        LinearLayout subView = null;
-        for (int i = 0; i < colors.size(); i++) {
-            if (subView == null || i % 5 == 0) {
-                subView = new LinearLayout(getActivity());
-                subView.setLayoutParams(new ViewGroup.LayoutParams(
-                        ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
-                linearLayout.addView(subView);
-            }
-
-            BorderCircleView circle = new BorderCircleView(getActivity());
-            circle.setChecked(i == selection);
-            int seedColor = ContextCompat.getColor(getActivity(),
-                    Themes.getColor(colors.get(i)));
-            circle.setCircleColor(seedColor);
-            circle.setCheckColor(MaterialColors.isColorLight(seedColor)
-                    ? Color.BLACK : Color.WHITE);
-            circle.setBorderColor(outlineColor);
-            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
-                    ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT, 1);
-            int margin = (int) getResources().getDimension(R.dimen.color_dialog_margin);
-            params.setMargins(margin, margin, margin, margin);
-            circle.setLayoutParams(params);
-            circle.setOnClickListener(v -> {
-                for (BorderCircleView borderCircleView : circles) {
-                    if (v == borderCircleView) {
-                        borderCircleView.setChecked(true);
-                        mColorSelection = circles.indexOf(borderCircleView);
-                    } else {
-                        borderCircleView.setChecked(false);
-                    }
-                }
-            });
-
-            circles.add(circle);
-            subView.addView(circle);
-        }
-
-        new Dialog(getActivity()).setTitle(getString(R.string.theme_color))
-                .setView(linearLayout)
-                .setNegativeButton(getString(R.string.cancel), (dialog, which) -> {
-                })
-                .setPositiveButton(getString(R.string.ok), (dialog, which) -> {
-                    if (mColorSelection < 0) {
-                        return;
-                    }
-                    Themes.saveThemeColor(colors.get(mColorSelection), getActivity());
-                    Widget.updateAll(requireContext().getApplicationContext());
-                    getActivity().finish();
-                    Intent intent = new Intent(getActivity(), MainActivity.class);
-                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                    intent.putExtra(NavigationActivity.INTENT_SECTION,
-                            SettingsFragment.class.getCanonicalName());
-                    startActivity(intent);
-                })
-                .setOnDismissListener(dialog -> mColorSelection = -1).show();
     }
 
 }

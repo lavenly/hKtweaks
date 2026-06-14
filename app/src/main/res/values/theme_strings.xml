@@ -1,4 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
     <string name="theme_color" tools:ignore="MissingTranslation">Theme color</string>
+    <string name="theme_customize_summary" tools:ignore="MissingTranslation">Preview and customize the app color and appearance</string>
+    <string name="theme_preview" tools:ignore="MissingTranslation">Theme preview</string>
+    <string name="theme_mode_section" tools:ignore="MissingTranslation">Theme mode</string>
+    <string name="theme_mode_system_summary" tools:ignore="MissingTranslation">Follow the device appearance</string>
+    <string name="theme_mode_light_summary" tools:ignore="MissingTranslation">Always use the light appearance</string>
+    <string name="theme_mode_dark_summary" tools:ignore="MissingTranslation">Always use the dark appearance</string>
+    <string name="theme_mode_amoled_summary" tools:ignore="MissingTranslation">Use pure black surfaces for AMOLED displays</string>
+    <string name="theme_color_option" tools:ignore="MissingTranslation">Theme color %1$d</string>
+    <string name="theme_preview_cpu_title" tools:ignore="MissingTranslation">4 cores</string>
+    <string name="theme_preview_cpu_summary" tools:ignore="MissingTranslation">universal3475</string>
+    <string name="theme_preview_frequency" tools:ignore="MissingTranslation">1300 MHz</string>
+    <string name="theme_preview_governor" tools:ignore="MissingTranslation">interactive</string>
 </resources>

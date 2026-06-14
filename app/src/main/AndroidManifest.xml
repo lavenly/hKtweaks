@@ -81,6 +81,7 @@
             android:name="com.hades.hKtweaks.activities.SecurityActivity"
             android:configChanges="locale|keyboard|keyboardHidden|orientation|screenSize|navigation" />
         <activity android:name="com.hades.hKtweaks.activities.BannerResizerActivity" />
+        <activity android:name="com.hades.hKtweaks.activities.ThemeActivity" />
         <activity android:name="com.hades.hKtweaks.activities.tools.profile.ProfileEditActivity" />
         <activity android:name="com.hades.hKtweaks.activities.DataSharingSearchActivity" />
 
