@@ -6,10 +6,13 @@
         android:key="general"
         android:title="@string/general">
         <Preference
+            android:icon="@drawable/ic_restore"
             android:key="reset_data"
             android:summary="@string/reset_data_summary"
-            android:title="@string/reset_data_title" />
+            android:title="@string/reset_data_title"
+            android:widgetLayout="@layout/preference_widget_chevron" />
         <com.hades.hKtweaks.views.preference.MaterialSwitchPreference
+            android:icon="@drawable/ic_temperature"
             android:key="useretardedmeasurement"
             android:summary="@string/fahrenheit_summary"
             android:title="@string/fahrenheit_title" />
@@ -21,31 +24,39 @@
         <com.hades.hKtweaks.views.preference.MaterialSwitchPreference
             android:key="app_update_notif"
             android:defaultValue="true"
+            android:icon="@drawable/ic_refresh"
             android:title="@string/app_update_notif_title"
             android:summary="@string/app_update_notif_summary" />
         <Preference
+            android:icon="@drawable/ic_download"
             android:key="check_update"
             android:summary="@string/check_update_summary"
-            android:title="@string/check_update_title" />
+            android:title="@string/check_update_title"
+            android:widgetLayout="@layout/preference_widget_chevron" />
     </PreferenceCategory>
 
     <PreferenceCategory
         android:key="user_interface"
         android:title="@string/user_interface">
         <Preference
+            android:icon="@drawable/ic_display"
             android:key="theme_color"
             android:summary="@string/theme_customize_summary"
             android:title="@string/theme_mode"
-            android:widgetLayout="@layout/preference_theme_color_view" />
+            android:widgetLayout="@layout/preference_widget_chevron" />
         <com.hades.hKtweaks.views.preference.MaterialListPreference
+            android:icon="@drawable/ic_switch"
             android:key="navigation_mode"
             android:title="@string/navigation_mode"
             android:summary="%s"
             android:defaultValue="top_tabs"
             android:entries="@array/navigation_modes"
-            android:entryValues="@array/navigation_mode_values" />
+            android:entryValues="@array/navigation_mode_values"
+            android:widgetLayout="@layout/preference_widget_chevron" />
         <com.hades.hKtweaks.views.preference.MaterialSwitchPreference
+            android:icon="@drawable/ic_display"
             android:key="forceenglish"
+            android:summary="@string/force_english_summary"
             android:title="@string/force_english" />
 <!--
         <com.hades.hKtweaks.views.preference.MaterialSwitchPreference
@@ -53,17 +64,24 @@
             android:title="@string/material_icon" />
 -->
         <Preference
+            android:icon="@drawable/ic_gallery"
             android:key="banner_resizer"
-            android:title="@string/banner_resizer" />
+            android:summary="@string/banner_resizer_summary"
+            android:title="@string/banner_resizer"
+            android:widgetLayout="@layout/preference_widget_chevron" />
         <com.hades.hKtweaks.views.preference.MaterialSwitchPreference
+            android:icon="@drawable/ic_clear"
             android:key="hide_banner"
+            android:summary="@string/hide_banner_summary"
             android:title="@string/hide_banner" />
         <com.hades.hKtweaks.views.preference.MaterialSwitchPreference
+            android:icon="@drawable/ic_layers"
             android:key="forcecards"
             android:summary="@string/force_cards_summary"
             android:title="@string/force_cards" />
         <com.hades.hKtweaks.views.preference.MaterialSwitchPreference
             android:defaultValue="true"
+            android:icon="@drawable/ic_chart"
             android:key="section_icons"
             app:defaultValue="true"
             android:summary="@string/section_icons_summary"
@@ -75,27 +93,35 @@
             android:defaultValue="10"
             android:entries="@array/apply_on_boot_delay_entries"
             android:entryValues="@array/apply_on_boot_delay_values"
+            android:icon="@drawable/ic_start"
             android:key="applyonbootdelay"
             android:summary="%s"
-            android:title="@string/delay" />
+            android:title="@string/delay"
+            android:widgetLayout="@layout/preference_widget_chevron" />
         <Preference
+            android:icon="@drawable/ic_done"
             android:key="applyonboottest"
             android:summary="@string/apply_on_boot_test_summary"
-            android:title="@string/test" />
+            android:title="@string/test"
+            android:widgetLayout="@layout/preference_widget_chevron" />
         <com.hades.hKtweaks.views.preference.MaterialSwitchPreference
+            android:icon="@drawable/ic_clear"
             android:key="applyonboothide"
             android:summary="@string/apply_on_boot_hide_summary"
             android:title="@string/hide" />
         <com.hades.hKtweaks.views.preference.MaterialSwitchPreference
             android:defaultValue="true"
+            android:icon="@drawable/ic_done"
             android:key="applyonbootconfirmationnotification"
             android:summary="@string/apply_on_boot_confirmation_notification_summary"
             android:title="@string/confirmation_notification" />
         <com.hades.hKtweaks.views.preference.MaterialSwitchPreference
+            android:icon="@drawable/ic_about"
             android:key="applyonboottoast"
             android:summary="@string/apply_on_boot_toast_summary"
             android:title="@string/toast" />
         <com.hades.hKtweaks.views.preference.MaterialSwitchPreference
+            android:icon="@drawable/ic_shell"
             android:key="applyonbootscript"
             android:summary="@string/apply_on_boot_script_summary"
             android:title="@string/script" />
@@ -105,30 +131,42 @@
         android:key="debugging_category"
         android:title="@string/debugging">
         <Preference
+            android:icon="@drawable/ic_file"
             android:key="logcat"
             android:summary="@string/logcat_summary"
-            android:title="@string/logcat" />
+            android:title="@string/logcat"
+            android:widgetLayout="@layout/preference_widget_chevron" />
         <Preference
+            android:icon="@drawable/ic_file"
             android:key="lastkmsg"
             android:summary="@string/last_kmsg_summary"
-            android:title="@string/last_kmsg" />
+            android:title="@string/last_kmsg"
+            android:widgetLayout="@layout/preference_widget_chevron" />
         <Preference
+            android:icon="@drawable/ic_console"
             android:key="dmesg"
             android:summary="@string/driver_message_summary"
-            android:title="@string/driver_message" />
+            android:title="@string/driver_message"
+            android:widgetLayout="@layout/preference_widget_chevron" />
     </PreferenceCategory>
 
     <PreferenceCategory
         android:key="security_category"
         android:title="@string/security">
         <Preference
+            android:icon="@drawable/ic_security"
             android:key="set_password"
             android:summary="@string/set_password_summary"
-            android:title="@string/set_password" />
+            android:title="@string/set_password"
+            android:widgetLayout="@layout/preference_widget_chevron" />
         <Preference
+            android:icon="@drawable/ic_clear"
             android:key="delete_password"
-            android:title="@string/delete_password" />
+            android:summary="@string/delete_password_summary"
+            android:title="@string/delete_password"
+            android:widgetLayout="@layout/preference_widget_chevron" />
         <com.hades.hKtweaks.views.preference.MaterialSwitchPreference
+            android:icon="@drawable/ic_unlock"
             android:key="fingerprint"
             android:summary="@string/fingerprint_summary"
             android:title="@string/fingerprint" />

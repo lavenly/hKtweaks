@@ -35,6 +35,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceCategory;
 import androidx.preference.PreferenceFragmentCompat;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.text.InputType;
 import android.view.Gravity;
@@ -61,6 +62,7 @@ import com.hades.hKtweaks.utils.root.RootUtils;
 import com.hades.hKtweaks.views.dialog.Dialog;
 import com.hades.hKtweaks.views.preference.MaterialListPreference;
 import com.hades.hKtweaks.views.preference.MaterialSwitchPreference;
+import com.hades.hKtweaks.views.preference.PreferenceCardDecoration;
 
 /**
  * Created by willi on 13.08.16.
@@ -114,6 +116,15 @@ public class SettingsFragment extends PreferenceFragmentCompat implements
         rootView.setPadding(rootView.getPaddingLeft(),
                 topPadding,
                 rootView.getPaddingRight(), rootView.getPaddingBottom());
+
+        RecyclerView list = getListView();
+        int horizontalPadding = Math.round(8 * getResources().getDisplayMetrics().density);
+        int bottomPadding = Math.round(24 * getResources().getDisplayMetrics().density);
+        list.setClipToPadding(false);
+        list.setPadding(horizontalPadding, list.getPaddingTop(),
+                horizontalPadding, bottomPadding);
+        list.addItemDecoration(new PreferenceCardDecoration(requireContext()));
+        setDivider(null);
         return rootView;
     }
 
@@ -192,6 +203,9 @@ public class SettingsFragment extends PreferenceFragmentCompat implements
                 MaterialSwitchPreference switchPreference =
                         new MaterialSwitchPreference(getActivity());
                 switchPreference.setTitle(getString(id));
+                if (navigationFragment.getDrawable() != 0) {
+                    switchPreference.setIcon(navigationFragment.getDrawable());
+                }
                 switchPreference.setKey(fragmentClass.getSimpleName() + "_enabled");
                 switchPreference.setChecked(AppSettings.isFragmentEnabled(fragmentClass, getActivity()));
                 switchPreference.setOnPreferenceChangeListener(this);

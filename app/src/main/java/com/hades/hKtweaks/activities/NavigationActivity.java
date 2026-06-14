@@ -1198,6 +1198,10 @@ public class NavigationActivity extends BaseActivity
             return String.valueOf(mId);
         }
 
+        public int getDrawable() {
+            return mDrawable;
+        }
+
         @Override
         public int describeContents() {
             return 0;
