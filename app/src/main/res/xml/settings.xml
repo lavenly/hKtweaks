@@ -32,14 +32,11 @@
     <PreferenceCategory
         android:key="user_interface"
         android:title="@string/user_interface">
-        <com.hades.hKtweaks.views.preference.MaterialListPreference
-            android:key="theme_mode"
+        <Preference
+            android:key="theme_color"
+            android:summary="@string/theme_customize_summary"
             android:title="@string/theme_mode"
-            android:summary="%s"
-            android:defaultValue="system"
-            android:entries="@array/theme_modes"
-            android:entryValues="@array/theme_mode_values"
-            />
+            android:widgetLayout="@layout/preference_theme_color_view" />
         <com.hades.hKtweaks.views.preference.MaterialListPreference
             android:key="navigation_mode"
             android:title="@string/navigation_mode"
@@ -65,10 +62,6 @@
             android:key="forcecards"
             android:summary="@string/force_cards_summary"
             android:title="@string/force_cards" />
-        <Preference
-            android:key="theme_color"
-            android:title="@string/theme_color"
-            android:widgetLayout="@layout/preference_theme_color_view" />
         <com.hades.hKtweaks.views.preference.MaterialSwitchPreference
             android:defaultValue="true"
             android:key="section_icons"

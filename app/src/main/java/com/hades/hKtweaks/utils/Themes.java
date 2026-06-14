@@ -232,7 +232,10 @@ public final class Themes {
     }
 
     public static Theme getTheme(Context context, boolean darkTheme, boolean amoledDarkTheme) {
-        String color = getThemeColor(context);
+        return getTheme(getThemeColor(context), darkTheme, amoledDarkTheme);
+    }
+
+    public static Theme getTheme(String color, boolean darkTheme, boolean amoledDarkTheme) {
         ThemeSet themeSet = THEMES.get(color);
         if (themeSet == null) {
             color = DEFAULT_THEME_COLOR;
