@@ -73,6 +73,7 @@ public abstract class BaseActivity extends AppCompatActivity {
         Utils.AMOLED_DARK_THEME = Themes.isAmoledBlack(this);
         Themes.Theme theme = Themes.getTheme(this, Utils.DARK_THEME, Utils.AMOLED_DARK_THEME);
         setTheme(theme.getStyle());
+        Themes.applyDynamicColors(this, Utils.DARK_THEME, Utils.AMOLED_DARK_THEME);
         super.onCreate(savedInstanceState);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && setStatusBarColor()) {

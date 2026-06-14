@@ -31,7 +31,6 @@ import android.os.Bundle;
 import android.os.SystemClock;
 import android.util.SparseArray;
 import android.util.TypedValue;
-import android.view.ContextThemeWrapper;
 import android.view.View;
 import android.widget.RemoteViews;
 import android.widget.RemoteViewsService;
@@ -123,7 +122,7 @@ public class Widget extends AppWidgetProvider {
         boolean darkTheme = Themes.isDarkTheme(context);
         boolean amoledTheme = darkTheme && Themes.isAmoledBlack(context);
 
-        ContextThemeWrapper themedContext = getThemedContext(context);
+        Context themedContext = getThemedContext(context);
         int primaryContainer = resolveColor(themedContext, R.attr.colorPrimaryContainer,
                 R.color.widget_primary_container);
         int onPrimaryContainer = resolveColor(themedContext, R.attr.colorOnPrimaryContainer,
@@ -149,11 +148,10 @@ public class Widget extends AppWidgetProvider {
         views.setInt(R.id.widget_header_icon, "setColorFilter", onPrimaryContainer);
     }
 
-    private static ContextThemeWrapper getThemedContext(Context context) {
+    private static Context getThemedContext(Context context) {
         boolean darkTheme = Themes.isDarkTheme(context);
-        Themes.Theme theme = Themes.getTheme(context, darkTheme,
-                darkTheme && Themes.isAmoledBlack(context));
-        return new ContextThemeWrapper(context, theme.getStyle());
+        return Themes.createThemedContext(context, Themes.getThemeColor(context),
+                darkTheme, darkTheme && Themes.isAmoledBlack(context));
     }
 
     private static int resolveColor(Context context, int attribute, int fallbackColor) {
@@ -251,7 +249,7 @@ public class Widget extends AppWidgetProvider {
             RemoteViews row = new RemoteViews(mContext.getPackageName(), R.layout.widget_profile_item);
 
             row.setTextViewText(R.id.text, mItems.get(position).getName());
-            ContextThemeWrapper themedContext = getThemedContext(mContext);
+            Context themedContext = getThemedContext(mContext);
             int onSurface = resolveColor(themedContext, R.attr.colorOnSurface,
                     R.color.widget_on_surface);
             int onSurfaceVariant = resolveColor(themedContext, R.attr.colorOnSurfaceVariant,

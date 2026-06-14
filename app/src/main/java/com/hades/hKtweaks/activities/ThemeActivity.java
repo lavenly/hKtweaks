@@ -8,7 +8,6 @@ package com.hades.hKtweaks.activities;
 import android.content.Context;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.view.ContextThemeWrapper;
 import android.view.View;
 import android.widget.HorizontalScrollView;
 import android.widget.LinearLayout;
@@ -23,6 +22,8 @@ import com.hades.hKtweaks.services.profile.Widget;
 import com.hades.hKtweaks.utils.Themes;
 import com.hades.hKtweaks.utils.ViewUtils;
 import com.hades.hKtweaks.views.ThemeColorView;
+
+import java.util.List;
 
 public class ThemeActivity extends BaseActivity {
 
@@ -91,10 +92,11 @@ public class ThemeActivity extends BaseActivity {
         boolean amoled = Themes.isAmoledBlack(this);
         ThemeColorView selectedView = null;
 
-        for (int i = 0; i < Themes.THEME_COLORS.size(); i++) {
-            String color = Themes.THEME_COLORS.get(i);
-            Themes.Theme theme = Themes.getTheme(color, dark, amoled);
-            Context themedContext = new ContextThemeWrapper(this, theme.getStyle());
+        List<String> colors = Themes.getAvailableThemeColors();
+        for (int i = 0; i < colors.size(); i++) {
+            String color = colors.get(i);
+            Context themedContext = Themes.createThemedContext(
+                    this, color, dark, amoled);
 
             ThemeColorView colorView = new ThemeColorView(this);
             int margin = Math.round(dp(8));
@@ -102,7 +104,9 @@ public class ThemeActivity extends BaseActivity {
                     Math.round(dp(72)), Math.round(dp(72)));
             params.setMarginEnd(margin);
             colorView.setLayoutParams(params);
-            colorView.setContentDescription(getString(R.string.theme_color_option, i + 1));
+            colorView.setContentDescription(Themes.THEME_COLOR_DYNAMIC.equals(color)
+                    ? getString(R.string.theme_color_device)
+                    : getString(R.string.theme_color_option, i + 1));
             colorView.setColors(
                     resolveColor(themedContext, R.attr.colorSurfaceContainer),
                     resolveColor(themedContext, R.attr.colorPrimaryContainer),

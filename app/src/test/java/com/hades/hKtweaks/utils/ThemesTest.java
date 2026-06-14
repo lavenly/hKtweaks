@@ -12,6 +12,12 @@ public class ThemesTest {
     }
 
     @Test
+    public void dynamicSeedIsPreserved() {
+        assertEquals(Themes.THEME_COLOR_DYNAMIC,
+                Themes.normalizeThemeColor(Themes.THEME_COLOR_DYNAMIC));
+    }
+
+    @Test
     public void legacyPairKeepsPrimaryChoice() {
         assertEquals("themeSeedDeepPurple",
                 Themes.normalizeThemeColor("deep_purplePrimary;orangeAccent"));
