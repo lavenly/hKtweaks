@@ -51,6 +51,17 @@
 
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.Material3Expressive.Light" />
 
+    <style name="ThemeOverlay.hKtweaks.DynamicSurface" parent="">
+        <item name="appSurfaceColor">?attr/colorSurface</item>
+    </style>
+
+    <style name="ThemeOverlay.hKtweaks.AmoledSurfaces" parent="">
+        <item name="appSurfaceColor">#FF000000</item>
+        <item name="colorSurface">#FF000000</item>
+        <item name="colorSurfaceDim">#FF000000</item>
+        <item name="colorSurfaceContainerLowest">#FF000000</item>
+    </style>
+
     <style name="Widget.hKtweaks.Material3Expressive.Toolbar"
         parent="Widget.Material3Expressive.Toolbar.OnSurface">
         <item name="actionMenuTextColor">?attr/colorOnSurface</item>

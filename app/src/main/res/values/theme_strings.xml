@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
     <string name="theme_color" tools:ignore="MissingTranslation">Theme color</string>
+    <string name="theme_color_device" tools:ignore="MissingTranslation">Device colors</string>
     <string name="theme_customize_summary" tools:ignore="MissingTranslation">Preview and customize the app color and appearance</string>
     <string name="theme_preview" tools:ignore="MissingTranslation">Theme preview</string>
     <string name="theme_mode_section" tools:ignore="MissingTranslation">Theme mode</string>

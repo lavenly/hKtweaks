@@ -19,15 +19,20 @@
  */
 package com.hades.hKtweaks.utils;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.content.res.Resources;
+import android.view.ContextThemeWrapper;
 
 import androidx.annotation.ColorRes;
 import androidx.annotation.StyleRes;
 
+import com.google.android.material.color.DynamicColors;
+import com.google.android.material.color.DynamicColorsOptions;
 import com.hades.hKtweaks.R;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -79,6 +84,7 @@ public final class Themes {
     private static final String DARK_THEME_MODE_PREF_KEY = "darkthememode";
     private static final String DEFAULT_THEME_COLOR = "themeSeedDefault";
 
+    public static final String THEME_COLOR_DYNAMIC = "themeSeedDynamic";
     public static final String THEME_MODE_SYSTEM = "system";
     public static final String THEME_MODE_LIGHT = "light";
     public static final String THEME_MODE_DARK = "dark";
@@ -249,17 +255,74 @@ public final class Themes {
     }
 
     public static void saveThemeColor(String color, Context context) {
+        if (THEME_COLOR_DYNAMIC.equals(color) && isDynamicColorAvailable()) {
+            Prefs.saveString(THEME_PREF_KEY, color, context);
+            return;
+        }
         Prefs.saveString(THEME_PREF_KEY,
                 THEMES.containsKey(color) ? color : DEFAULT_THEME_COLOR, context);
     }
 
     public static String getThemeColor(Context context) {
-        String savedTheme = Prefs.getString(THEME_PREF_KEY, DEFAULT_THEME_COLOR, context);
+        String defaultColor = isDynamicColorAvailable()
+                ? THEME_COLOR_DYNAMIC : DEFAULT_THEME_COLOR;
+        String savedTheme = Prefs.getString(THEME_PREF_KEY, defaultColor, context);
         String color = normalizeThemeColor(savedTheme);
+        if (THEME_COLOR_DYNAMIC.equals(color) && !isDynamicColorAvailable()) {
+            color = DEFAULT_THEME_COLOR;
+        }
         if (!color.equals(savedTheme)) {
             Prefs.saveString(THEME_PREF_KEY, color, context);
         }
         return color;
+    }
+
+    public static List<String> getAvailableThemeColors() {
+        if (!isDynamicColorAvailable()) {
+            return THEME_COLORS;
+        }
+        List<String> colors = new ArrayList<>(THEME_COLORS.size() + 1);
+        colors.add(THEME_COLOR_DYNAMIC);
+        colors.addAll(THEME_COLORS);
+        return colors;
+    }
+
+    public static boolean isDynamicColorAvailable() {
+        return DynamicColors.isDynamicColorAvailable();
+    }
+
+    public static void applyDynamicColors(Activity activity, boolean darkTheme,
+                                          boolean amoledTheme) {
+        if (!THEME_COLOR_DYNAMIC.equals(getThemeColor(activity))
+                || !isDynamicColorAvailable()) {
+            return;
+        }
+        DynamicColors.applyToActivityIfAvailable(
+                activity, getDynamicColorOptions(darkTheme));
+        activity.getTheme().applyStyle(
+                R.style.ThemeOverlay_hKtweaks_DynamicSurface, true);
+        if (amoledTheme) {
+            activity.getTheme().applyStyle(
+                    R.style.ThemeOverlay_hKtweaks_AmoledSurfaces, true);
+        }
+    }
+
+    public static Context createThemedContext(Context context, String color,
+                                              boolean darkTheme, boolean amoledTheme) {
+        Theme theme = getTheme(color, darkTheme, amoledTheme);
+        Context themedContext = new ContextThemeWrapper(context, theme.getStyle());
+        if (!THEME_COLOR_DYNAMIC.equals(color) || !isDynamicColorAvailable()) {
+            return themedContext;
+        }
+
+        themedContext = DynamicColors.wrapContextIfAvailable(
+                themedContext, getDynamicColorOptions(darkTheme));
+        themedContext = new ContextThemeWrapper(
+                themedContext, R.style.ThemeOverlay_hKtweaks_DynamicSurface);
+        return amoledTheme
+                ? new ContextThemeWrapper(
+                        themedContext, R.style.ThemeOverlay_hKtweaks_AmoledSurfaces)
+                : themedContext;
     }
 
     @ColorRes
@@ -269,6 +332,9 @@ public final class Themes {
     }
 
     static String normalizeThemeColor(String savedTheme) {
+        if (THEME_COLOR_DYNAMIC.equals(savedTheme)) {
+            return savedTheme;
+        }
         if (THEMES.containsKey(savedTheme)) {
             return savedTheme;
         }
@@ -287,5 +353,18 @@ public final class Themes {
 
     private static void addLegacyColor(String legacyColor, String color) {
         LEGACY_COLORS.put(legacyColor, color);
+    }
+
+    @StyleRes
+    private static int getDynamicColorOverlay(boolean darkTheme) {
+        return darkTheme
+                ? R.style.ThemeOverlay_Material3Expressive_DynamicColors_Dark
+                : R.style.ThemeOverlay_Material3Expressive_DynamicColors_Light;
+    }
+
+    private static DynamicColorsOptions getDynamicColorOptions(boolean darkTheme) {
+        return new DynamicColorsOptions.Builder()
+                .setThemeOverlay(getDynamicColorOverlay(darkTheme))
+                .build();
     }
 }
