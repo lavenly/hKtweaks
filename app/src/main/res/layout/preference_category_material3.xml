@@ -4,9 +4,9 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginTop="16dp"
-    android:paddingStart="16dp"
+    android:paddingStart="8dp"
     android:paddingTop="12dp"
-    android:paddingEnd="16dp"
+    android:paddingEnd="8dp"
     android:paddingBottom="8dp"
-    android:textAppearance="@style/TextAppearance.hKtweaks.ItemTitleSmall"
+    android:textAppearance="@style/TextAppearance.hKtweaks.SectionTitle"
     android:textColor="?attr/colorPrimary" />

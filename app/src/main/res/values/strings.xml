@@ -1265,6 +1265,7 @@
     <string name="fahrenheit_title">Fahrenheit</string>
     <string name="fahrenheit_summary">Use fahrenheit to measure temperature.</string>
     <string name="force_english">Force displaying english language</string>
+    <string name="force_english_summary">Always display the app interface in English.</string>
     <string name="user_interface">User interface</string>
     <string name="dark_theme">Dark theme</string>
     <string name="dark_theme_mode">Dark theme mode</string>
@@ -1278,7 +1279,9 @@
     <string name="navigation_mode_drawer">Navigation drawer</string>
     <string name="material_icon">Material icon</string>
     <string name="banner_resizer">Banner resizer</string>
+    <string name="banner_resizer_summary">Adjust the size of section banner content.</string>
     <string name="hide_banner">Hide banner</string>
+    <string name="hide_banner_summary">Hide banners at the top of kernel sections.</string>
     <string name="force_cards">Force cards</string>
     <string name="force_cards_summary">Use cards for items if possible.</string>
     <string name="primary_color">Primary color</string>
@@ -1312,6 +1315,7 @@
     <string name="set_password">Set Password</string>
     <string name="set_password_summary">You can protect hKtweaks by setting up a password. Every time you open this application, you have to enter it. If you forget it, simply wipe the data of this application in settings of your device. Don\'t worry I won\'t share your password.</string>
     <string name="delete_password">Delete Password</string>
+    <string name="delete_password_summary">Remove the current app protection password.</string>
     <string name="old_password">Old password</string>
     <string name="new_password">New password</string>
     <string name="confirm_new_password">Confirm new password</string>
