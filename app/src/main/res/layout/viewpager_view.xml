@@ -13,7 +13,10 @@
         android:layout_marginStart="12dp"
         android:layout_marginTop="8dp"
         android:layout_marginEnd="12dp"
-        android:layout_marginBottom="8dp">
+        android:layout_marginBottom="8dp"
+        app:cardBackgroundColor="?attr/colorPrimaryContainer"
+        app:shapeAppearance="@style/ShapeAppearance.Material3.Corner.Large"
+        app:strokeWidth="0dp">
 
         <com.hades.hKtweaks.views.NestedScrollableHost
             android:layout_width="match_parent"

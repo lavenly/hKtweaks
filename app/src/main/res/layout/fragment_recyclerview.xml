@@ -12,17 +12,17 @@
         android:paddingTop="@dimen/banner_default_height"
         android:visibility="gone" />
 
-    <LinearLayout
+    <FrameLayout
         android:id="@+id/viewpagerparent"
         android:layout_width="match_parent"
         android:layout_height="@dimen/banner_default_height"
-        android:orientation="vertical">
+        android:clipChildren="true">
 
         <include
+            android:id="@+id/banner_viewpager"
             layout="@layout/viewpager_view"
             android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1" />
+            android:layout_height="match_parent" />
 
         <View
             android:id="@+id/viewpager_shadow"
@@ -30,7 +30,35 @@
             android:layout_height="0dp"
             android:background="@android:color/transparent"
             android:visibility="invisible" />
-    </LinearLayout>
+
+        <FrameLayout
+            android:id="@+id/apply_on_boot_parent"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/apply_on_boot_header_only_inset"
+            android:background="?attr/colorSurface"
+            android:elevation="@dimen/apply_on_boot_header_elevation"
+            android:visibility="gone">
+
+            <com.google.android.material.card.MaterialCardView
+                style="@style/Widget.Material3.CardView.Filled"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/apply_on_boot_header_height"
+                android:layout_marginStart="12dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="12dp"
+                app:cardBackgroundColor="?attr/colorSurfaceContainerHigh"
+                app:cardElevation="0dp"
+                app:shapeAppearance="@style/ShapeAppearance.Material3.Corner.Full"
+                app:strokeColor="?attr/colorOutlineVariant"
+                app:strokeWidth="1dp">
+
+                <FrameLayout
+                    android:id="@+id/apply_on_boot_content"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent" />
+            </com.google.android.material.card.MaterialCardView>
+        </FrameLayout>
+    </FrameLayout>
 
     <com.google.android.material.loadingindicator.LoadingIndicator
         style="@style/Widget.hKtweaks.Material3Expressive.LoadingIndicator"
