@@ -102,7 +102,6 @@ public class SettingsFragment extends PreferenceFragmentCompat implements
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setRetainInstance(true);
     }
 
     @Override
@@ -231,7 +230,7 @@ public class SettingsFragment extends PreferenceFragmentCompat implements
                 return true;
             case KEY_NAVIGATION_MODE:
                 AppSettings.saveNavigationMode(String.valueOf(o), requireContext());
-                restartSettings();
+                relaunchSettingsImmediately();
                 return true;
 /*
             case KEY_MATERIAL_ICON:
@@ -346,8 +345,39 @@ public class SettingsFragment extends PreferenceFragmentCompat implements
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == REQUEST_THEME && resultCode == ThemeActivity.RESULT_THEME_CHANGED) {
-            restartSettings();
+            recreateSettingsImmediately();
         }
+    }
+
+    private void recreateSettingsImmediately() {
+        if (!(requireActivity() instanceof NavigationActivity)) {
+            restartSettings();
+            return;
+        }
+
+        requireActivity().getIntent().putExtra(NavigationActivity.INTENT_SECTION,
+                SettingsFragment.class.getCanonicalName());
+        new Handler(Looper.getMainLooper()).post(() -> {
+            if (isAdded()) {
+                requireActivity().recreate();
+            }
+        });
+    }
+
+    private void relaunchSettingsImmediately() {
+        if (!(requireActivity() instanceof NavigationActivity)) {
+            restartSettings();
+            return;
+        }
+
+        Intent intent = new Intent(requireContext(), NavigationActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        intent.putExtra(NavigationActivity.INTENT_SECTION,
+                SettingsFragment.class.getCanonicalName());
+        startActivity(intent);
+        requireActivity().overridePendingTransition(
+                android.R.anim.fade_in, android.R.anim.fade_out);
+        requireActivity().finish();
     }
 
     private static class Execute extends AsyncTask<String, Void, Void> {
