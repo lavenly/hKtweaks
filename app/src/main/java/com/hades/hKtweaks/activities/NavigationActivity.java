@@ -177,6 +177,7 @@ public class NavigationActivity extends BaseActivity
     private ViewPager2.OnPageChangeCallback mNavigationPageChangeCallback;
     private View mNavigationContent;
     private View mNavigationLoading;
+    private int mNavigationItemIconPadding;
     private long mLastTimeBackbuttonPressed;
     private boolean mUseTopTabs;
     private boolean mUpdatingNavigation;
@@ -685,6 +686,8 @@ public class NavigationActivity extends BaseActivity
         SubMenu lastSubMenu = null;
         Menu menu = null;
         if (!mUseTopTabs) {
+            mNavigationView.setItemIconPadding(
+                    AppSettings.isSectionIcons(this) ? mNavigationItemIconPadding : 0);
             menu = mNavigationView.getMenu();
             menu.clear();
         }
@@ -701,14 +704,14 @@ public class NavigationActivity extends BaseActivity
                 if (mUseTopTabs) {
                     tabIds.add(id);
                 } else {
-                    Drawable drawable = ContextCompat.getDrawable(this,
-                            AppSettings.isSectionIcons(this) && navigationFragment.mDrawable != 0
-                                    ? navigationFragment.mDrawable
-                                    : R.drawable.ic_blank);
                     MenuItem menuItem = lastSubMenu == null
                             ? menu.add(0, id, 0, id)
                             : lastSubMenu.add(0, id, 0, id);
-                    menuItem.setIcon(drawable);
+                    if (AppSettings.isSectionIcons(this) && navigationFragment.mDrawable != 0) {
+                        Drawable drawable = ContextCompat.getDrawable(this,
+                                navigationFragment.mDrawable);
+                        menuItem.setIcon(drawable);
+                    }
                     menuItem.setCheckable(true);
                 }
                 actualFragments.put(id, fragmentClass);
@@ -724,8 +727,12 @@ public class NavigationActivity extends BaseActivity
             if (mActualFragments.get(mSelection) == null) {
                 mSelection = firstTab();
             }
-            if (mUseTopTabs && mPagerAdapter != null && !previousTabIds.equals(mTabIds)) {
-                bindTopTabsAdapter();
+            if (mUseTopTabs && mPagerAdapter != null) {
+                if (!previousTabIds.equals(mTabIds)) {
+                    bindTopTabsAdapter();
+                } else {
+                    rebindNavigationTabs();
+                }
             }
             selectNavigationSurface(mSelection);
         } finally {
@@ -773,6 +780,17 @@ public class NavigationActivity extends BaseActivity
         mNavigationPager.registerOnPageChangeCallback(mNavigationPageChangeCallback);
     }
 
+    private void rebindNavigationTabs() {
+        if (mNavigationTabs == null) return;
+
+        for (int i = 0; i < mNavigationTabs.getTabCount(); i++) {
+            TabLayout.Tab tab = mNavigationTabs.getTabAt(i);
+            if (tab != null) {
+                bindTab(tab, i);
+            }
+        }
+    }
+
     private void initDrawer(MaterialToolbar toolbar) {
         mDrawer = findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, mDrawer, toolbar, 0, 0);
@@ -780,6 +798,7 @@ public class NavigationActivity extends BaseActivity
         toggle.syncState();
 
         mNavigationView = findViewById(R.id.nav_view);
+        mNavigationItemIconPadding = mNavigationView.getItemIconPadding();
         mNavigationView.setNavigationItemSelectedListener(this);
         mNavigationView.setOnFocusChangeListener((v, hasFocus) -> {
             if (hasFocus) {
