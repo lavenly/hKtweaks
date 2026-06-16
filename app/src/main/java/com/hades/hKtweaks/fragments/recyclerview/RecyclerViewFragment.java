@@ -540,8 +540,9 @@ public abstract class RecyclerViewFragment extends BaseFragment {
             int bannerHeight = 0;
             if (hasBanner) {
                 bannerHeight = isCompactDescriptionBanner()
-                        ? getResources().getDimensionPixelSize(
-                                R.dimen.banner_compact_height)
+                        ? Math.max(AppSettings.getBannerSize(requireContext()),
+                                getResources().getDimensionPixelSize(
+                                        R.dimen.banner_compact_height))
                         : Math.max(AppSettings.getBannerSize(requireContext()),
                                 getMinimumBannerHeight());
             }
