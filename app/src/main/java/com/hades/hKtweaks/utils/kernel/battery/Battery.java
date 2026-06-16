@@ -34,6 +34,8 @@ import com.hades.hKtweaks.utils.root.Control;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 
 /**
@@ -53,6 +55,7 @@ public class Battery {
     }
 
     public static String BATTERY_NODE;
+    private static String BATTERY_POWER_SUPPLY_NODE;
     private static String UNSTABLE_CHARGE;
     private static String HV_INPUT;
     private static String HV_CHARGE;
@@ -69,11 +72,42 @@ public class Battery {
     private static String CHARGE_SOURCE;
     private static String HEALTH;
     private static String FG_FULLCAPNOM;
+    private static String STORE_MODE;
+    private static String STORE_MODE_MAX;
+    private static String STORE_MODE_MIN;
+    private static final List<String> sStoreModeMaxFiles = new ArrayList<>();
+    private static final List<String> sStoreModeMinFiles = new ArrayList<>();
+    private static String DISABLE_CHARGING;
+    private static String DISABLE_CHARGING_ENABLE_VALUE = "1";
+    private static String DISABLE_CHARGING_DISABLE_VALUE = "0";
+    private static final List<DisableChargingControl> sDisableChargingControls =
+            new ArrayList<>();
 
+    private static final String STANDARD_POWER_SUPPLY_BATTERY =
+            "/sys/class/power_supply/battery";
     private static final String STANDARD_BATTERY_HEALTH =
             "/sys/class/power_supply/battery/health";
 
     public static void setValues() {
+        BATTERY_NODE = null;
+        BATTERY_POWER_SUPPLY_NODE = null;
+        UNSTABLE_CHARGE = null;
+        HV_INPUT = null;
+        HV_CHARGE = null;
+        AC_INPUT = null;
+        AC_CHARGE = null;
+        AC_INPUT_SCREEN = null;
+        AC_CHARGE_SCREEN = null;
+        USB_INPUT = null;
+        USB_CHARGE = null;
+        WC_INPUT = null;
+        WC_CHARGE = null;
+        CAR_INPUT = null;
+        CAR_CHARGE = null;
+        CHARGE_SOURCE = null;
+        HEALTH = null;
+        FG_FULLCAPNOM = null;
+
         for (String file : new String[] {
                 // Add on this list needed values for battery sysfs nodes
                 // TODO: Make sys nodes of battery device be auto detected as on gpu/cpu temps
@@ -107,6 +141,162 @@ public class Battery {
                 break;
             }
         }
+        detectPowerSupplyNode();
+        detectFeatureFiles();
+    }
+
+    private static void detectPowerSupplyNode() {
+        for (String root : getBatteryRoots()) {
+            if (isPowerSupplyRoot(root)) {
+                BATTERY_POWER_SUPPLY_NODE = root;
+                break;
+            }
+        }
+
+        if (BATTERY_POWER_SUPPLY_NODE != null) {
+            CHARGE_SOURCE = BATTERY_POWER_SUPPLY_NODE + "/batt_charging_source";
+            HEALTH = BATTERY_POWER_SUPPLY_NODE + "/health";
+            FG_FULLCAPNOM = BATTERY_POWER_SUPPLY_NODE + "/fg_fullcapnom";
+        }
+    }
+
+    private static boolean isPowerSupplyRoot(String root) {
+        return exists(root + "/capacity")
+                || exists(root + "/status")
+                || exists(root + "/current_now")
+                || exists(root + "/voltage_now")
+                || exists(root + "/health");
+    }
+
+    private static void detectFeatureFiles() {
+        STORE_MODE = findBatteryFile("store_mode");
+        detectStoreModeLimitFiles();
+        detectDisableChargingFile();
+    }
+
+    private static void detectStoreModeLimitFiles() {
+        sStoreModeMaxFiles.clear();
+        sStoreModeMinFiles.clear();
+
+        addBatteryFileCandidates(sStoreModeMaxFiles, "store_mode_max");
+        addExistingFile(sStoreModeMaxFiles, STORE_MODE_MAX_MODULE);
+        addBatteryFileCandidates(sStoreModeMinFiles, "store_mode_min");
+        addExistingFile(sStoreModeMinFiles, STORE_MODE_MIN_MODULE);
+
+        STORE_MODE_MAX = firstStoreModeLimitFile(sStoreModeMaxFiles);
+        STORE_MODE_MIN = firstStoreModeLimitFile(sStoreModeMinFiles);
+    }
+
+    private static void addBatteryFileCandidates(List<String> files, String fileName) {
+        for (String root : getBatteryRoots()) {
+            addExistingFile(files, root + "/" + fileName);
+        }
+    }
+
+    private static void addExistingFile(List<String> files, String path) {
+        if (exists(path) && !files.contains(path)) {
+            files.add(path);
+        }
+    }
+
+    private static String firstStoreModeLimitFile(List<String> files) {
+        return files.isEmpty() ? null : files.get(0);
+    }
+
+    private static void detectDisableChargingFile() {
+        DISABLE_CHARGING = null;
+        DISABLE_CHARGING_ENABLE_VALUE = "1";
+        DISABLE_CHARGING_DISABLE_VALUE = "0";
+        sDisableChargingControls.clear();
+
+        for (String root : getBatteryRoots()) {
+            if (addDisableChargingFiles(root) > 0) {
+                return;
+            }
+        }
+
+        addDisableChargingFile("/sys/class/power_supply/usb/input_suspend", "1", "0");
+    }
+
+    private static int addDisableChargingFiles(String root) {
+        int count = 0;
+        count += addDisableChargingFile(root + "/charging_disabled", "1", "0") ? 1 : 0;
+        count += addDisableChargingFile(root + "/charge_disabled", "1", "0") ? 1 : 0;
+        count += addDisableChargingFile(root + "/charge_disable", "1", "0") ? 1 : 0;
+        count += addDisableChargingFile(root + "/batt_slate_mode", "1", "0") ? 1 : 0;
+        count += addDisableChargingFile(root + "/input_suspend", "1", "0") ? 1 : 0;
+        count += addDisableChargingFile(root + "/charging_enabled", "0", "1") ? 1 : 0;
+        count += addDisableChargingFile(root + "/charge_enabled", "0", "1") ? 1 : 0;
+        count += addDisableChargingFile(root + "/battery_charging_enabled", "0", "1") ? 1 : 0;
+        count += addDisableChargingFile(root + "/batt_charging_enabled", "0", "1") ? 1 : 0;
+        return count;
+    }
+
+    private static boolean addDisableChargingFile(String path, String disableValue,
+                                                  String enableValue) {
+        if (!exists(path) || hasDisableChargingFile(path)) return false;
+
+        if (DISABLE_CHARGING == null) {
+            DISABLE_CHARGING = path;
+            DISABLE_CHARGING_DISABLE_VALUE = disableValue;
+            DISABLE_CHARGING_ENABLE_VALUE = enableValue;
+        }
+        sDisableChargingControls.add(
+                new DisableChargingControl(path, disableValue, enableValue));
+        return true;
+    }
+
+    private static boolean hasDisableChargingFile(String path) {
+        for (DisableChargingControl control : sDisableChargingControls) {
+            if (control.path.equals(path)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private static String findBatteryFile(String fileName) {
+        for (String root : getBatteryRoots()) {
+            String path = root + "/" + fileName;
+            if (exists(path)) {
+                return path;
+            }
+        }
+        return null;
+    }
+
+    private static List<String> getBatteryRoots() {
+        List<String> roots = new ArrayList<>();
+        if (BATTERY_NODE != null) {
+            addRoot(roots, BATTERY_NODE + "/power_supply/battery");
+            addRoot(roots, BATTERY_NODE);
+        }
+        addRoot(roots, STANDARD_POWER_SUPPLY_BATTERY);
+        addRoot(roots, "/sys/devices/platform/battery/power_supply/battery");
+        addRoot(roots, "/sys/devices/battery/power_supply/battery");
+        addRoot(roots, "/sys/devices/platform/sec-battery/power_supply/battery");
+        return roots;
+    }
+
+    private static void addRoot(List<String> roots, String root) {
+        if (root != null && !roots.contains(root)) {
+            roots.add(root);
+        }
+    }
+
+    private static String readBatteryFile(String fileName) {
+        if (BATTERY_POWER_SUPPLY_NODE == null) {
+            detectPowerSupplyNode();
+        }
+        if (BATTERY_POWER_SUPPLY_NODE == null) {
+            return null;
+        }
+        return Utils.readFile(BATTERY_POWER_SUPPLY_NODE + "/" + fileName);
+    }
+
+    private static int readBatteryInt(String fileName) {
+        String value = readBatteryFile(fileName);
+        return Utils.strToInt(value == null ? "" : value);
     }
 
     private static final String FORCE_FAST_CHARGE = "/sys/kernel/fast_charge/force_fast_charge";
@@ -115,10 +305,8 @@ public class Battery {
     private static final String CHARGE_RATE = "/sys/kernel/thundercharge_control";
     private static final String CHARGE_RATE_ENABLE = CHARGE_RATE + "/enabled";
     private static final String CUSTOM_CURRENT = CHARGE_RATE + "/custom_current";
-    private static final String STORE_MODE = "/sys/devices/battery/power_supply/battery/store_mode";
-    private static final String STORE_MODE_MAX = "/sys/module/sec_battery/parameters/store_mode_max";
-    private static final String STORE_MODE_MIN = "/sys/module/sec_battery/parameters/store_mode_min";
-    private static final String DISABLE_CHARGING = "/sys/devices/platform/battery/power_supply/battery/charging_enabled";
+    private static final String STORE_MODE_MAX_MODULE = "/sys/module/sec_battery/parameters/store_mode_max";
+    private static final String STORE_MODE_MIN_MODULE = "/sys/module/sec_battery/parameters/store_mode_min";
 
     private Battery(Context context) {
         if (BATTERY_NODE == null) {
@@ -157,6 +345,41 @@ public class Battery {
             }
         }
         return state;
+    }
+
+    public static int getCurrentNow() {
+        return readBatteryInt("current_now");
+    }
+
+    public static int getCurrentAvg() {
+        return readBatteryInt("current_avg");
+    }
+
+    public static String getStatus(Context context) {
+        String status = readBatteryFile("status");
+        if (status != null && !status.isEmpty()) {
+            return status;
+        }
+
+        Intent intent = context.registerReceiver(
+                null, new IntentFilter(Intent.ACTION_BATTERY_CHANGED));
+        if (intent == null) {
+            return context.getString(R.string.unknown);
+        }
+
+        switch (intent.getIntExtra(
+                BatteryManager.EXTRA_STATUS, BatteryManager.BATTERY_STATUS_UNKNOWN)) {
+            case BatteryManager.BATTERY_STATUS_CHARGING:
+                return "Charging";
+            case BatteryManager.BATTERY_STATUS_DISCHARGING:
+                return "Discharging";
+            case BatteryManager.BATTERY_STATUS_FULL:
+                return "Full";
+            case BatteryManager.BATTERY_STATUS_NOT_CHARGING:
+                return "Not charging";
+            default:
+                return context.getString(R.string.unknown);
+        }
     }
 
     public static String getHealthValue(@NonNull Context context) {
@@ -259,44 +482,94 @@ public class Battery {
 
 
     public boolean hasStoreMode(){
-        return (Utils.existFile(STORE_MODE) && Utils.existFile(STORE_MODE_MAX)
-                && Utils.existFile(STORE_MODE_MIN));
+        return hasStoreModeToggle() || hasStoreModeMax() || hasStoreModeMin();
+    }
+
+    public boolean hasStoreModeToggle() {
+        return exists(STORE_MODE);
+    }
+
+    public boolean hasStoreModeMax() {
+        return !sStoreModeMaxFiles.isEmpty();
+    }
+
+    public boolean hasStoreModeMin() {
+        return !sStoreModeMinFiles.isEmpty();
     }
 
     public boolean isStoreModeEnabled(){
-        return Utils.readFile(STORE_MODE).equals("1");
+        return "1".equals(Utils.readFile(STORE_MODE));
     }
 
     public void enableStoreMode(boolean enable, Context context){
+        if (!hasStoreModeToggle()) return;
         run(Control.write(enable ? "1" : "0", STORE_MODE), STORE_MODE, context);
     }
 
     public String getStoreModeMax(){
-        return Utils.readFile(STORE_MODE_MAX);
+        return readStoreModeLimit(sStoreModeMaxFiles);
     }
 
     public void setStoreModeMax(int value, Context context){
-        run(Control.write(String.valueOf(value), STORE_MODE_MAX), STORE_MODE_MAX, context);
+        if (!hasStoreModeMax()) return;
+        run(buildStoreModeLimitCommand(value, sStoreModeMaxFiles), STORE_MODE_MAX, context);
     }
 
     public String getStoreModeMin(){
-        return Utils.readFile(STORE_MODE_MIN);
+        return readStoreModeLimit(sStoreModeMinFiles);
     }
 
     public void setStoreModeMin(int value, Context context){
-        run(Control.write(String.valueOf(value), STORE_MODE_MIN), STORE_MODE_MIN, context);
+        if (!hasStoreModeMin()) return;
+        run(buildStoreModeLimitCommand(value, sStoreModeMinFiles), STORE_MODE_MIN, context);
+    }
+
+    private String readStoreModeLimit(List<String> files) {
+        for (String file : files) {
+            String value = Utils.readFile(file);
+            if (value != null && !value.isEmpty()) {
+                return value;
+            }
+        }
+        return "";
+    }
+
+    private String buildStoreModeLimitCommand(int value, List<String> files) {
+        StringBuilder command = new StringBuilder();
+        for (String file : files) {
+            if (command.length() > 0) {
+                command.append("; ");
+            }
+            command.append(Control.write(String.valueOf(value), file));
+        }
+        return command.toString();
     }
 
     public boolean hasDisableCharging(){
-        return (Utils.existFile(DISABLE_CHARGING));
+        return !sDisableChargingControls.isEmpty();
     }
 
     public boolean isDisableChargingEnabled(){
-        return !Utils.readFile(DISABLE_CHARGING).equals("1");
+        for (DisableChargingControl control : sDisableChargingControls) {
+            if (control.disableValue.equals(Utils.readFile(control.path))) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public void enableDisableCharging(boolean enable, Context context){
-        run(Control.write(enable ? "0" : "1", DISABLE_CHARGING), DISABLE_CHARGING, context);
+        if (!hasDisableCharging()) return;
+
+        StringBuilder command = new StringBuilder();
+        for (DisableChargingControl control : sDisableChargingControls) {
+            if (command.length() > 0) {
+                command.append("; ");
+            }
+            command.append(Control.write(enable ? control.disableValue : control.enableValue,
+                    control.path));
+        }
+        run(command.toString(), DISABLE_CHARGING, context);
     }
 
     public void setChargingCurrent(int value, Context context) {
@@ -524,11 +797,11 @@ public class Battery {
 
     public static String getChargeSource(Context context) {
         if (CHARGE_SOURCE == null) {
-            return context.getString(R.string.cs_unknown);
+            return getPluggedSource(context);
         }
         String value = Utils.readFile(CHARGE_SOURCE);
-        if (value == null) {
-            return context.getString(R.string.cs_unknown);
+        if (value == null || value.isEmpty()) {
+            return getPluggedSource(context);
         }
         switch (value){
             case "0" :
@@ -619,8 +892,27 @@ public class Battery {
         return "Unknown source";
     }
 
+    private static String getPluggedSource(Context context) {
+        Intent intent = context.registerReceiver(
+                null, new IntentFilter(Intent.ACTION_BATTERY_CHANGED));
+        if (intent == null) {
+            return context.getString(R.string.cs_unknown);
+        }
+
+        switch (intent.getIntExtra(BatteryManager.EXTRA_PLUGGED, 0)) {
+            case BatteryManager.BATTERY_PLUGGED_AC:
+                return context.getResources().getString(R.string.cs_main_ac);
+            case BatteryManager.BATTERY_PLUGGED_USB:
+                return context.getResources().getString(R.string.cs_usb);
+            case BatteryManager.BATTERY_PLUGGED_WIRELESS:
+                return context.getResources().getString(R.string.cs_wireless);
+            default:
+                return context.getResources().getString(R.string.cs_battery);
+        }
+    }
+
     public boolean hasCharge() {
-        return exists(BATTERY_NODE);
+        return exists(BATTERY_POWER_SUPPLY_NODE) || exists(BATTERY_NODE);
     }
 
     public boolean hasUnstableCharge() {
@@ -629,6 +921,18 @@ public class Battery {
 
     private static boolean exists(String path) {
         return path != null && Utils.existFile(path);
+    }
+
+    private static class DisableChargingControl {
+        private final String path;
+        private final String disableValue;
+        private final String enableValue;
+
+        private DisableChargingControl(String path, String disableValue, String enableValue) {
+            this.path = path;
+            this.disableValue = disableValue;
+            this.enableValue = enableValue;
+        }
     }
 
     public boolean isUnstableChargeEnabled() {

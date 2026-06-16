@@ -64,7 +64,9 @@ public class BusMifFragment extends RecyclerViewFragment {
         final List<String> voltages = VoltageMif.getVoltages();
         final List<String> voltagesStock = VoltageMif.getStockVoltages();
 
-        if (freqs != null && voltages != null && voltagesStock != null && freqs.size() == voltages.size()) {
+        if (freqs != null && voltages != null && voltagesStock != null
+                && freqs.size() == voltages.size()
+                && freqs.size() == voltagesStock.size()) {
 
             CardView freqCard = new CardView(getActivity());
             freqCard.setTitle(getString(R.string.busMif_volt_title));
@@ -212,7 +214,9 @@ public class BusMifFragment extends RecyclerViewFragment {
         List<String> voltagesStock = VoltageMif.getStockVoltages();
 
         if (freqs != null && voltages != null && voltagesStock != null) {
-            for (int i = 0; i < mVoltages.size(); i++) {
+            int count = Math.min(mVoltages.size(),
+                    Math.min(freqs.size(), Math.min(voltages.size(), voltagesStock.size())));
+            for (int i = 0; i < count; i++) {
                 seekbarInit(mVoltages.get(i), freqs.get(i), voltages.get(i), voltagesStock.get(i));
             }
             List<String> progress = new ArrayList<>();

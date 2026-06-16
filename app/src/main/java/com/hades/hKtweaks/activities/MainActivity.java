@@ -277,61 +277,61 @@ public class MainActivity extends BaseActivity {
 
             // Save backup of Cluster0 stock voltages
             if (!AppSettings.getBoolean("cl0_voltage_saved", false, mRefActivity.get())
-                    || (mIsBooted && !Utils.existFile(VoltageCl0.BACKUP))) {
+                    || !Utils.existFile(VoltageCl0.BACKUP)) {
                 if (VoltageCl0.supported()){
-                    RootUtils.runCommand("cp " + VoltageCl0.CL0_VOLTAGE + " " + VoltageCl0.BACKUP);
+                    RootUtils.runCommand("cp " + VoltageCl0.getPath() + " " + VoltageCl0.BACKUP);
                     AppSettings.saveBoolean("cl0_voltage_saved", true, mRefActivity.get());
                 }
             }
 
             // Save backup of Cluster1 stock voltages
             if (!AppSettings.getBoolean("cl1_voltage_saved", false, mRefActivity.get())
-                    || (mIsBooted && !Utils.existFile(VoltageCl1.BACKUP))) {
+                    || !Utils.existFile(VoltageCl1.BACKUP)) {
                 if (VoltageCl1.supported()){
-                    RootUtils.runCommand("cp " + VoltageCl1.CL1_VOLTAGE + " " + VoltageCl1.BACKUP);
+                    RootUtils.runCommand("cp " + VoltageCl1.getPath() + " " + VoltageCl1.BACKUP);
                     AppSettings.saveBoolean("cl1_voltage_saved", true, mRefActivity.get());
                 }
             }
 
             // Save backup of Bus Mif stock voltages
             if (!AppSettings.getBoolean("busMif_voltage_saved", false, mRefActivity.get())
-                    || (mIsBooted && !Utils.existFile(VoltageMif.BACKUP))) {
+                    || !Utils.existFile(VoltageMif.BACKUP)) {
                 if (VoltageMif.supported()){
-                    RootUtils.runCommand("cp " + VoltageMif.VOLTAGE + " " + VoltageMif.BACKUP);
+                    RootUtils.runCommand("cp " + VoltageMif.getPath() + " " + VoltageMif.BACKUP);
                     AppSettings.saveBoolean("busMif_voltage_saved", true, mRefActivity.get());
                 }
             }
 
             // Save backup of Bus Int stock voltages
             if (!AppSettings.getBoolean("busInt_voltage_saved", false, mRefActivity.get())
-                    || (mIsBooted && !Utils.existFile(VoltageInt.BACKUP))) {
+                    || !Utils.existFile(VoltageInt.BACKUP)) {
                 if (VoltageInt.supported()){
-                    RootUtils.runCommand("cp " + VoltageInt.VOLTAGE + " " + VoltageInt.BACKUP);
+                    RootUtils.runCommand("cp " + VoltageInt.getPath() + " " + VoltageInt.BACKUP);
                     AppSettings.saveBoolean("busInt_voltage_saved", true, mRefActivity.get());
                 }
             }
 
             // Save backup of Bus Disp stock voltages
             if (!AppSettings.getBoolean("busDisp_voltage_saved", false, mRefActivity.get())
-                    || (mIsBooted && !Utils.existFile(VoltageDisp.BACKUP))) {
+                    || !Utils.existFile(VoltageDisp.BACKUP)) {
                 if (VoltageDisp.supported()){
-                    RootUtils.runCommand("cp " + VoltageDisp.VOLTAGE + " " + VoltageDisp.BACKUP);
+                    RootUtils.runCommand("cp " + VoltageDisp.getPath() + " " + VoltageDisp.BACKUP);
                     AppSettings.saveBoolean("busDisp_voltage_saved", true, mRefActivity.get());
                 }
             }
 
             // Save backup of Bus Cam stock voltages
             if (!AppSettings.getBoolean("busCam_voltage_saved", false, mRefActivity.get())
-                    || (mIsBooted && !Utils.existFile(VoltageCam.BACKUP))) {
+                    || !Utils.existFile(VoltageCam.BACKUP)) {
                 if (VoltageCam.supported()){
-                    RootUtils.runCommand("cp " + VoltageCam.VOLTAGE + " " + VoltageCam.BACKUP);
+                    RootUtils.runCommand("cp " + VoltageCam.getPath() + " " + VoltageCam.BACKUP);
                     AppSettings.saveBoolean("busCam_voltage_saved", true,mRefActivity.get() );
                 }
             }
 
             // Save backup of GPU stock voltages
             if (!AppSettings.getBoolean("gpu_voltage_saved", false, mRefActivity.get())
-                    || (mIsBooted && !Utils.existFile(GPUFreqExynos.BACKUP))) {
+                    || !Utils.existFile(GPUFreqExynos.BACKUP)) {
                 if (GPUFreqExynos.getInstance().supported() && GPUFreqExynos.getInstance().hasVoltage()){
                     RootUtils.runCommand("cp " + GPUFreqExynos.getInstance().AVAILABLE_VOLTS + " " + GPUFreqExynos.BACKUP);
                     AppSettings.saveBoolean("gpu_voltage_saved", true, mRefActivity.get());

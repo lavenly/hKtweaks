@@ -63,10 +63,14 @@ public class CPUVoltageCl0Fragment extends RecyclerViewFragment {
         final List<String> voltages = VoltageCl0.getVoltages();
         final List<String> voltagesStock = VoltageCl0.getStockVoltages();
 
-        if (freqs != null && voltages != null && voltagesStock != null && freqs.size() == voltages.size()) {
+        if (freqs != null && voltages != null && voltagesStock != null
+                && freqs.size() == voltages.size()
+                && freqs.size() == voltagesStock.size()) {
 
             CardView freqCard = new CardView(getActivity());
-            freqCard.setTitle(getString(R.string.cpuCl0_volt_control));
+            freqCard.setTitle(getString(VoltageCl0.isSingleCluster()
+                    ? R.string.cpu_voltage
+                    : R.string.cpuCl0_volt_control));
 
             List<String> progress = new ArrayList<>();
             for (float i = mVoltMinValue; i < (mVoltMaxValue + mVoltStep); i += mVoltStep) {
@@ -105,7 +109,9 @@ public class CPUVoltageCl0Fragment extends RecyclerViewFragment {
             }
 
             TitleView tunables = new TitleView();
-            tunables.setText(getString(R.string.cpuCl0_volt));
+            tunables.setText(getString(VoltageCl0.isSingleCluster()
+                    ? R.string.cpu_voltage
+                    : R.string.cpuCl0_volt));
             items.add(tunables);
 
             for (int i = 0; i < freqs.size(); i++) {
@@ -207,7 +213,9 @@ public class CPUVoltageCl0Fragment extends RecyclerViewFragment {
         List<String> voltagesStock = VoltageCl0.getStockVoltages();
 
         if (freqs != null && voltages != null && voltagesStock != null) {
-            for (int i = 0; i < mVoltages.size(); i++) {
+            int count = Math.min(mVoltages.size(),
+                    Math.min(freqs.size(), Math.min(voltages.size(), voltagesStock.size())));
+            for (int i = 0; i < count; i++) {
                 seekbarInit(mVoltages.get(i), freqs.get(i), voltages.get(i), voltagesStock.get(i));
             }
             List<String> progress = new ArrayList<>();
