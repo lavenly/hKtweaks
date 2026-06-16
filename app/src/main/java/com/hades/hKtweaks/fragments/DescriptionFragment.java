@@ -19,6 +19,7 @@
  */
 package com.hades.hKtweaks.fragments;
 
+import android.content.Context;
 import android.os.Bundle;
 import androidx.annotation.Nullable;
 import android.text.method.LinkMovementMethod;
@@ -35,11 +36,15 @@ import com.hades.hKtweaks.utils.Utils;
  */
 public class DescriptionFragment extends BaseFragment {
 
+    private static final String ARG_TITLE = "title";
+    private static final String ARG_SUMMARY = "summary";
+    private static final int TALL_BANNER_TEXT_THRESHOLD = 90;
+
     public static DescriptionFragment newInstance(CharSequence title, CharSequence summary) {
         Bundle args = new Bundle();
         DescriptionFragment fragment = new DescriptionFragment();
-        args.putCharSequence("title", title);
-        args.putCharSequence("summary", summary);
+        args.putCharSequence(ARG_TITLE, title);
+        args.putCharSequence(ARG_SUMMARY, summary);
         fragment.setArguments(args);
         return fragment;
     }
@@ -69,11 +74,32 @@ public class DescriptionFragment extends BaseFragment {
         mSummaryView.setSelected(true);
         mSummaryView.setMovementMethod(LinkMovementMethod.getInstance());
 
-        mTitle = getArguments().getCharSequence("title");
-        mSummary = getArguments().getCharSequence("summary");
+        mTitle = getArguments().getCharSequence(ARG_TITLE);
+        mSummary = getArguments().getCharSequence(ARG_SUMMARY);
 
         refresh();
         return rootView;
+    }
+
+    public int getPreferredBannerHeight(Context context) {
+        CharSequence summary = mSummary;
+        Bundle args = getArguments();
+        if (summary == null && args != null) {
+            summary = args.getCharSequence(ARG_SUMMARY);
+        }
+
+        int compactHeight = context.getResources().getDimensionPixelSize(
+                R.dimen.banner_compact_height);
+        if (summary == null) {
+            return compactHeight;
+        }
+
+        String text = summary.toString().trim();
+        if (text.contains("\n") || text.length() > TALL_BANNER_TEXT_THRESHOLD) {
+            return context.getResources().getDimensionPixelSize(
+                    R.dimen.banner_description_tall_height);
+        }
+        return compactHeight;
     }
 
     public void setTitle(CharSequence title) {

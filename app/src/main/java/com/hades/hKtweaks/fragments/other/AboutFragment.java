@@ -63,6 +63,11 @@ public class AboutFragment extends RecyclerViewFragment {
     }
 
     @Override
+    protected int getMinimumBannerHeight() {
+        return getResources().getDimensionPixelSize(R.dimen.about_banner_min_height);
+    }
+
+    @Override
     protected void addItems(List<RecyclerViewItem> items) {
         librariesInit(items);
     }

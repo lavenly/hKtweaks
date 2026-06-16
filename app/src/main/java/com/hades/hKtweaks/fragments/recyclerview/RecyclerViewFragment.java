@@ -251,6 +251,7 @@ public abstract class RecyclerViewFragment extends BaseFragment {
         } else {
             showProgress();
             init();
+            configureHeader(true);
             hideProgress();
             postInit();
             adjustScrollPosition();
@@ -408,15 +409,25 @@ public abstract class RecyclerViewFragment extends BaseFragment {
     @Override
     public void onViewFinished() {
         super.onViewFinished();
+        configureHeader(false);
+    }
+
+    private void configureHeader(boolean forceBannerVisible) {
+        if (mViewPagerParent == null || mRecyclerView == null) return;
+
         if (shouldShowHeader()) {
             boolean hasApplyOnBoot = mApplyOnBootFragment != null;
             boolean hasBanner = !hideBanner() && !mViewPagerFragments.isEmpty();
 
             mApplyOnBootParent.setVisibility(hasApplyOnBoot ? View.VISIBLE : View.GONE);
             if (hasApplyOnBoot) {
-                getChildFragmentManager().beginTransaction()
-                        .replace(R.id.apply_on_boot_content, mApplyOnBootFragment)
-                        .commitNowAllowingStateLoss();
+                Fragment current = getChildFragmentManager()
+                        .findFragmentById(R.id.apply_on_boot_content);
+                if (current != mApplyOnBootFragment) {
+                    getChildFragmentManager().beginTransaction()
+                            .replace(R.id.apply_on_boot_content, mApplyOnBootFragment)
+                            .commitNowAllowingStateLoss();
+                }
             }
             mBannerViewPager.setVisibility(hasBanner ? View.VISIBLE : View.GONE);
             mBannerViewPager.setTranslationY(0f);
@@ -428,16 +439,31 @@ public abstract class RecyclerViewFragment extends BaseFragment {
 
             resizeBanner();
             if (hasBanner) {
-                mViewPager.setAdapter(mViewPagerAdapter = new ViewPagerAdapter(this,
-                        mViewPagerFragments));
-                mPageIndicatorMediator = new TabLayoutMediator(
-                        mPageIndicator, mViewPager, (tab, position) -> {
-                        });
-                mPageIndicatorMediator.attach();
+                if (mViewPagerAdapter == null
+                        || mViewPager.getAdapter() != mViewPagerAdapter
+                        || mViewPagerAdapter.getItemCount() != mViewPagerFragments.size()) {
+                    detachPageIndicator();
+                    mViewPager.setAdapter(null);
+                    mViewPager.setAdapter(mViewPagerAdapter = new ViewPagerAdapter(this,
+                            mViewPagerFragments));
+                }
+                if (mPageIndicatorMediator == null) {
+                    mPageIndicatorMediator = new TabLayoutMediator(
+                            mPageIndicator, mViewPager, (tab, position) -> {
+                            });
+                    mPageIndicatorMediator.attach();
+                }
                 mPageIndicator.setVisibility(
                         mViewPagerFragments.size() > 1 ? View.VISIBLE : View.GONE);
+                if (forceBannerVisible) {
+                    mViewPager.setAlpha(1f);
+                    mViewPager.setVisibility(View.VISIBLE);
+                    mViewPagerShadow.setVisibility(View.VISIBLE);
+                }
             } else {
+                detachPageIndicator();
                 mViewPager.setAdapter(null);
+                mViewPagerAdapter = null;
                 mPageIndicator.setVisibility(View.GONE);
             }
 
@@ -462,6 +488,13 @@ public abstract class RecyclerViewFragment extends BaseFragment {
                     mBottomFab = null;
                 }
             }
+        }
+    }
+
+    private void detachPageIndicator() {
+        if (mPageIndicatorMediator != null) {
+            mPageIndicatorMediator.detach();
+            mPageIndicatorMediator = null;
         }
     }
 
@@ -539,10 +572,8 @@ public abstract class RecyclerViewFragment extends BaseFragment {
                     && !mViewPagerFragments.isEmpty();
             int bannerHeight = 0;
             if (hasBanner) {
-                bannerHeight = isCompactDescriptionBanner()
-                        ? Math.max(AppSettings.getBannerSize(requireContext()),
-                                getResources().getDimensionPixelSize(
-                                        R.dimen.banner_compact_height))
+                bannerHeight = isSingleDescriptionBanner()
+                        ? getDescriptionBannerHeight()
                         : Math.max(AppSettings.getBannerSize(requireContext()),
                                 getMinimumBannerHeight());
             }
@@ -576,7 +607,13 @@ public abstract class RecyclerViewFragment extends BaseFragment {
         return 0;
     }
 
-    private boolean isCompactDescriptionBanner() {
+    private int getDescriptionBannerHeight() {
+        DescriptionFragment fragment = (DescriptionFragment) mViewPagerFragments.get(0);
+        return Math.max(fragment.getPreferredBannerHeight(requireContext()),
+                getMinimumBannerHeight());
+    }
+
+    private boolean isSingleDescriptionBanner() {
         return mViewPagerFragments.size() == 1
                 && mViewPagerFragments.get(0) instanceof DescriptionFragment;
     }
@@ -986,10 +1023,7 @@ public abstract class RecyclerViewFragment extends BaseFragment {
     @Override
     public void onDestroyView() {
         cancelPageLoaders();
-        if (mPageIndicatorMediator != null) {
-            mPageIndicatorMediator.detach();
-            mPageIndicatorMediator = null;
-        }
+        detachPageIndicator();
         if (mViewPager != null) {
             mViewPager.setAdapter(null);
         }
@@ -1010,6 +1044,10 @@ public abstract class RecyclerViewFragment extends BaseFragment {
     @Override
     public void onResume() {
         super.onResume();
+        if (mRootView != null && getView() == mRootView
+                && mLoader == null && itemsSize() > 0) {
+            configureHeader(true);
+        }
         if (hasPeriodicRefresh() && mPoolExecutor == null) {
             mPoolExecutor = new ScheduledThreadPoolExecutor(1);
             mPoolExecutor.scheduleWithFixedDelay(mScheduler, 1,

@@ -27,7 +27,9 @@
     <dimen name="banner_min_height">112dp</dimen>
     <dimen name="banner_default_height">112dp</dimen>
     <dimen name="banner_max_height">280dp</dimen>
-    <dimen name="banner_compact_height">144dp</dimen>
+    <dimen name="banner_compact_height">80dp</dimen>
+    <dimen name="banner_description_tall_height">144dp</dimen>
+    <dimen name="about_banner_min_height">176dp</dimen>
     <dimen name="overall_cpu_graph_banner_height">184dp</dimen>
     <dimen name="apply_on_boot_header_height">64dp</dimen>
     <dimen name="apply_on_boot_header_inset">72dp</dimen>
