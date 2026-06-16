@@ -49,7 +49,6 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
-import androidx.recyclerview.widget.DiffUtil;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 import androidx.viewpager2.widget.ViewPager2;
 
@@ -716,19 +715,17 @@ public class NavigationActivity extends BaseActivity
             }
         }
 
-        List<Integer> previousTabIds = mTabIds;
+        List<Integer> previousTabIds = new ArrayList<>(mTabIds);
         mUpdatingNavigation = mUseTopTabs && mPagerAdapter != null;
         try {
             mActualFragments = actualFragments;
             mTabIds = tabIds;
 
-            if (mUseTopTabs && mPagerAdapter != null) {
-                mPagerFragments.keySet().removeIf(section -> !mTabIds.contains(section));
-                dispatchTabUpdates(previousTabIds, mTabIds);
-            }
-
             if (mActualFragments.get(mSelection) == null) {
                 mSelection = firstTab();
+            }
+            if (mUseTopTabs && mPagerAdapter != null && !previousTabIds.equals(mTabIds)) {
+                bindTopTabsAdapter();
             }
             selectNavigationSurface(mSelection);
         } finally {
@@ -740,31 +737,23 @@ public class NavigationActivity extends BaseActivity
         }
     }
 
-    private void dispatchTabUpdates(List<Integer> oldTabs, List<Integer> newTabs) {
-        DiffUtil.calculateDiff(new DiffUtil.Callback() {
-            @Override
-            public int getOldListSize() {
-                return oldTabs.size();
-            }
-
-            @Override
-            public int getNewListSize() {
-                return newTabs.size();
-            }
-
-            @Override
-            public boolean areItemsTheSame(int oldItemPosition, int newItemPosition) {
-                return oldTabs.get(oldItemPosition).equals(newTabs.get(newItemPosition));
-            }
-
-            @Override
-            public boolean areContentsTheSame(int oldItemPosition, int newItemPosition) {
-                return true;
-            }
-        }).dispatchUpdatesTo(mPagerAdapter);
+    private void initTopTabs() {
+        bindTopTabsAdapter();
     }
 
-    private void initTopTabs() {
+    private void bindTopTabsAdapter() {
+        if (mNavigationPager == null || mNavigationTabs == null) return;
+
+        if (mNavigationPageChangeCallback != null) {
+            mNavigationPager.unregisterOnPageChangeCallback(mNavigationPageChangeCallback);
+            mNavigationPageChangeCallback = null;
+        }
+        if (mNavigationTabMediator != null) {
+            mNavigationTabMediator.detach();
+            mNavigationTabMediator = null;
+        }
+        mPagerFragments.clear();
+        mNavigationPager.setAdapter(null);
         mPagerAdapter = new NavigationPagerAdapter();
         mNavigationPager.setAdapter(mPagerAdapter);
         mNavigationTabMediator = new TabLayoutMediator(mNavigationTabs, mNavigationPager,
