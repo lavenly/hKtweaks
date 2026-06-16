@@ -25,6 +25,9 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ShortcutInfo;
 import android.content.pm.ShortcutManager;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.Paint;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.Icon;
 import android.os.AsyncTask;
@@ -888,21 +891,68 @@ public class NavigationActivity extends BaseActivity
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
 
             ShortcutInfo shortcut = new ShortcutInfo.Builder(this,
-                    fragment.mFragmentClass.getSimpleName())
+                    "section_" + fragment.mFragmentClass.getSimpleName() + "_v2")
                     .setShortLabel(getString(fragment.mId))
                     .setLongLabel(Utils.strFormat(getString(R.string.open), getString(fragment.mId)))
-                    .setIcon(Icon.createWithResource(this, fragment.mDrawable == 0 ?
-                            R.drawable.ic_blank : fragment.mDrawable))
+                    .setIcon(createShortcutIcon(fragment.mDrawable))
                     .setIntent(intent)
+                    .setRank(i)
                     .build();
             shortcutInfos.add(shortcut);
         }
         int generation = ++mShortcutGeneration;
         mShortcutExecutor.execute(() -> {
             if (generation == mShortcutGeneration) {
+                shortcutManager.removeAllDynamicShortcuts();
                 shortcutManager.setDynamicShortcuts(shortcutInfos);
             }
         });
+    }
+
+    private Icon createShortcutIcon(int drawableRes) {
+        int shortcutIconRes = getShortcutIconResource(drawableRes);
+        if (shortcutIconRes != 0) {
+            return Icon.createWithResource(this, shortcutIconRes);
+        }
+
+        float density = getResources().getDisplayMetrics().density;
+        int size = Math.max(48, Math.round(48f * density));
+        int iconSize = Math.round(size * 0.52f);
+        int inset = (size - iconSize) / 2;
+
+        int backgroundColor = MaterialColors.getColor(this, R.attr.colorPrimaryContainer, 0xFF0B5D6E);
+        int iconColor = MaterialColors.getColor(this, R.attr.colorOnPrimaryContainer, 0xFFB8EAFF);
+
+        Bitmap bitmap = Bitmap.createBitmap(size, size, Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(bitmap);
+
+        Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        paint.setColor(backgroundColor);
+        canvas.drawCircle(size / 2f, size / 2f, size * 0.44f, paint);
+
+        Drawable drawable = ContextCompat.getDrawable(this,
+                drawableRes == 0 ? R.drawable.ic_launcher_monochrome : drawableRes);
+        if (drawable != null) {
+            drawable = drawable.mutate();
+            drawable.setTint(iconColor);
+            drawable.setBounds(inset, inset, size - inset, size - inset);
+            drawable.draw(canvas);
+        }
+
+        return Icon.createWithBitmap(bitmap);
+    }
+
+    private int getShortcutIconResource(int drawableRes) {
+        if (drawableRes == R.drawable.ic_settings) {
+            return R.drawable.ic_shortcut_settings;
+        } else if (drawableRes == R.drawable.ic_cpu) {
+            return R.drawable.ic_shortcut_cpu;
+        } else if (drawableRes == R.drawable.ic_gpu) {
+            return R.drawable.ic_shortcut_gpu;
+        } else if (drawableRes == R.drawable.ic_battery) {
+            return R.drawable.ic_shortcut_battery;
+        }
+        return 0;
     }
 
     public ArrayList<NavigationFragment> getFragments() {
