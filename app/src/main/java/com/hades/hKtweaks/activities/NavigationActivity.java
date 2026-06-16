@@ -153,7 +153,7 @@ public class NavigationActivity extends BaseActivity
     private static final String FRAGMENT_CACHE = "navigation_fragment_cache";
     private static final String FRAGMENT_CACHE_FORMAT =
             "navigation_fragment_cache_format";
-    private static final String FRAGMENT_CACHE_FORMAT_CURRENT = "2";
+    private static final String FRAGMENT_CACHE_FORMAT_CURRENT = "5";
     private static final String FRAGMENT_CACHE_APP_VERSION =
             "navigation_fragment_cache_app_version";
     private static final String FRAGMENT_CACHE_INSTALL_TIME =
@@ -468,23 +468,34 @@ public class NavigationActivity extends BaseActivity
             fragments.add(new NavigationFragment(R.string.entropy, EntropyFragment.class, R.drawable.ic_numbers));
         }
         fragments.add(new NavigationFragment(R.string.misc, MiscFragment.class, R.drawable.ic_clear));
-        fragments.add(new NavigationFragment(R.string.voltage_control));
-        if (VoltageCl1.supported()) {
+        boolean hasCpuCl1Voltage = VoltageCl1.supported();
+        boolean hasCpuCl0Voltage = VoltageCl0.supported();
+        boolean hasBusMifVoltage = VoltageMif.supported();
+        boolean hasBusIntVoltage = VoltageInt.supported();
+        boolean hasBusDispVoltage = VoltageDisp.supported();
+        boolean hasBusCamVoltage = VoltageCam.supported();
+        if (hasCpuCl1Voltage || hasCpuCl0Voltage || hasBusMifVoltage
+                || hasBusIntVoltage || hasBusDispVoltage || hasBusCamVoltage) {
+            fragments.add(new NavigationFragment(R.string.voltage_control));
+        }
+        if (hasCpuCl1Voltage) {
             fragments.add(new NavigationFragment(R.string.cpucl1_voltage, CPUVoltageCl1Fragment.class, R.drawable.ic_bolt));
         }
-        if (VoltageCl0.supported()) {
-            fragments.add(new NavigationFragment(R.string.cpucl0_voltage, CPUVoltageCl0Fragment.class, R.drawable.ic_bolt));
+        if (hasCpuCl0Voltage) {
+            fragments.add(new NavigationFragment(hasCpuCl1Voltage
+                    ? R.string.cpucl0_voltage
+                    : R.string.cpu_voltage, CPUVoltageCl0Fragment.class, R.drawable.ic_bolt));
         }
-        if (VoltageMif.supported()) {
+        if (hasBusMifVoltage) {
             fragments.add(new NavigationFragment(R.string.busMif_voltage, BusMifFragment.class, R.drawable.ic_bolt));
         }
-        if (VoltageInt.supported()) {
+        if (hasBusIntVoltage) {
             fragments.add(new NavigationFragment(R.string.busInt_voltage, BusIntFragment.class, R.drawable.ic_bolt));
         }
-        if (VoltageDisp.supported()) {
+        if (hasBusDispVoltage) {
             fragments.add(new NavigationFragment(R.string.busDisp_voltage, BusDispFragment.class, R.drawable.ic_bolt));
         }
-        if (VoltageCam.supported()) {
+        if (hasBusCamVoltage) {
             fragments.add(new NavigationFragment(R.string.busCam_voltage, BusCamFragment.class, R.drawable.ic_bolt));
         }
         fragments.add(new NavigationFragment(R.string.tools));

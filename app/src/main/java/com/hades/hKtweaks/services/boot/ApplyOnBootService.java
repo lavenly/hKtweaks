@@ -39,6 +39,10 @@ import com.hades.hKtweaks.utils.AppUpdaterTask;
 import com.hades.hKtweaks.utils.Device;
 import com.hades.hKtweaks.utils.NotificationId;
 import com.hades.hKtweaks.utils.Utils;
+import com.hades.hKtweaks.utils.kernel.bus.VoltageCam;
+import com.hades.hKtweaks.utils.kernel.bus.VoltageDisp;
+import com.hades.hKtweaks.utils.kernel.bus.VoltageInt;
+import com.hades.hKtweaks.utils.kernel.bus.VoltageMif;
 import com.hades.hKtweaks.utils.kernel.cpuvoltage.VoltageCl0;
 import com.hades.hKtweaks.utils.kernel.cpuvoltage.VoltageCl1;
 import com.hades.hKtweaks.utils.kernel.gpu.GPUFreqExynos;
@@ -101,13 +105,33 @@ public class ApplyOnBootService extends Service {
         if (!kernel_old.equals(kernel_new)) {
             // Save backup of Cluster0 stock voltages
             if (VoltageCl0.supported()) {
-                RootUtils.runCommand("cp " + VoltageCl0.CL0_VOLTAGE + " " + VoltageCl0.BACKUP);
+                RootUtils.runCommand("cp " + VoltageCl0.getPath() + " " + VoltageCl0.BACKUP);
                 AppSettings.saveBoolean("cl0_voltage_saved", true, this);
             }
             // Save backup of Cluster1 stock voltages
             if (VoltageCl1.supported()) {
-                RootUtils.runCommand("cp " + VoltageCl1.CL1_VOLTAGE + " " + VoltageCl1.BACKUP);
+                RootUtils.runCommand("cp " + VoltageCl1.getPath() + " " + VoltageCl1.BACKUP);
                 AppSettings.saveBoolean("cl1_voltage_saved", true, this);
+            }
+            // Save backup of Bus MIF stock voltages
+            if (VoltageMif.supported()) {
+                RootUtils.runCommand("cp " + VoltageMif.getPath() + " " + VoltageMif.BACKUP);
+                AppSettings.saveBoolean("busMif_voltage_saved", true, this);
+            }
+            // Save backup of Bus INT stock voltages
+            if (VoltageInt.supported()) {
+                RootUtils.runCommand("cp " + VoltageInt.getPath() + " " + VoltageInt.BACKUP);
+                AppSettings.saveBoolean("busInt_voltage_saved", true, this);
+            }
+            // Save backup of Bus DISP stock voltages
+            if (VoltageDisp.supported()) {
+                RootUtils.runCommand("cp " + VoltageDisp.getPath() + " " + VoltageDisp.BACKUP);
+                AppSettings.saveBoolean("busDisp_voltage_saved", true, this);
+            }
+            // Save backup of Bus CAM stock voltages
+            if (VoltageCam.supported()) {
+                RootUtils.runCommand("cp " + VoltageCam.getPath() + " " + VoltageCam.BACKUP);
+                AppSettings.saveBoolean("busCam_voltage_saved", true, this);
             }
             // Save backup of GPU stock voltages
             if (GPUFreqExynos.getInstance().supported() && GPUFreqExynos.getInstance().hasVoltage()) {

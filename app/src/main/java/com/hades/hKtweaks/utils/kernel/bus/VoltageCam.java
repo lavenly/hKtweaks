@@ -23,9 +23,9 @@ import android.content.Context;
 
 import com.hades.hKtweaks.fragments.ApplyOnBootFragment;
 import com.hades.hKtweaks.utils.Utils;
+import com.hades.hKtweaks.utils.kernel.VoltageTables;
 import com.hades.hKtweaks.utils.root.Control;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -47,27 +47,23 @@ public class VoltageCam {
     private static final HashMap<String, Boolean> sAppend = new HashMap<>();
 
     static {
-        sVoltages.put(VOLTAGE, false);
-
-        sOffsetFreq.put(VOLTAGE, 1000);
-
-        sOffset.put(VOLTAGE, 1000);
-
-        sSplitNewline.put(VOLTAGE, "\\r?\\n");
-
-        sSplitLine.put(VOLTAGE, " ");
-
-        sAppend.put(VOLTAGE, false);
+        registerVoltagePath(VOLTAGE);
     }
 
     private static String PATH;
     private static String[] sFreqs;
 
     public static void setVoltage(String freq, String voltage, Context context) {
-        int position = getFreqs().indexOf(freq);
+        if (!supported()) return;
+
+        List<String> freqs = getFreqs();
+        if (freqs == null) return;
+
+        int position = freqs.indexOf(freq);
         if (sAppend.get(PATH)) {
             String command = "";
             List<String> voltages = getVoltages();
+            if (voltages == null || position < 0) return;
             for (int i = 0; i < voltages.size(); i++) {
                 if (i == position) {
                     command += command.isEmpty() ? voltage : " " + voltage;
@@ -85,51 +81,34 @@ public class VoltageCam {
     }
 
     public static int getOffset () {
-        return sOffset.get(PATH);
+        Integer offset = sOffset.get(PATH);
+        return offset != null && offset != 0 ? offset : 1;
     }
 
     public static List<String> getStockVoltages() {
-        String value = Utils.readFile(BACKUP);
-        if (!value.isEmpty()) {
-            String[] lines = value.split(sSplitNewline.get(PATH));
-            List<String> voltages = new ArrayList<>();
-            for (String line : lines) {
-                String[] voltageLine = line.split(sSplitLine.get(PATH));
-                if (voltageLine.length > 1) {
-                    voltages.add(String.valueOf(Utils.strToFloat(voltageLine[1].trim()) / sOffset.get(PATH)));
-                }
-            }
-            return voltages;
+        if (!supported()) return null;
+
+        String value = VoltageTables.readFile(BACKUP);
+        if (value == null || value.isEmpty()) {
+            value = VoltageTables.readFile(PATH);
         }
-        return null;
+        return VoltageTables.parseTableColumn(value, 1, getOffset());
     }
 
     public static List<String> getVoltages() {
-        String value = Utils.readFile(PATH);
-        if (!value.isEmpty()) {
-            String[] lines = value.split(sSplitNewline.get(PATH));
-            List<String> voltages = new ArrayList<>();
-            for (String line : lines) {
-                String[] voltageLine = line.split(sSplitLine.get(PATH));
-                if (voltageLine.length > 1) {
-                    voltages.add(String.valueOf(Utils.strToFloat(voltageLine[1].trim()) / sOffset.get(PATH)));
-                }
-            }
-            return voltages;
-        }
-        return null;
+        if (!supported()) return null;
+
+        return VoltageTables.parseTableColumn(VoltageTables.readFile(PATH), 1, getOffset());
     }
 
     public static List<String> getFreqs() {
+        if (!supported()) return null;
+
         if (sFreqs == null) {
-            String value = Utils.readFile(PATH);
-            if (!value.isEmpty()) {
-                String[] lines = value.split(sSplitNewline.get(PATH));
-                sFreqs = new String[lines.length];
-                for (int i = 0; i < sFreqs.length; i++) {
-                    sFreqs[i] = String.valueOf(Utils.strToInt(lines[i]
-                            .split(sSplitLine.get(PATH))[0].trim()) / sOffsetFreq.get(PATH));
-                }
+            List<String> freqs = VoltageTables.parseFrequencyColumn(
+                    VoltageTables.readFile(PATH), sOffsetFreq.get(PATH));
+            if (freqs != null) {
+                sFreqs = freqs.toArray(new String[0]);
             }
         }
         if (sFreqs == null) return null;
@@ -137,13 +116,34 @@ public class VoltageCam {
     }
 
     public static boolean supported() {
-        if (PATH != null) return true;
-        for (String path : sVoltages.keySet()) {
-            if (Utils.existFile(path)) {
-                PATH = path;
-            }
+        if (PATH != null && Utils.existFile(PATH) && VoltageTables.hasVoltageTable(PATH)) {
+            return true;
+        }
+
+        PATH = null;
+        sFreqs = null;
+        String path = VoltageTables.findDevfreqVoltageTable(VOLTAGE, "cam");
+        if (path != null && VoltageTables.hasVoltageTable(path)) {
+            registerVoltagePath(path);
+            PATH = path;
         }
         return PATH != null;
+    }
+
+    public static String getPath() {
+        supported();
+        return PATH;
+    }
+
+    private static void registerVoltagePath(String path) {
+        if (path == null || sVoltages.containsKey(path)) return;
+
+        sVoltages.put(path, false);
+        sOffsetFreq.put(path, 1000);
+        sOffset.put(path, 1000);
+        sSplitNewline.put(path, "\\r?\\n");
+        sSplitLine.put(path, " ");
+        sAppend.put(path, false);
     }
 
     private static void run(String command, String id, Context context) {

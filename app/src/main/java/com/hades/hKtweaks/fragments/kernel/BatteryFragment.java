@@ -81,7 +81,10 @@ public class BatteryFragment extends RecyclerViewFragment {
                 || mBattery.hasForceFastCharge()
                 || mBattery.hasBlx()
                 || mBattery.hasChargeRateEnable()
-                || mBattery.hasChargingCurrent()) {
+                || mBattery.hasChargingCurrent()
+                || mBattery.hasStoreMode()
+                || mBattery.hasDisableCharging()
+                || mBattery.hasUnstableCharge()) {
             addViewPagerFragment(ApplyOnBootFragment.newInstance(this));
         }
     }
@@ -98,10 +101,15 @@ public class BatteryFragment extends RecyclerViewFragment {
             tempInit(items);
             levelInit(items);
             healthInit(items);
-            chargeInit(items);
         } else {
             levelInit(items);
             voltageInit(items);
+        }
+        if (mBattery.hasCharge()
+                || mBattery.hasStoreMode()
+                || mBattery.hasDisableCharging()
+                || mBattery.hasUnstableCharge()) {
+            chargeInit(items);
         }
         if (mBattery.hasForceFastCharge()) {
             forceFastChargeInit(items);
@@ -139,56 +147,60 @@ public class BatteryFragment extends RecyclerViewFragment {
         storeCard.setFullSpan(true);
 
         if (mBattery.hasStoreMode()){
-            SwitchView sMode = new SwitchView();
-            sMode.setTitle(getString(R.string.store_mode));
-            sMode.setSummary(getString(R.string.store_mode_summary));
-            sMode.setChecked(mBattery.isStoreModeEnabled());
-            sMode.addOnSwitchListener((switchView, isChecked)
-                    -> mBattery.enableStoreMode(isChecked, getActivity()));
+            if (mBattery.hasStoreModeToggle()) {
+                SwitchView sMode = new SwitchView();
+                sMode.setTitle(getString(R.string.store_mode));
+                sMode.setSummary(getString(R.string.store_mode_summary));
+                sMode.setChecked(mBattery.isStoreModeEnabled());
+                sMode.addOnSwitchListener((switchView, isChecked)
+                        -> mBattery.enableStoreMode(isChecked, getActivity()));
 
-            storeCard.addItem(sMode);
+                storeCard.addItem(sMode);
+            }
 
+            if (mBattery.hasStoreModeMax()) {
+                SeekBarView smMax = new SeekBarView();
+                smMax.setTitle(getString(R.string.store_mode_max));
+                smMax.setSummary(getString(R.string.store_mode_max_summary));
+                smMax.setMax(100);
+                smMax.setMin(1);
+                smMax.setUnit(getString(R.string.percent));
+                smMax.setProgress(Math.max(0, Utils.strToInt(mBattery.getStoreModeMax()) - 1));
+                smMax.setOnSeekBarListener(new SeekBarView.OnSeekBarListener() {
+                    @Override
+                    public void onStop(SeekBarView seekBarView, int position, String value) {
+                        mBattery.setStoreModeMax(position + 1, getActivity());
+                    }
 
-            SeekBarView smMax = new SeekBarView();
-            smMax.setTitle(getString(R.string.store_mode_max));
-            smMax.setSummary(getString(R.string.store_mode_max_summary));
-            smMax.setMax(100);
-            smMax.setMin(1);
-            smMax.setUnit(getString(R.string.percent));
-            smMax.setProgress(Utils.strToInt(mBattery.getStoreModeMax()) -1 );
-            smMax.setOnSeekBarListener(new SeekBarView.OnSeekBarListener() {
-                @Override
-                public void onStop(SeekBarView seekBarView, int position, String value) {
-                    mBattery.setStoreModeMax(position +1, getActivity());
-                }
+                    @Override
+                    public void onMove(SeekBarView seekBarView, int position, String value) {
+                    }
+                });
 
-                @Override
-                public void onMove(SeekBarView seekBarView, int position, String value) {
-                }
-            });
+                storeCard.addItem(smMax);
+            }
 
-            storeCard.addItem(smMax);
+            if (mBattery.hasStoreModeMin()) {
+                SeekBarView smMin = new SeekBarView();
+                smMin.setTitle(getString(R.string.store_mode_min));
+                smMin.setSummary(getString(R.string.store_mode_min_summary));
+                smMin.setMax(100);
+                smMin.setMin(1);
+                smMin.setUnit(getString(R.string.percent));
+                smMin.setProgress(Math.max(0, Utils.strToInt(mBattery.getStoreModeMin()) - 1));
+                smMin.setOnSeekBarListener(new SeekBarView.OnSeekBarListener() {
+                    @Override
+                    public void onStop(SeekBarView seekBarView, int position, String value) {
+                        mBattery.setStoreModeMin(position + 1, getActivity());
+                    }
 
+                    @Override
+                    public void onMove(SeekBarView seekBarView, int position, String value) {
+                    }
+                });
 
-            SeekBarView smMin = new SeekBarView();
-            smMin.setTitle(getString(R.string.store_mode_min));
-            smMin.setSummary(getString(R.string.store_mode_min_summary));
-            smMin.setMax(100);
-            smMin.setMin(1);
-            smMin.setUnit(getString(R.string.percent));
-            smMin.setProgress(Utils.strToInt(mBattery.getStoreModeMin()) -1 );
-            smMin.setOnSeekBarListener(new SeekBarView.OnSeekBarListener() {
-                @Override
-                public void onStop(SeekBarView seekBarView, int position, String value) {
-                    mBattery.setStoreModeMin(position +1, getActivity());
-                }
-
-                @Override
-                public void onMove(SeekBarView seekBarView, int position, String value) {
-                }
-            });
-
-            storeCard.addItem(smMin);
+                storeCard.addItem(smMin);
+            }
         }
 
         if (storeCard.size() > 0) {
@@ -690,17 +702,17 @@ public class BatteryFragment extends RecyclerViewFragment {
     private final BroadcastReceiver mBatteryReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            if (Battery.BATTERY_NODE == null) {
+            if (!mBattery.hasCharge()) {
                 Battery.setValues();
             }
             mBatteryLevel = intent.getIntExtra(BatteryManager.EXTRA_LEVEL, 0);
             mBatteryVoltage = intent.getIntExtra(BatteryManager.EXTRA_VOLTAGE, 0);
-            mBatteryCurrent = Utils.strToInt(Utils.readFile(Battery.BATTERY_NODE + "/power_supply/battery/current_now"));
-            mBatteryCurrentAvg = Utils.strToInt(Utils.readFile(Battery.BATTERY_NODE + "/power_supply/battery/current_avg"));
+            mBatteryCurrent = Battery.getCurrentNow();
+            mBatteryCurrentAvg = Battery.getCurrentAvg();
             mBatteryCharSource = Battery.getChargeSource(context);
             mBatteryCapacity = Battery.getCapacity() + getString(R.string.mah);
             mBatteryTemp = intent.getIntExtra(BatteryManager.EXTRA_TEMPERATURE, 0) / 10D;
-            mBatteryStatus = Utils.readFile(Battery.BATTERY_NODE + "/power_supply/battery/status");
+            mBatteryStatus = Battery.getStatus(context);
             mBatteryHealth = Battery.getHealthValue();
         }
     };
@@ -717,7 +729,7 @@ public class BatteryFragment extends RecyclerViewFragment {
         if (mCurrent != null) {
             mCurrent.setStat(mBatteryCurrent + getString(R.string.ma));
         }
-        if (mCurrent != null) {
+        if (mCurrentAvg != null) {
             mCurrentAvg.setStat(mBatteryCurrentAvg + getString(R.string.ma));
         }
         if (mCharSource != null) {
@@ -726,7 +738,7 @@ public class BatteryFragment extends RecyclerViewFragment {
         if (mCapacity != null) {
             mCapacity.setStat(mBatteryCapacity);
         }
-        if (mCurrent != null) {
+        if (mTemp != null) {
             mTemp.setStat(mBatteryTemp + getString(R.string.celsius));
         }
         if (mStatus != null) {

@@ -24,6 +24,7 @@ import android.content.Context;
 import com.hades.hKtweaks.R;
 import com.hades.hKtweaks.fragments.ApplyOnBootFragment;
 import com.hades.hKtweaks.utils.Utils;
+import com.hades.hKtweaks.utils.kernel.VoltageTables;
 import com.hades.hKtweaks.utils.root.Control;
 import com.hades.hKtweaks.utils.root.RootUtils;
 
@@ -248,6 +249,14 @@ public class GPUFreqExynos {
                 break;
             }
         }
+        if (AVAILABLE_VOLTS == null) {
+            String file = VoltageTables.findMaliVoltageTable(null);
+            if (file != null) {
+                AVAILABLE_VOLTS = file;
+                AVAILABLE_VOLTS_OFFSET = 1000;
+                mAvailableVolts.put(file, AVAILABLE_VOLTS_OFFSET);
+            }
+        }
 
         for (String file : mCurrentFreqs.keySet()) {
             if (Utils.existFile(file)) {
@@ -273,27 +282,12 @@ public class GPUFreqExynos {
 
         for (String file : mAvailableFreqs) {
             if (Utils.existFile(file)) {
-                if ((file.equals(AVAILABLE_S7_FREQS_STOCK)) || (file.equals(AVAILABLE_FREQS_STOCK))){
-                    String[] freqs = Utils.readFile(file).split(" ");
-                    AVAILABLE_FREQS = new ArrayList<>();
-                    AVAILABLE_FREQS_SORT = new ArrayList<>();
-                    for (String freq : freqs) {
-                        AVAILABLE_FREQS.add(Utils.strToInt(freq.trim()));
-                        AVAILABLE_FREQS_SORT.add(Utils.strToInt(freq.trim()));
-                    }
-                } else {
-                    String[] freqs = Utils.readFile(file).split("\\r?\\n");
-                    AVAILABLE_FREQS = new ArrayList<>();
-                    AVAILABLE_FREQS_SORT = new ArrayList<>();
-                    for (String freq : freqs) {
-                        String[] freqLine = freq.split(" ");
-                        AVAILABLE_FREQS.add(Utils.strToInt(freqLine[0].trim()));
-                        AVAILABLE_FREQS_SORT.add(Utils.strToInt(freqLine[0].trim()));
-                    }
-                }
-                Collections.sort(AVAILABLE_FREQS_SORT);
+                loadAvailableFreqs(file);
                 break;
             }
+        }
+        if (AVAILABLE_FREQS == null && AVAILABLE_VOLTS != null) {
+            loadAvailableFreqs(AVAILABLE_VOLTS);
         }
 
         for (String file : mScalingGovernors) {
@@ -337,6 +331,35 @@ public class GPUFreqExynos {
                 break;
             }
         }
+    }
+
+    private void loadAvailableFreqs(String file) {
+        String value = VoltageTables.readFile(file);
+        if (value == null || value.isEmpty()) return;
+
+        List<Integer> freqs = new ArrayList<>();
+        if ((file.equals(AVAILABLE_S7_FREQS_STOCK)) || (file.equals(AVAILABLE_FREQS_STOCK))) {
+            String[] items = value.split("\\s+");
+            for (String freq : items) {
+                String number = freq == null ? "" : freq.replaceAll("[^0-9.\\-]", "");
+                if (!number.isEmpty()) {
+                    freqs.add(Utils.strToInt(number));
+                }
+            }
+        } else {
+            List<String> parsedFreqs = VoltageTables.parseFrequencyColumn(value, 1);
+            if (parsedFreqs != null) {
+                for (String freq : parsedFreqs) {
+                    freqs.add(Utils.strToInt(freq));
+                }
+            }
+        }
+
+        if (freqs.isEmpty()) return;
+
+        AVAILABLE_FREQS = new ArrayList<>(freqs);
+        AVAILABLE_FREQS_SORT = new ArrayList<>(freqs);
+        Collections.sort(AVAILABLE_FREQS_SORT);
     }
 
     public boolean needRefactor;
@@ -505,46 +528,31 @@ public class GPUFreqExynos {
     }
 
     public void setVoltage(Integer freq, String voltage, Context context) {
+        if (!hasVoltage()) return;
+
         String volt = String.valueOf((int)(Utils.strToFloat(voltage) * AVAILABLE_VOLTS_OFFSET));
         run(Control.write(freq + " " + volt, AVAILABLE_VOLTS), AVAILABLE_VOLTS + freq, context);
     }
 
     public List<String> getStockVoltages() {
-        String value = Utils.readFile(BACKUP);
-        if (!value.isEmpty()) {
-            String[] lines = value.split(SPLIT_NEW_LINE);
-            List<String> voltages = new ArrayList<>();
-            for (String line : lines) {
-                String[] voltageLine = line.split(SPLIT_LINE);
-                if (voltageLine.length > 1) {
-                    voltages.add(String.valueOf(Utils.strToFloat(voltageLine[1].trim()) / AVAILABLE_VOLTS_OFFSET));
+        if (!hasVoltage()) return null;
 
-                }
-            }
-            return voltages;
+        String value = VoltageTables.readFile(BACKUP);
+        if (value == null || value.isEmpty()) {
+            value = VoltageTables.readFile(AVAILABLE_VOLTS);
         }
-        return null;
+        return VoltageTables.parseTableColumn(value, 1, getVoltageOffset());
     }
 
     public List<String> getVoltages() {
-        String value = Utils.readFile(AVAILABLE_VOLTS);
-        if (!value.isEmpty()) {
-            String[] lines = value.split(SPLIT_NEW_LINE);
-            List<String> voltages = new ArrayList<>();
-            for (String line : lines) {
-                String[] voltageLine = line.split(SPLIT_LINE);
-                if (voltageLine.length > 1) {
-                    voltages.add(String.valueOf(Utils.strToFloat(voltageLine[1].trim()) / AVAILABLE_VOLTS_OFFSET));
+        if (!hasVoltage()) return null;
 
-                }
-            }
-            return voltages;
-        }
-        return null;
+        return VoltageTables.parseTableColumn(VoltageTables.readFile(AVAILABLE_VOLTS),
+                1, getVoltageOffset());
     }
 
     public boolean hasVoltage() {
-        return AVAILABLE_VOLTS != null;
+        return AVAILABLE_VOLTS != null && VoltageTables.hasVoltageTable(AVAILABLE_VOLTS);
     }
 
     public void setPowerPolicy(String value, Context context) {
@@ -583,7 +591,7 @@ public class GPUFreqExynos {
     }
 
     public int getVoltageOffset () {
-        return AVAILABLE_VOLTS_OFFSET;
+        return AVAILABLE_VOLTS_OFFSET != 0 ? AVAILABLE_VOLTS_OFFSET : 1;
     }
 
     public boolean hasDriverVersion() {
