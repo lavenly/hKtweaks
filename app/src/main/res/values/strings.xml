@@ -417,6 +417,8 @@
     <string name="rq_4_0"> The time reserved for each process in the queue for scale down.</string>	
     <string name="samsungPlug">SamsungPlug</string>
     <string name="samsungPlug_summary">An in-kernel Samsung Stock Hotplugging</string>
+    <string name="dynamic_hotplug">Dynamic Hotplug</string>
+    <string name="dynamic_hotplug_summary">Kernel CPU hotplug driver detected from available sysfs controls.</string>
     <string name="samsungPlug_max_cpu">Maximum turned On cores</string>
     <string name="samsungPlug_min_cpu">Minimum turned On cores</string>
     <string name="thunderplug">ThunderPlug</string>

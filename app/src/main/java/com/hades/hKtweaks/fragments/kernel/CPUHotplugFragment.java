@@ -145,54 +145,63 @@ public class CPUHotplugFragment extends RecyclerViewFragment {
 
     private void samsungPlugInit(List<RecyclerViewItem> items) {
         final CardView samsungPlug = new CardView(getActivity());
-        samsungPlug.setTitle(getString(R.string.samsungPlug));
+        int title = SamsungPlug.isDynamicHotplug() ? R.string.dynamic_hotplug : R.string.samsungPlug;
+        int summary = SamsungPlug.isDynamicHotplug()
+                ? R.string.dynamic_hotplug_summary : R.string.samsungPlug_summary;
+        samsungPlug.setTitle(getString(title));
 
-        SwitchView enable = new SwitchView();
-        enable.setTitle(getString(R.string.samsungPlug));
-        enable.setSummary(getString(R.string.samsungPlug_summary));
-        enable.setChecked(SamsungPlug.isSamsungPlugEnabled());
-        enable.addOnSwitchListener((switchView, isChecked)
-                -> SamsungPlug.enableSamsungPlug(isChecked, getActivity()));
+        if (SamsungPlug.hasEnable()) {
+            SwitchView enable = new SwitchView();
+            enable.setTitle(getString(title));
+            enable.setSummary(getString(summary));
+            enable.setChecked(SamsungPlug.isSamsungPlugEnabled());
+            enable.addOnSwitchListener((switchView, isChecked)
+                    -> SamsungPlug.enableSamsungPlug(isChecked, getActivity()));
 
-        samsungPlug.addItem(enable);
-        mEnableViews.add(enable);
-/*
-		SeekBarView max = new SeekBarView();
-        max.setTitle(getString(R.string.samsungPlug_max_cpu));
-        max.setMax(8);
-        max.setMin(1);
-        max.setProgress(Utils.strToInt(SamsungPlug.getMaxOnlineCpu()) - 1);
-        max.setOnSeekBarListener(new SeekBarView.OnSeekBarListener() {
-            @Override
-            public void onStop(SeekBarView seekBarView, int position, String value) {
-                SamsungPlug.setMaxOnlineCpu((position + 1), getActivity());
-            }
+            samsungPlug.addItem(enable);
+            mEnableViews.add(enable);
+        }
 
-            @Override
-            public void onMove(SeekBarView seekBarView, int position, String value) {
-            }
-        });
+        if (SamsungPlug.hasMaxOnlineCpu()) {
+            SeekBarView max = new SeekBarView();
+            max.setTitle(getString(R.string.samsungPlug_max_cpu));
+            max.setMax(mCPUFreq.getCpuCount());
+            max.setMin(1);
+            max.setProgress(Math.max(0, Utils.strToInt(SamsungPlug.getMaxOnlineCpu()) - 1));
+            max.setOnSeekBarListener(new SeekBarView.OnSeekBarListener() {
+                @Override
+                public void onStop(SeekBarView seekBarView, int position, String value) {
+                    SamsungPlug.setMaxOnlineCpu((position + 1), getActivity());
+                }
 
-        samsungPlug.addItem(max);
+                @Override
+                public void onMove(SeekBarView seekBarView, int position, String value) {
+                }
+            });
 
-        SeekBarView min = new SeekBarView();
-        min.setTitle(getString(R.string.samsungPlug_min_cpu));
-        min.setMax(8);
-        min.setMin(1);
-        min.setProgress(Utils.strToInt(SamsungPlug.getMinOnlineCpu()) - 1);
-        min.setOnSeekBarListener(new SeekBarView.OnSeekBarListener() {
-            @Override
-            public void onStop(SeekBarView seekBarView, int position, String value) {
-                SamsungPlug.setMinOnlineCpu((position + 1), getActivity());
-            }
+            samsungPlug.addItem(max);
+        }
 
-            @Override
-            public void onMove(SeekBarView seekBarView, int position, String value) {
-            }
-        });
+        if (SamsungPlug.hasMinOnlineCpu()) {
+            SeekBarView min = new SeekBarView();
+            min.setTitle(getString(R.string.samsungPlug_min_cpu));
+            min.setMax(mCPUFreq.getCpuCount());
+            min.setMin(1);
+            min.setProgress(Math.max(0, Utils.strToInt(SamsungPlug.getMinOnlineCpu()) - 1));
+            min.setOnSeekBarListener(new SeekBarView.OnSeekBarListener() {
+                @Override
+                public void onStop(SeekBarView seekBarView, int position, String value) {
+                    SamsungPlug.setMinOnlineCpu((position + 1), getActivity());
+                }
 
-        samsungPlug.addItem(min);
-*/
+                @Override
+                public void onMove(SeekBarView seekBarView, int position, String value) {
+                }
+            });
+
+            samsungPlug.addItem(min);
+        }
+
         if (samsungPlug.size() > 0) {
             items.add(samsungPlug);
         }
