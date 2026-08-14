@@ -1,9 +1,15 @@
 {
-  "latestVersion": "2.2.3",
-  "latestVersionCode": "223",
-  "url": "https://github.com/ExtremeXT/hKtweaks/releases/download/v2.2.3/hKtweaks_v2.2.3.apk",
+  "latestVersion": "2.2.4",
+  "latestVersionCode": "224",
+  "url": "https://github.com/lavenly/hKtweaks/releases/download/v2.2.4/hKtweaks_v2.2.4.apk",
   "releaseNotes": [
     "Changelog:",
-    "Implement Disable Charging function, fix TCP congestion algorithm detection - ExtremeXT"
+    "- Complete Material 3 Expressive UI refresh across app screens, settings, dialogs, widgets, icons, typography, animations, banners, and loading states.",
+    "- Add top-tabs navigation with swipe support, ViewPager2 migration, and immediate theme/navigation refresh.",
+    "- Improve profile widget styling, launcher shortcut icons, adaptive app icon support, and settings layout consistency.",
+    "- Improve startup and page-loading stability, including fixes for checking-info flow and navigation page selection.",
+    "- Improve battery, voltage, and dynamic CPU hotplug detection, including single-cluster CPU voltage support.",
+    "- Fix disable charging and MIN/MAX store mode controls so supported sysfs nodes are detected and applied dynamically.",
+    "By lavenly & GPT 5.5 (Codex)"
   ]
 }
