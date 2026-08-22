@@ -18,12 +18,14 @@ public class SamsungPlug {
             "/sys/kernel/dynamic_hotplug",
             "/sys/module/dyn_hotplug/parameters",
             "/sys/module/dynamic_hotplug/parameters",
-            "/sys/devices/system/cpu/cpuhotplug"
+            "/sys/devices/system/cpu/cpuhotplug",
+            "/sys/power"
     };
 
     private static final String[] ENABLE_NAMES = {
             "enabled",
             "enable",
+            "enable_dm_hotplug",
             "hotplug_enabled",
             "hotplug_enable"
     };
