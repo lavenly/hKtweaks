@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="AppThemeParent" parent="AppTheme">
+        <item name="android:windowDrawsSystemBarBackgrounds">true</item>
+        <item name="android:statusBarColor">?attr/colorSurface</item>
+        <item name="android:windowLightStatusBar">true</item>
+        <item name="android:windowSplashScreenAnimatedIcon">@drawable/ic_launcher_splash</item>
+        <item name="android:windowSplashScreenBackground">?attr/colorSurface</item>
+    </style>
+
+    <style name="AppThemeParentDark" parent="AppThemeDark">
+        <item name="android:windowDrawsSystemBarBackgrounds">true</item>
+        <item name="android:statusBarColor">?attr/colorSurface</item>
+        <item name="android:windowLightStatusBar">false</item>
+        <item name="android:windowSplashScreenAnimatedIcon">@drawable/ic_launcher_splash</item>
+        <item name="android:windowSplashScreenBackground">?attr/colorSurface</item>
+    </style>
+</resources>
