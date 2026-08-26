@@ -51,7 +51,7 @@ public class SamsungPlug {
     public static void enableSamsungPlug(boolean enable, Context context) {
         String path = getEnablePath();
         if (path != null) {
-            run(Control.write(enable ? "1" : "0", path), path, context);
+            run(Control.write(getEnableWriteValue(enable, path), path), path, context);
         }
     }
 
@@ -177,6 +177,27 @@ public class SamsungPlug {
     private static boolean isEnabledValue(String value) {
         return "1".equals(value) || "Y".equalsIgnoreCase(value)
                 || "on".equalsIgnoreCase(value) || "enabled".equalsIgnoreCase(value);
+    }
+
+    private static String getEnableWriteValue(boolean enable, String path) {
+        String value = Utils.readFile(path);
+        if (value == null) {
+            return enable ? "1" : "0";
+        }
+
+        if ("enabled".equalsIgnoreCase(value) || "disabled".equalsIgnoreCase(value)) {
+            return enable ? "enabled" : "disabled";
+        }
+        if ("Y".equalsIgnoreCase(value) || "N".equalsIgnoreCase(value)) {
+            return enable ? "Y" : "N";
+        }
+        if ("on".equalsIgnoreCase(value) || "off".equalsIgnoreCase(value)) {
+            return enable ? "on" : "off";
+        }
+        if ("true".equalsIgnoreCase(value) || "false".equalsIgnoreCase(value)) {
+            return enable ? "true" : "false";
+        }
+        return enable ? "1" : "0";
     }
 
     private static void run(String command, String id, Context context) {
